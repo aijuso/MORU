@@ -56,8 +56,8 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 - [x] ブランド再定義完了(猫用家具から始まるライフスタイルブランド / トーンは旧比で親しみやすく)
 - [x] トップページ構成・ビジュアル確定(docs/02 + docs/mockups/home_v2_final.png)
 - [x] ロゴ確定(テラコッタのワードマーク)
-- [ ] Skeletonベースの初期セットアップ
-- [ ] design token(カラー/フォント/spacing)整備
+- [x] Skeletonベースの初期セットアップ(upstream a4f32d3 取り込み・Dev MCP登録済み)
+- [x] design token(カラー/フォント/spacing)整備(settings_schema + css-variables + base.css)
 - [ ] セクション構築(docs/05 の手順で順次)
 - [ ] 商品ページ(フラワーラウンジで検証)
 - [ ] コレクション・About・Journal 等下層ページ(仕様未作成)
