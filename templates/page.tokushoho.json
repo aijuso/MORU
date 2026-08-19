@@ -13,7 +13,7 @@
       "type": "moru-page-header",
       "settings": {
         "show_breadcrumbs": true,
-        "eyebrow": "LEGAL",
+        "eyebrow": "事業者情報",
         "heading": "特定商取引法に基づく表記",
         "alignment": "left",
         "background": "none"

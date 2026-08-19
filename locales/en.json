@@ -71,7 +71,10 @@
       "newsletter_success": "Thanks for subscribing.",
       "legal_tokushoho": "Legal notice (SCTA)",
       "legal_privacy": "Privacy policy",
-      "legal_terms": "Terms of service"
+      "legal_terms": "Terms of service",
+      "newsletter_error": "We could not sign you up. Please check your email address.",
+      "select_menu": "Select a menu",
+      "rights": "All rights reserved."
     },
     "badge": {
       "new": "NEW"

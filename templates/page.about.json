@@ -13,7 +13,7 @@
       "type": "moru-page-header",
       "settings": {
         "show_breadcrumbs": true,
-        "eyebrow": "ABOUT",
+        "eyebrow": "ブランドについて",
         "heading": "MORUについて",
         "lead": "<p>人とペットが過ごす部屋を、ひとつの景色として考える。</p>",
         "alignment": "left",
@@ -27,7 +27,7 @@
           "type": "story",
           "settings": {
             "image_position": "left",
-            "eyebrow": "CONCEPT",
+            "eyebrow": "コンセプト",
             "heading": "暮らしを、好きな景色に。",
             "text": "<p>MORUは、人とペットが過ごす部屋を、ひとつの景色として考えるライフスタイルブランドです。</p><p>北欧の温かさ、ミッドセンチュリーの曲線、韓国インテリアの柔らかな色。今の気分を取り入れたペット家具やインテリア雑貨を通して、家にいる時間がもっと楽しみになる暮らしを提案します。</p>"
           }
@@ -36,7 +36,7 @@
           "type": "story",
           "settings": {
             "image_position": "right",
-            "eyebrow": "SELECTION",
+            "eyebrow": "選びかた",
             "heading": "猫用品だから、インテリアを諦めない。",
             "text": "<p>デザインのために、心地よさも諦めない。かたちと素材、そして猫が本当にくつろげるかどうか。その両方を基準にアイテムを選んでいます。</p><p>猫が自分だけの場所でくつろぎ、その姿まで部屋の一部になる。MORUが届けるのは、商品だけではありません。好きな景色の中で、一緒に暮らす毎日です。</p>"
           }
@@ -45,7 +45,7 @@
           "type": "story",
           "settings": {
             "image_position": "left",
-            "eyebrow": "FUTURE",
+            "eyebrow": "これから",
             "heading": "猫の居場所から、部屋全体へ。",
             "text": "<p>はじまりは、猫の居場所をつくるアイテムから。そこから同じ部屋に置けるインテリア雑貨へ、さらに人がくつろぐためのアイテムへと、少しずつ広げていきます。</p><p>ひとつの部屋の中で、猫のものと人のものが同じトーンで並ぶこと。それがMORUの目指す景色です。</p>"
           }
@@ -63,7 +63,7 @@
     "cta": {
       "type": "moru-page-cta",
       "settings": {
-        "eyebrow": "SHOP",
+        "eyebrow": "ショップ",
         "heading": "MORUのアイテムを見る",
         "text": "<p>いまお届けできるアイテムを一覧でご覧いただけます。</p>",
         "button_label": "商品を見る",

@@ -13,7 +13,7 @@
       "type": "moru-page-header",
       "settings": {
         "show_breadcrumbs": true,
-        "eyebrow": "FAQ",
+        "eyebrow": "サポート",
         "heading": "よくあるご質問",
         "lead": "<p>お届けまでの流れやご注文についてのご質問をまとめました。</p>",
         "alignment": "left",
@@ -97,7 +97,7 @@
     "cta": {
       "type": "moru-page-cta",
       "settings": {
-        "eyebrow": "CONTACT",
+        "eyebrow": "お問い合わせ",
         "heading": "お探しの内容が見つかりませんか?",
         "text": "<p>ご不明な点はお気軽にお問い合わせください。内容を確認のうえ、順番にご返信します。</p>",
         "background": "alt"

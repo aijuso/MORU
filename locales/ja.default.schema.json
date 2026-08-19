@@ -339,7 +339,7 @@
       "blog_label": "ブログ",
       "articles_to_show_label": "表示する記事数",
       "read_more_label": "記事リンクのラベル",
-      "read_more_default": "READ MORE"
+      "read_more_default": "記事を読む"
     },
     "instagram": {
       "name": "MORU Instagram",
@@ -353,9 +353,9 @@
       "name": "MORU フッター",
       "logo_label": "ロゴ画像",
       "brand_text_label": "ブランド説明文",
-      "brand_text_default": "人とペットが過ごす部屋を、ひとつの景色として考えるライフスタイルブランドです。日常に寄り添う心地よいアイテムをお届けします。",
+      "brand_text_default": "やわらかな光と木のぬくもりが調和する、\n人とペットのためのインテリアショップです。\n日常に寄り添う心地よいアイテムをお届けします。",
       "newsletter_heading_label": "ニュースレター見出し",
-      "newsletter_heading_default": "NEWSLETTER",
+      "newsletter_heading_default": "ニュースレター",
       "newsletter_text_label": "ニュースレター説明文",
       "newsletter_text_default": "最新情報や新着アイテムをお届けします。",
       "show_newsletter_label": "ニュースレターを表示",
@@ -365,7 +365,11 @@
       "legal_menu_label": "規約・ポリシーメニュー",
       "block_menu_name": "リンク列",
       "block_heading_label": "列の見出し",
-      "block_heading_default": "SHOP"
+      "block_heading_default": "ショップ",
+      "legal_menu_info": "空のままにすると、特定商取引法に基づく表記・プライバシーポリシー・利用規約へのリンクを表示します",
+      "preset_shop": "ショップ",
+      "preset_support": "カスタマーサポート",
+      "preset_about": "MORUについて"
     },
     "page_header": {
       "name": "MORU ページ見出し",

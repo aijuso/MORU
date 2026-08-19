@@ -353,11 +353,11 @@
       "name": "MORU footer",
       "logo_label": "Logo image",
       "brand_text_label": "Brand description",
-      "brand_text_default": "A lifestyle brand that sees the room people and pets share as one landscape. Comfortable pieces for everyday living.",
+      "brand_text_default": "An interior shop for people and their pets,\nwhere soft light meets the warmth of wood.\nEveryday pieces made to live with.",
       "newsletter_heading_label": "Newsletter heading",
-      "newsletter_heading_default": "NEWSLETTER",
+      "newsletter_heading_default": "Newsletter",
       "newsletter_text_label": "Newsletter description",
-      "newsletter_text_default": "News and new arrivals, delivered to your inbox.",
+      "newsletter_text_default": "News and new arrivals, straight to your inbox.",
       "show_newsletter_label": "Show newsletter",
       "instagram_url_label": "Instagram URL",
       "pinterest_url_label": "Pinterest URL",
@@ -365,7 +365,11 @@
       "legal_menu_label": "Legal & policy menu",
       "block_menu_name": "Link column",
       "block_heading_label": "Column heading",
-      "block_heading_default": "SHOP"
+      "block_heading_default": "Shop",
+      "legal_menu_info": "Leave empty to link to the legal notice, privacy policy and terms pages",
+      "preset_shop": "Shop",
+      "preset_support": "Customer care",
+      "preset_about": "About"
     },
     "page_header": {
       "name": "MORU page header",

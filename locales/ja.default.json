@@ -71,7 +71,10 @@
       "newsletter_success": "ご登録ありがとうございます。",
       "legal_tokushoho": "特定商取引法に基づく表記",
       "legal_privacy": "プライバシーポリシー",
-      "legal_terms": "利用規約"
+      "legal_terms": "利用規約",
+      "newsletter_error": "登録できませんでした。メールアドレスをご確認ください。",
+      "select_menu": "メニューを選択してください",
+      "rights": "無断転載を禁じます。"
     },
     "badge": {
       "new": "NEW"

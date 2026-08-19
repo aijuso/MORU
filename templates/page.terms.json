@@ -13,7 +13,7 @@
       "type": "moru-page-header",
       "settings": {
         "show_breadcrumbs": true,
-        "eyebrow": "TERMS OF SERVICE",
+        "eyebrow": "ご利用にあたって",
         "heading": "利用規約",
         "alignment": "left",
         "background": "none"

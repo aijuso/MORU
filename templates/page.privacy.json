@@ -13,7 +13,7 @@
       "type": "moru-page-header",
       "settings": {
         "show_breadcrumbs": true,
-        "eyebrow": "PRIVACY POLICY",
+        "eyebrow": "個人情報の取り扱い",
         "heading": "プライバシーポリシー",
         "alignment": "left",
         "background": "none"
