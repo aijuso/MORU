@@ -218,6 +218,37 @@
       "block_use_description_info": "オンにすると、本文の代わりに商品の説明文を表示します",
       "block_open_label": "最初から開いた状態にする"
     },
+    "collection_banner": {
+      "name": "MORU カテゴリーバナー",
+      "title_en_label": "英字タイトル",
+      "title_en_info": "空にするとコレクション名を表示します(例: LIGHTING)",
+      "title_ja_label": "日本語タイトル",
+      "title_ja_info": "英字タイトルの下に表示します(例: 照明)",
+      "description_label": "説明文",
+      "description_info": "空にするとコレクションの説明文を表示します",
+      "image_label": "バナー画像",
+      "image_info": "空にするとコレクション画像を使用します"
+    },
+    "collection_grid": {
+      "name": "MORU 商品一覧",
+      "products_per_page_label": "1ページの表示件数",
+      "filter_header": "絞り込み・並び替え",
+      "show_tag_filter_label": "カテゴリータブ(タグ)を表示",
+      "show_tag_filter_info": "商品のタグから自動でタブを作ります。管理画面で商品にタグを付けてください",
+      "max_tags_label": "表示するタグの数",
+      "show_sort_label": "並び替えを表示",
+      "show_sort_info": "おすすめ順・人気順・価格順・新着順など、Shopifyの並び替えを使用します",
+      "card_header": "商品カード",
+      "show_swatches_label": "カラースウォッチを表示",
+      "show_swatches_info": "カラーオプションのスウォッチを表示し、クリックで画像が切り替わります(管理画面でオプションにスウォッチ色を設定してください)"
+    },
+    "recent": {
+      "name": "MORU 閲覧した商品",
+      "title_default": "閲覧した商品",
+      "products_to_show_label": "表示する商品数",
+      "show_clear_label": "「履歴を消す」を表示",
+      "info": "閲覧履歴はお客様のブラウザに保存されます。履歴がないお客様にはこのセクションは表示されません(テーマエディタではサンプルを表示しています)。"
+    },
     "styling": {
       "name": "MORU スタイリング",
       "title_default": "スタイリングインスピレーション",

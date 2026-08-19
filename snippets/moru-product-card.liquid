@@ -6,10 +6,12 @@
   @param {number} [ph_index] - Placeholder variation 1-6 when product is empty
   @param {boolean} [show_new_badge] - Show a NEW badge on recently published products
   @param {boolean} [show_subtitle] - Show the product type as a muted subtitle
+  @param {boolean} [show_swatches] - Show colour swatches that swap the card image
+  @param {string} [swatch_option_names] - Comma separated option names treated as colour
 
   @example
   {% render 'moru-product-card', product: product %}
-  {% render 'moru-product-card', ph_index: 3, show_new_badge: true %}
+  {% render 'moru-product-card', product: product, show_swatches: true %}
 {% enddoc %}
 
 {% liquid
@@ -29,45 +31,94 @@
       assign is_new = true
     endif
   endif
+
+  assign swatch_option = null
+  if show_swatches and product != blank
+    assign names = swatch_option_names | default: 'カラー,色,color' | downcase | split: ','
+    for option in product.options_with_values
+      assign option_name_down = option.name | downcase
+      for name in names
+        assign trimmed = name | strip
+        if option_name_down == trimmed
+          assign swatch_option = option
+        endif
+      endfor
+    endfor
+  endif
 %}
 
 {% if product != blank %}
-  <a class="moru-product-card" href="{{ product.url }}">
-    <div class="moru-product-card__media moru-card">
-      {% if is_new %}
-        <span class="moru-product-card__badge">{{ 'moru.badge.new' | t }}</span>
-      {% endif %}
-      <span class="moru-product-card__fav" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
-        </svg>
+  <div class="moru-product-card">
+    <a class="moru-product-card__link" href="{{ product.url }}" data-card-link>
+      <span class="moru-product-card__media moru-card">
+        {% if is_new %}
+          <span class="moru-product-card__badge">{{ 'moru.badge.new' | t }}</span>
+        {% endif %}
+        <span class="moru-product-card__fav" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+        </span>
+        {% if product.featured_image %}
+          {{ product.featured_image | image_url: width: 600, height: 600, crop: 'center' | image_tag: loading: 'lazy', widths: '300, 450, 600', class: 'moru-product-card__image' }}
+        {% else %}
+          {{ ph_name | placeholder_svg_tag: 'moru-product-card__placeholder' }}
+        {% endif %}
       </span>
-      {% if product.featured_image %}
-        {{ product.featured_image | image_url: width: 600, height: 600, crop: 'center' | image_tag: loading: 'lazy', widths: '300, 450, 600' }}
-      {% else %}
-        {{ ph_name | placeholder_svg_tag: 'moru-product-card__placeholder' }}
-      {% endif %}
-    </div>
-    <p class="moru-product-card__title">{{ product.title }}</p>
+      <span class="moru-product-card__title">{{ product.title }}</span>
+    </a>
+
+    {% if swatch_option != null %}
+      <moru-swatches class="moru-product-card__swatches">
+        {% for value in swatch_option.values limit: 5 %}
+          {% liquid
+            assign swap_image = ''
+            if value.variant.featured_media != blank
+              assign swap_image = value.variant.featured_media.preview_image | image_url: width: 600, height: 600, crop: 'center'
+            endif
+          %}
+          <button
+            type="button"
+            class="moru-product-card__swatch{% if forloop.first %} is-active{% endif %}"
+            title="{{ value | escape }}"
+            aria-label="{{ value | escape }}"
+            {% if value.swatch.color %}style="--swatch-color: {{ value.swatch.color }}"{% endif %}
+            {% if swap_image != blank %}data-swatch-image="{{ swap_image }}"{% endif %}
+            {% if value.variant.url != blank %}data-swatch-url="{{ value.variant.url }}"{% endif %}
+          >
+            {% if value.swatch.image %}
+              {{ value.swatch.image | image_url: width: 40, height: 40, crop: 'center' | image_tag: loading: 'lazy', alt: '' }}
+            {% endif %}
+          </button>
+        {% endfor %}
+      </moru-swatches>
+    {% endif %}
+
     {% if show_subtitle and product.type != blank %}
       <p class="moru-product-card__subtitle">{{ product.type }}</p>
     {% endif %}
     <p class="moru-product-card__price">{{ product.price | money }}</p>
-  </a>
+  </div>
 {% else %}
   <div class="moru-product-card">
-    <div class="moru-product-card__media moru-card">
-      {% if is_new %}
-        <span class="moru-product-card__badge">{{ 'moru.badge.new' | t }}</span>
-      {% endif %}
-      <span class="moru-product-card__fav" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
-        </svg>
+    <div class="moru-product-card__link">
+      <span class="moru-product-card__media moru-card">
+        {% if is_new %}
+          <span class="moru-product-card__badge">{{ 'moru.badge.new' | t }}</span>
+        {% endif %}
+        {{ ph_name | placeholder_svg_tag: 'moru-product-card__placeholder' }}
       </span>
-      {{ ph_name | placeholder_svg_tag: 'moru-product-card__placeholder' }}
+      <span class="moru-product-card__title">{{ 'moru.placeholder.product_title' | t }}</span>
     </div>
-    <p class="moru-product-card__title">{{ 'moru.placeholder.product_title' | t }}</p>
+
+    {% if show_swatches %}
+      <div class="moru-product-card__swatches">
+        <span class="moru-product-card__swatch moru-product-card__swatch--ph1 is-active"></span>
+        <span class="moru-product-card__swatch moru-product-card__swatch--ph2"></span>
+        <span class="moru-product-card__swatch moru-product-card__swatch--ph3"></span>
+      </div>
+    {% endif %}
+
     {% if show_subtitle %}
       <p class="moru-product-card__subtitle">{{ 'moru.placeholder.product_subtitle' | t }}</p>
     {% endif %}
@@ -77,6 +128,11 @@
 
 {% stylesheet %}
   .moru-product-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .moru-product-card__link {
     display: block;
     text-decoration: none;
     color: var(--color-text);
@@ -84,11 +140,14 @@
 
   .moru-product-card__media {
     position: relative;
+    display: block;
     aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 2px;
     background-color: var(--color-bg-alt);
   }
 
-  .moru-product-card__media > img,
+  .moru-product-card__media img,
   .moru-product-card__media > svg {
     width: 100%;
     height: 100%;
@@ -96,8 +155,8 @@
     transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  a.moru-product-card:hover .moru-product-card__media > img {
-    transform: scale(1.05);
+  a.moru-product-card__link:hover .moru-product-card__media img {
+    transform: scale(1.04);
   }
 
   .moru-product-card__badge {
@@ -106,8 +165,8 @@
     left: var(--space-xs);
     z-index: 2;
     padding: 2px var(--space-xs);
-    border-radius: var(--style-border-radius-inputs);
-    background-color: rgb(255 255 255 / 0.92);
+    border-radius: 2px;
+    background-color: color-mix(in srgb, var(--color-surface) 92%, transparent);
     color: var(--color-text);
     font-size: 0.625rem;
     font-weight: 500;
@@ -124,7 +183,7 @@
     width: 1.75rem;
     height: 1.75rem;
     border-radius: 50%;
-    background-color: rgb(255 255 255 / 0.85);
+    background-color: color-mix(in srgb, var(--color-surface) 85%, transparent);
     color: var(--color-muted);
     opacity: 0;
     transform: translateY(4px);
@@ -142,24 +201,106 @@
   }
 
   .moru-product-card__title {
-    margin-block: var(--space-sm) 0;
-    font-size: var(--font-size-sm);
-    line-height: 1.5;
+    display: block;
+    margin-block-start: var(--space-sm);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a.moru-product-card__link:hover .moru-product-card__title {
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-product-card__swatches {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 1rem;
+    margin-block-start: var(--space-xs);
+  }
+
+  .moru-product-card__swatch {
+    position: relative;
+    display: block;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgb(0 0 0 / 0.15);
+    border-radius: 50%;
+    background-color: var(--swatch-color, var(--color-bg-alt));
+    cursor: pointer;
+    transition: box-shadow 200ms ease;
+  }
+
+  .moru-product-card__swatch img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-product-card__swatch.is-active {
+    box-shadow: 0 0 0 1px var(--color-bg), 0 0 0 2px var(--color-text);
+  }
+
+  .moru-product-card__swatch--ph1 {
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-product-card__swatch--ph2 {
+    background-color: var(--color-wood);
+  }
+
+  .moru-product-card__swatch--ph3 {
+    background-color: var(--color-accent-olive);
   }
 
   .moru-product-card__subtitle {
-    margin-block: var(--space-2xs) 0;
+    margin: var(--space-2xs) 0 0;
     font-size: var(--font-size-xs);
     color: var(--color-muted);
   }
 
   .moru-product-card__price {
-    margin-block: var(--space-2xs) 0;
-    font-size: var(--font-size-sm);
+    margin: var(--space-xs) 0 0;
+    font-size: var(--font-size-xs);
     font-weight: 500;
   }
-
-  a.moru-product-card:hover .moru-product-card__title {
-    color: var(--color-accent-terracotta);
-  }
 {% endstylesheet %}
+
+{% javascript %}
+  class MoruSwatches extends HTMLElement {
+    connectedCallback() {
+      this.card = this.closest('.moru-product-card');
+      this.addEventListener('click', (event) => {
+        const button = event.target.closest('.moru-product-card__swatch');
+        if (!button) return;
+        event.preventDefault();
+
+        this.querySelectorAll('.moru-product-card__swatch').forEach((swatch) => {
+          swatch.classList.toggle('is-active', swatch === button);
+        });
+
+        if (!this.card) return;
+
+        const image = this.card.querySelector('.moru-product-card__image');
+        if (image && button.dataset.swatchImage) {
+          image.removeAttribute('srcset');
+          image.src = button.dataset.swatchImage;
+        }
+
+        const link = this.card.querySelector('[data-card-link]');
+        if (link && button.dataset.swatchUrl) {
+          link.href = button.dataset.swatchUrl;
+        }
+      });
+    }
+  }
+
+  if (!customElements.get('moru-swatches')) {
+    customElements.define('moru-swatches', MoruSwatches);
+  }
+{% endjavascript %}

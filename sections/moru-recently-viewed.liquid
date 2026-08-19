@@ -1,0 +1,223 @@
+<moru-recently-viewed
+  class="moru-recent"
+  data-max="{{ section.settings.products_to_show }}"
+  data-current-handle="{{ product.handle }}"
+  style="--grid-columns: {{ section.settings.columns }}"
+  hidden
+>
+  <div class="moru-section-header">
+    <h2>{{ section.settings.title }}</h2>
+    {% if section.settings.show_clear %}
+      <button type="button" class="moru-section-header__link moru-recent__clear" data-recent-clear>
+        {{ 'moru.recent.clear' | t }}
+      </button>
+    {% endif %}
+  </div>
+
+  <ul class="moru-recent__grid" role="list" data-recent-items></ul>
+</moru-recently-viewed>
+
+{% if product != blank %}
+  <template data-recent-self data-handle="{{ product.handle }}">
+    {% render 'moru-product-card', product: product, show_swatches: section.settings.show_swatches %}
+  </template>
+{% endif %}
+
+<template data-recent-placeholder>
+  {% for i in (1..4) %}
+    <li>{% render 'moru-product-card', ph_index: forloop.index %}</li>
+  {% endfor %}
+</template>
+
+{% stylesheet %}
+  .moru-recent {
+    display: block;
+    padding-block: var(--space-xl) var(--space-2xl);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .moru-recent[hidden] {
+    display: none;
+  }
+
+  .moru-recent__clear {
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .moru-recent__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns, 4), 1fr);
+    column-gap: var(--space-md);
+    row-gap: var(--space-lg);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 1024px) {
+    .moru-recent__grid {
+      grid-template-columns: repeat(min(var(--grid-columns, 4), 3), 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .moru-recent__grid {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: var(--space-sm);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class MoruRecentlyViewed extends HTMLElement {
+    static STORAGE_KEY = 'moru:recently-viewed';
+    static MAX_AGE = 1000 * 60 * 60 * 24 * 30;
+
+    connectedCallback() {
+      this.list = this.querySelector('[data-recent-items]');
+      this.max = parseInt(this.dataset.max, 10) || 4;
+      this.currentHandle = this.dataset.currentHandle || '';
+
+      const clearButton = this.querySelector('[data-recent-clear]');
+      if (clearButton) {
+        clearButton.addEventListener('click', () => {
+          this.write([]);
+          this.render();
+        });
+      }
+
+      this.remember();
+      this.render();
+    }
+
+    read() {
+      try {
+        const raw = window.localStorage.getItem(MoruRecentlyViewed.STORAGE_KEY);
+        if (!raw) return [];
+        const now = Date.now();
+        return JSON.parse(raw).filter(
+          (entry) => entry && entry.handle && entry.html && now - entry.at < MoruRecentlyViewed.MAX_AGE
+        );
+      } catch (error) {
+        return [];
+      }
+    }
+
+    write(entries) {
+      try {
+        window.localStorage.setItem(MoruRecentlyViewed.STORAGE_KEY, JSON.stringify(entries));
+      } catch (error) {
+        /* storage unavailable — recently viewed simply does not persist */
+      }
+    }
+
+    remember() {
+      const self = document.querySelector('[data-recent-self]');
+      if (!self || !self.dataset.handle) return;
+
+      const entries = this.read().filter((entry) => entry.handle !== self.dataset.handle);
+      entries.unshift({
+        handle: self.dataset.handle,
+        html: self.innerHTML.trim(),
+        at: Date.now(),
+      });
+      this.write(entries.slice(0, 12));
+    }
+
+    render() {
+      const entries = this.read().filter((entry) => entry.handle !== this.currentHandle);
+      const designMode = window.Shopify && window.Shopify.designMode;
+
+      this.list.innerHTML = '';
+
+      if (entries.length === 0) {
+        if (!designMode) {
+          this.hidden = true;
+          return;
+        }
+        const placeholder = document.querySelector('[data-recent-placeholder]');
+        if (placeholder) this.list.appendChild(placeholder.content.cloneNode(true));
+        this.hidden = false;
+        return;
+      }
+
+      entries.slice(0, this.max).forEach((entry) => {
+        const item = document.createElement('li');
+        item.innerHTML = entry.html;
+        this.list.appendChild(item);
+      });
+
+      this.hidden = false;
+    }
+  }
+
+  if (!customElements.get('moru-recently-viewed')) {
+    customElements.define('moru-recently-viewed', MoruRecentlyViewed);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:moru.recent.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "default": "t:moru.recent.title_default"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "t:moru.recent.products_to_show_label",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "t:moru.product_grid.columns_label",
+      "options": [
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "t:moru.collection_grid.show_swatches_label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_clear",
+      "label": "t:moru.recent.show_clear_label",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:moru.recent.info"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.recent.name"
+    }
+  ]
+}
+{% endschema %}

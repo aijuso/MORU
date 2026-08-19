@@ -113,6 +113,19 @@
       },
       "no_reviews": "No reviews yet. Only reviews from verified buyers are published here."
     },
+    "collection": {
+      "all": "All",
+      "sort_by": "Sort by:",
+      "apply": "Apply",
+      "count": "{{ count }} items",
+      "shown": "Showing {{ shown }} of {{ total }}",
+      "load_more": "Load more",
+      "all_shown": "All items shown",
+      "empty": "No products matched."
+    },
+    "recent": {
+      "clear": "Clear history"
+    },
     "bundle": {
       "total": "Total for 2 items",
       "discount_tag": "{{ amount }} off as a set ({{ percent }}%)",

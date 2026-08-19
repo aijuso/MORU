@@ -113,6 +113,19 @@
       },
       "no_reviews": "レビューはまだありません。ご購入いただいたお客様のレビューのみを掲載します。"
     },
+    "collection": {
+      "all": "すべて",
+      "sort_by": "並び替え:",
+      "apply": "適用",
+      "count": "{{ count }}件",
+      "shown": "{{ total }}件中 {{ shown }}件を表示",
+      "load_more": "さらに表示する",
+      "all_shown": "すべて表示されました",
+      "empty": "該当する商品が見つかりませんでした。"
+    },
+    "recent": {
+      "clear": "履歴を消す"
+    },
     "bundle": {
       "total": "2点の合計",
       "discount_tag": "セットで {{ amount }} OFF（{{ percent }}%）",

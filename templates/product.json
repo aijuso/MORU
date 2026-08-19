@@ -150,6 +150,10 @@
         "show_view_all": false,
         "show_subtitle": true
       }
+    },
+    "recently_viewed": {
+      "type": "moru-recently-viewed",
+      "settings": {}
     }
   },
   "order": [
@@ -158,6 +162,7 @@
     "details",
     "styling",
     "bought_together",
-    "related"
+    "related",
+    "recently_viewed"
   ]
 }

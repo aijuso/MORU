@@ -1,0 +1,178 @@
+{% liquid
+  assign banner_image = section.settings.image | default: collection.image
+  assign title_en = section.settings.title_en | default: collection.title
+  assign title_ja = section.settings.title_ja | default: collection.title
+  assign description = section.settings.description
+  if description == blank
+    assign description = collection.description
+  endif
+%}
+
+<div class="moru-collection-banner">
+  {% if section.settings.show_breadcrumbs %}
+    <nav class="moru-breadcrumbs" aria-label="{{ 'moru.product.breadcrumbs' | t }}">
+      <ol>
+        <li><a href="{{ routes.root_url }}">{{ 'moru.product.home' | t }}</a></li>
+        <li aria-current="page">
+          {%- if collection != blank -%}{{ collection.title }}{%- else -%}{{ title_ja }}{%- endif -%}
+        </li>
+      </ol>
+    </nav>
+  {% endif %}
+
+  <header class="moru-collection-hero">
+    <div class="moru-collection-hero__content">
+      <h1 class="moru-collection-hero__title-en">{{ title_en }}</h1>
+      {% if title_ja != blank %}
+        <p class="moru-collection-hero__title-ja">{{ title_ja }}</p>
+      {% endif %}
+      {% if description != blank %}
+        <div class="moru-collection-hero__desc">{{ description }}</div>
+      {% endif %}
+    </div>
+
+    <div class="moru-collection-hero__visual">
+      {% if banner_image != blank %}
+        {{ banner_image | image_url: width: 1600 | image_tag: loading: 'eager', widths: '600, 1000, 1600', sizes: '(min-width: 750px) 60vw, 100vw', alt: banner_image.alt }}
+      {% else %}
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      {% endif %}
+    </div>
+  </header>
+</div>
+
+{% stylesheet %}
+  .moru-collection-banner {
+    padding-block-start: var(--space-sm);
+  }
+
+  .moru-collection-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    min-height: 280px;
+    margin-block-end: var(--space-lg);
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-collection-hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+    padding: var(--space-2xl) var(--space-xl) var(--space-2xl) var(--space-2xl);
+    background: linear-gradient(
+      90deg,
+      var(--color-bg-alt) 75%,
+      color-mix(in srgb, var(--color-bg-alt) 85%, transparent) 90%,
+      transparent 100%
+    );
+  }
+
+  .moru-collection-hero__title-en {
+    margin: 0 0 var(--space-2xs);
+    font-family: var(--font-display--family);
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .moru-collection-hero__title-ja {
+    margin: 0 0 var(--space-lg);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+  }
+
+  .moru-collection-hero__desc {
+    font-size: var(--font-size-xs);
+    line-height: 1.9;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+  }
+
+  .moru-collection-hero__desc > :last-child {
+    margin-block-end: 0;
+  }
+
+  .moru-collection-hero__visual {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .moru-collection-hero__visual img,
+  .moru-collection-hero__visual svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+  }
+
+  @media (max-width: 768px) {
+    .moru-collection-hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .moru-collection-hero__content {
+      padding: var(--space-lg) var(--page-margin);
+      background: none;
+    }
+
+    .moru-collection-hero__visual {
+      height: 200px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.collection_banner.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "t:moru.main_product.show_breadcrumbs_label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title_en",
+      "label": "t:moru.collection_banner.title_en_label",
+      "info": "t:moru.collection_banner.title_en_info"
+    },
+    {
+      "type": "text",
+      "id": "title_ja",
+      "label": "t:moru.collection_banner.title_ja_label",
+      "info": "t:moru.collection_banner.title_ja_info"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:moru.collection_banner.description_label",
+      "info": "t:moru.collection_banner.description_info"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:moru.collection_banner.image_label",
+      "info": "t:moru.collection_banner.image_info"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.collection_banner.name"
+    }
+  ]
+}
+{% endschema %}

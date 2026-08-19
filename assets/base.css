@@ -111,6 +111,39 @@ a:hover {
   background-color: var(--color-bg-alt);
 }
 
+/* Breadcrumbs — shared by the product and collection pages */
+.moru-breadcrumbs {
+  padding-block: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+}
+
+.moru-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moru-breadcrumbs li + li::before {
+  content: '/';
+  margin-inline-end: var(--space-xs);
+  color: var(--color-border);
+}
+
+.moru-breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.moru-breadcrumbs a:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
 /* Rating stars — shared by the product page and review summaries */
 .moru-rating-stars {
   letter-spacing: 2px;

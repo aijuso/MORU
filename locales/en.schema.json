@@ -218,6 +218,37 @@
       "block_use_description_info": "Shows the product description instead of the body text",
       "block_open_label": "Open by default"
     },
+    "collection_banner": {
+      "name": "MORU collection banner",
+      "title_en_label": "Latin title",
+      "title_en_info": "Falls back to the collection title (e.g. LIGHTING)",
+      "title_ja_label": "Japanese title",
+      "title_ja_info": "Shown under the Latin title (e.g. 照明)",
+      "description_label": "Description",
+      "description_info": "Falls back to the collection description",
+      "image_label": "Banner image",
+      "image_info": "Falls back to the collection image"
+    },
+    "collection_grid": {
+      "name": "MORU product list",
+      "products_per_page_label": "Products per page",
+      "filter_header": "Filter & sort",
+      "show_tag_filter_label": "Show category tabs (tags)",
+      "show_tag_filter_info": "Tabs are built from product tags — tag your products in the admin",
+      "max_tags_label": "Number of tags to show",
+      "show_sort_label": "Show sorting",
+      "show_sort_info": "Uses Shopify's sort options: featured, best selling, price, newest",
+      "card_header": "Product card",
+      "show_swatches_label": "Show colour swatches",
+      "show_swatches_info": "Shows swatches for the colour option and swaps the image on click (set swatch colours on the option in the admin)"
+    },
+    "recent": {
+      "name": "MORU recently viewed",
+      "title_default": "Recently viewed",
+      "products_to_show_label": "Products to show",
+      "show_clear_label": "Show \"Clear history\"",
+      "info": "History is stored in the visitor's browser. The section is hidden for visitors with no history (the theme editor shows samples)."
+    },
     "styling": {
       "name": "MORU styling",
       "title_default": "Styling inspiration",

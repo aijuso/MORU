@@ -1,0 +1,453 @@
+{% paginate collection.products by section.settings.products_per_page %}
+  {% liquid
+    assign shown = paginate.current_offset | plus: paginate.page_size
+    if shown > paginate.items
+      assign shown = paginate.items
+    endif
+  %}
+
+  <div
+    class="moru-collection"
+    data-collection-grid
+    data-section-id="{{ section.id }}"
+    style="--grid-columns: {{ section.settings.columns }}"
+  >
+    <div class="moru-collection__toolbar">
+      {% if section.settings.show_tag_filter and collection.all_tags.size > 0 %}
+        <div class="moru-collection__pills">
+          <a
+            class="moru-pill{% if current_tags == blank %} is-active{% endif %}"
+            href="{{ collection.url }}"
+          >{{ 'moru.collection.all' | t }}</a>
+          {% for tag in collection.all_tags limit: section.settings.max_tags %}
+            <a
+              class="moru-pill{% if current_tags contains tag %} is-active{% endif %}"
+              href="{{ collection.url }}/{{ tag | handleize }}"
+            >{{ tag }}</a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="moru-collection__pills"></div>
+      {% endif %}
+
+      <div class="moru-collection__toolbar-right">
+        {% if section.settings.show_sort and collection.sort_options.size > 0 %}
+          <form class="moru-collection__sort" method="get" action="{{ collection.url }}" data-sort-form>
+            <label class="moru-collection__sort-label" for="{{ section.id }}-sort">
+              {{ 'moru.collection.sort_by' | t }}
+            </label>
+            <div class="moru-collection__sort-control">
+              <select id="{{ section.id }}-sort" name="sort_by" data-sort-select>
+                {% assign current_sort = collection.sort_by | default: collection.default_sort_by %}
+                {% for option in collection.sort_options %}
+                  <option value="{{ option.value }}" {% if option.value == current_sort %}selected{% endif %}>
+                    {{ option.name }}
+                  </option>
+                {% endfor %}
+              </select>
+              <svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M1 1l4 4 4-4"></path>
+              </svg>
+            </div>
+            <noscript>
+              <button type="submit" class="moru-collection__sort-submit">{{ 'moru.collection.apply' | t }}</button>
+            </noscript>
+          </form>
+        {% endif %}
+
+        <span class="moru-collection__count">{{ 'moru.collection.count' | t: count: paginate.items }}</span>
+      </div>
+    </div>
+
+    <ul class="moru-collection__grid" role="list" data-grid-items>
+      {% for product in collection.products %}
+        <li>
+          {% render 'moru-product-card',
+            product: product,
+            show_swatches: section.settings.show_swatches,
+            swatch_option_names: section.settings.swatch_option_names,
+            show_subtitle: section.settings.show_subtitle
+          %}
+        </li>
+      {% else %}
+        {% for i in (1..8) %}
+          <li>
+            {% render 'moru-product-card',
+              ph_index: forloop.index,
+              show_swatches: section.settings.show_swatches,
+              show_subtitle: section.settings.show_subtitle
+            %}
+          </li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+
+    <div class="moru-collection__footer">
+      <p class="moru-collection__shown" data-shown-text>
+        {{ 'moru.collection.shown' | t: shown: shown, total: paginate.items }}
+      </p>
+
+      {% if paginate.next %}
+        <a class="moru-collection__more" href="{{ paginate.next.url }}" data-load-more>
+          {{ 'moru.collection.load_more' | t }}
+        </a>
+      {% elsif collection.products.size > 0 %}
+        <p class="moru-collection__all-shown">{{ 'moru.collection.all_shown' | t }}</p>
+      {% endif %}
+    </div>
+
+    {% if collection != blank and collection.products.size == 0 %}
+      <p class="moru-collection__empty">{{ 'moru.collection.empty' | t }}</p>
+    {% endif %}
+  </div>
+{% endpaginate %}
+
+{% stylesheet %}
+  .moru-collection {
+    padding-block-end: var(--space-2xl);
+  }
+
+  .moru-collection__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-block-end: var(--space-lg);
+  }
+
+  .moru-collection__pills {
+    display: flex;
+    gap: var(--space-xs);
+    overflow-x: auto;
+    padding-block-end: 4px;
+    scrollbar-width: none;
+  }
+
+  .moru-collection__pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .moru-pill {
+    padding: 6px var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background-color: transparent;
+    color: var(--color-text);
+    font-size: var(--font-size-xs);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 200ms ease, background-color 200ms ease, color 200ms ease;
+  }
+
+  .moru-pill:hover {
+    border-color: var(--color-muted);
+    color: var(--color-text);
+  }
+
+  .moru-pill.is-active {
+    border-color: var(--color-text);
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .moru-collection__toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    font-size: var(--font-size-xs);
+  }
+
+  .moru-collection__sort {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: 0;
+  }
+
+  .moru-collection__sort-label {
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  .moru-collection__sort-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .moru-collection__sort-control select {
+    appearance: none;
+    padding: 0 var(--space-md) 0 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+  }
+
+  .moru-collection__sort-control svg {
+    position: absolute;
+    right: 0;
+    width: 10px;
+    height: 6px;
+    pointer-events: none;
+  }
+
+  .moru-collection__sort-submit {
+    margin-inline-start: var(--space-xs);
+    padding: 2px var(--space-xs);
+    border: 1px solid var(--color-border);
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+  }
+
+  .moru-collection__count {
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+
+  .moru-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns, 4), 1fr);
+    column-gap: var(--space-md);
+    row-gap: var(--space-xl);
+    margin: 0 0 var(--space-2xl);
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-collection__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .moru-collection__shown,
+  .moru-collection__all-shown,
+  .moru-collection__empty {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-collection__more {
+    padding: 10px var(--space-2xl);
+    border: 1px solid var(--color-text);
+    border-radius: 2px;
+    background-color: transparent;
+    color: var(--color-text);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  .moru-collection__more:hover {
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .moru-collection__more[aria-disabled="true"] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .moru-collection__empty {
+    text-align: center;
+  }
+
+  @media (max-width: 1024px) {
+    .moru-collection__grid {
+      grid-template-columns: repeat(min(var(--grid-columns, 4), 3), 1fr);
+      row-gap: var(--space-lg);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .moru-collection__grid {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: var(--space-sm);
+      row-gap: var(--space-lg);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .moru-collection__toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .moru-collection__toolbar-right {
+      width: 100%;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class MoruCollectionGrid {
+    constructor(root) {
+      this.root = root;
+      this.sectionId = root.dataset.sectionId;
+      this.items = root.querySelector('[data-grid-items]');
+      this.button = root.querySelector('[data-load-more]');
+      this.shownText = root.querySelector('[data-shown-text]');
+
+      const sortSelect = root.querySelector('[data-sort-select]');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+          const form = sortSelect.closest('form');
+          if (form) form.submit();
+        });
+      }
+
+      if (this.button) {
+        this.button.addEventListener('click', (event) => {
+          event.preventDefault();
+          this.loadMore();
+        });
+      }
+    }
+
+    async loadMore() {
+      const url = this.button.getAttribute('href');
+      if (!url) return;
+
+      const original = this.button.textContent;
+      this.button.setAttribute('aria-disabled', 'true');
+      this.button.textContent = this.button.dataset.loadingLabel || original;
+
+      try {
+        const separator = url.indexOf('?') > -1 ? '&' : '?';
+        const response = await fetch(url + separator + 'sections=' + this.sectionId);
+        const data = await response.json();
+        const html = data[this.sectionId];
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+
+        const newItems = parsed.querySelector('[data-grid-items]');
+        if (newItems) {
+          Array.from(newItems.children).forEach((child) => this.items.appendChild(child));
+        }
+
+        const newShown = parsed.querySelector('[data-shown-text]');
+        if (newShown && this.shownText) this.shownText.textContent = newShown.textContent;
+
+        const newButton = parsed.querySelector('[data-load-more]');
+        if (newButton) {
+          this.button.setAttribute('href', newButton.getAttribute('href'));
+          this.button.textContent = original;
+          this.button.removeAttribute('aria-disabled');
+        } else {
+          this.button.remove();
+        }
+      } catch (error) {
+        this.button.textContent = original;
+        this.button.removeAttribute('aria-disabled');
+      }
+    }
+  }
+
+  document.querySelectorAll('[data-collection-grid]').forEach((root) => {
+    if (root.dataset.moruInit === 'true') return;
+    root.dataset.moruInit = 'true';
+    new MoruCollectionGrid(root);
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:moru.collection_grid.name",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "label": "t:moru.collection_grid.products_per_page_label",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "t:moru.product_grid.columns_label",
+      "options": [
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "header",
+      "content": "t:moru.collection_grid.filter_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tag_filter",
+      "label": "t:moru.collection_grid.show_tag_filter_label",
+      "info": "t:moru.collection_grid.show_tag_filter_info",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "max_tags",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "label": "t:moru.collection_grid.max_tags_label",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "t:moru.collection_grid.show_sort_label",
+      "info": "t:moru.collection_grid.show_sort_info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:moru.collection_grid.card_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "t:moru.collection_grid.show_swatches_label",
+      "info": "t:moru.collection_grid.show_swatches_info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "swatch_option_names",
+      "label": "t:moru.main_product.swatch_option_names_label",
+      "default": "t:moru.main_product.swatch_option_names_default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subtitle",
+      "label": "t:moru.product_grid.show_subtitle_label",
+      "default": false
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.collection_grid.name"
+    }
+  ]
+}
+{% endschema %}

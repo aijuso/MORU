@@ -9,12 +9,22 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "collection",
+    "banner": {
+      "type": "moru-collection-banner",
+      "settings": {}
+    },
+    "grid": {
+      "type": "moru-collection-grid",
+      "settings": {}
+    },
+    "recently_viewed": {
+      "type": "moru-recently-viewed",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "banner",
+    "grid",
+    "recently_viewed"
   ]
 }
