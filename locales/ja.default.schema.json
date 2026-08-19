@@ -171,6 +171,8 @@
     "footer": {
       "name": "MORU フッター",
       "logo_label": "ロゴ画像(Cream・白抜き版)",
+      "brand_text_label": "ブランド説明文",
+      "brand_text_default": "人とペットが過ごす部屋を、ひとつの景色として考えるライフスタイルブランドです。日常に寄り添う心地よいアイテムをお届けします。",
       "newsletter_heading_label": "ニュースレター見出し",
       "newsletter_heading_default": "NEWSLETTER",
       "newsletter_text_label": "ニュースレター説明文",

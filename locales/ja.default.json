@@ -67,6 +67,7 @@
       "category": "カテゴリ",
       "article_title": "記事タイトルが入ります",
       "article_tag": "暮らしのヒント",
+      "article_excerpt": "記事の抜粋テキストが入ります。ブログを選択すると実際の記事が表示されます。",
       "select_collection": "コレクションを選択すると商品が表示されます",
       "select_blog": "ブログを選択すると記事が表示されます"
     }

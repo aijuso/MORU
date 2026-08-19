@@ -36,11 +36,25 @@
     display: flex;
     gap: var(--space-md);
     margin: 0;
-    padding: 0;
+    padding: 0 0 var(--space-sm);
     list-style: none;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-wood) var(--color-bg-alt);
+  }
+
+  .moru-carousel__track::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .moru-carousel__track::-webkit-scrollbar-thumb {
+    background-color: var(--color-wood);
+  }
+
+  .moru-carousel__track::-webkit-scrollbar-track {
+    background-color: var(--color-bg-alt);
   }
 
   .moru-carousel__item {

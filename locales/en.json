@@ -67,6 +67,7 @@
       "category": "Category",
       "article_title": "Sample article title",
       "article_tag": "Living tips",
+      "article_excerpt": "Sample excerpt text. Select a blog to display real articles.",
       "select_collection": "Select a collection to display products",
       "select_blog": "Select a blog to display articles"
     }

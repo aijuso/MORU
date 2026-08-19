@@ -7,25 +7,25 @@
     {% endif %}
   </div>
 
-  <div class="moru-hero__content">
-    <h1 class="moru-hero__title">{{ section.settings.title }}</h1>
-    {% if section.settings.subtitle != blank %}
-      <p class="moru-hero__subtitle">{{ section.settings.subtitle }}</p>
-    {% endif %}
-    {% if section.settings.button_label != blank %}
-      <a class="moru-button moru-button--outline moru-hero__button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
-        {{ section.settings.button_label }}
-      </a>
-    {% endif %}
+  <div class="moru-hero__overlay">
+    <div class="moru-hero__content">
+      <h1 class="moru-hero__title">{{ section.settings.title }}</h1>
+      {% if section.settings.subtitle != blank %}
+        <p class="moru-hero__subtitle">{{ section.settings.subtitle }}</p>
+      {% endif %}
+      {% if section.settings.button_label != blank %}
+        <a class="moru-hero__button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
   </div>
 </div>
 
 {% stylesheet %}
   .moru-hero {
     position: relative;
-    min-height: clamp(420px, 68vh, 720px);
-    display: grid;
-    align-items: end;
+    min-height: clamp(420px, 60vh, 640px);
     overflow: hidden;
     background-color: var(--color-bg-alt);
   }
@@ -38,29 +38,57 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center 40%;
+  }
+
+  .moru-hero__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to right, rgb(0 0 0 / 0.4) 0%, rgb(0 0 0 / 0.15) 50%, rgb(0 0 0 / 0) 100%);
   }
 
   .moru-hero__content {
-    position: relative;
     max-width: 34rem;
-    margin: var(--space-xl) var(--page-margin);
-    padding: var(--space-lg);
-    background-color: var(--color-bg);
-    border-radius: var(--radius-card);
+    padding-inline: clamp(var(--page-margin), 6vw, 5rem);
+    color: #fff;
+    text-shadow: 0 2px 10px rgb(0 0 0 / 0.15);
   }
 
   .moru-hero__title {
     margin: 0;
+    color: #fff;
     font-size: var(--font-size-2xl);
+    line-height: 1.45;
+    letter-spacing: var(--letter-spacing-wide);
   }
 
   .moru-hero__subtitle {
-    margin-block: var(--space-sm) 0;
+    margin-block: var(--space-md) 0;
     font-size: var(--font-size-sm);
+    letter-spacing: var(--letter-spacing-wide);
+    color: rgb(255 255 255 / 0.9);
   }
 
   .moru-hero__button {
-    margin-block-start: var(--space-md);
+    display: inline-block;
+    margin-block-start: var(--space-lg);
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid rgb(255 255 255 / 0.85);
+    border-radius: var(--style-border-radius-inputs);
+    background: rgb(255 255 255 / 0.12);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--letter-spacing-wide);
+    text-decoration: none;
+    transition: background-color 300ms ease, color 300ms ease;
+  }
+
+  .moru-hero__button:hover {
+    background-color: #fff;
+    color: var(--color-text);
   }
 {% endstylesheet %}
 

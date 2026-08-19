@@ -171,6 +171,8 @@
     "footer": {
       "name": "MORU footer",
       "logo_label": "Logo image (cream / knockout version)",
+      "brand_text_label": "Brand description",
+      "brand_text_default": "A lifestyle brand that sees the room people and pets share as one landscape. Comfortable pieces for everyday living.",
       "newsletter_heading_label": "Newsletter heading",
       "newsletter_heading_default": "NEWSLETTER",
       "newsletter_text_label": "Newsletter description",

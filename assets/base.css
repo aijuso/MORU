@@ -34,6 +34,12 @@
   --line-height-body: 1.75;
   --letter-spacing-heading: 0.02em;
   --letter-spacing-wide: 0.08em;
+
+  /* Derived neutrals — hairline borders and secondary text, from the token palette */
+  --color-border: color-mix(in srgb, var(--color-text) 12%, var(--color-bg));
+  --color-muted: color-mix(in srgb, var(--color-text) 60%, var(--color-bg));
+  --shadow-soft: 0 4px 20px rgb(0 0 0 / 0.03);
+  --shadow-lift: 0 8px 24px rgb(0 0 0 / 0.05);
 }
 
 body {
@@ -140,6 +146,14 @@ a:hover {
   font-size: var(--font-size-sm);
   letter-spacing: var(--letter-spacing-wide);
   white-space: nowrap;
+  color: var(--color-muted);
+  text-decoration: none;
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.moru-section-header__link:hover {
+  color: var(--color-text);
+  transform: translateX(3px);
 }
 
 /* Alternating section backgrounds instead of divider rules (docs/02) */

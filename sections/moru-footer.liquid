@@ -1,14 +1,17 @@
 <footer class="moru-footer full-width">
   <div class="moru-footer__inner">
-    <div class="moru-footer__brand">
-      {% if section.settings.logo %}
-        {{ section.settings.logo | image_url: width: 320 | image_tag: alt: shop.name, loading: 'lazy', widths: '160, 320' }}
-      {% else %}
-        <span class="moru-footer__wordmark">{{ shop.name }}</span>
-      {% endif %}
-    </div>
-
     <div class="moru-footer__columns">
+      <div class="moru-footer__brand">
+        {% if section.settings.logo %}
+          {{ section.settings.logo | image_url: width: 320 | image_tag: alt: shop.name, loading: 'lazy', widths: '160, 320' }}
+        {% else %}
+          <span class="moru-footer__wordmark">{{ shop.name }}</span>
+        {% endif %}
+        {% if section.settings.brand_text != blank %}
+          <p class="moru-footer__brand-text">{{ section.settings.brand_text }}</p>
+        {% endif %}
+      </div>
+
       {% for block in section.blocks %}
         <nav class="moru-footer__column" {{ block.shopify_attributes }}>
           <p class="moru-footer__heading">{{ block.settings.heading }}</p>
@@ -39,30 +42,30 @@
               <button type="submit" class="moru-footer__submit">{{ 'moru.footer.newsletter_submit' | t }}</button>
             {% endif %}
           {% endform %}
+
+          <div class="moru-footer__social">
+            {% if section.settings.instagram_url != blank %}
+              <a href="{{ section.settings.instagram_url }}" class="moru-footer__social-icon">Ig</a>
+            {% endif %}
+            {% if section.settings.pinterest_url != blank %}
+              <a href="{{ section.settings.pinterest_url }}" class="moru-footer__social-icon">Pi</a>
+            {% endif %}
+            {% if section.settings.line_url != blank %}
+              <a href="{{ section.settings.line_url }}" class="moru-footer__social-icon">Ln</a>
+            {% endif %}
+          </div>
         </div>
       {% endif %}
     </div>
 
     <div class="moru-footer__bottom">
-      <div class="moru-footer__social">
-        {% if section.settings.instagram_url != blank %}
-          <a href="{{ section.settings.instagram_url }}">Instagram</a>
-        {% endif %}
-        {% if section.settings.pinterest_url != blank %}
-          <a href="{{ section.settings.pinterest_url }}">Pinterest</a>
-        {% endif %}
-        {% if section.settings.line_url != blank %}
-          <a href="{{ section.settings.line_url }}">LINE</a>
-        {% endif %}
-      </div>
+      <p class="moru-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
 
       <div class="moru-footer__legal">
         {% for link in section.settings.legal_menu.links %}
           {{ link.title | link_to: link.url }}
         {% endfor %}
       </div>
-
-      <p class="moru-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
     </div>
   </div>
 </footer>
@@ -89,6 +92,13 @@
     color: var(--color-bg);
   }
 
+  .moru-footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
   .moru-footer__brand img {
     width: 8rem;
     height: auto;
@@ -101,11 +111,18 @@
     color: var(--color-bg);
   }
 
+  .moru-footer__brand-text {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    line-height: 1.7;
+    opacity: 0.65;
+  }
+
   .moru-footer__columns {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1.4fr repeat(3, 0.9fr) 1.3fr;
     gap: var(--space-lg);
-    margin-block: var(--space-xl);
+    margin-block-end: var(--space-2xl);
   }
 
   .moru-footer__column {
@@ -161,13 +178,34 @@
     justify-content: space-between;
     gap: var(--space-md);
     padding-block-start: var(--space-lg);
-    border-block-start: 1px solid rgb(255 255 255 / 0.15);
+    border-block-start: 1px solid rgb(255 255 255 / 0.1);
   }
 
-  .moru-footer__social,
   .moru-footer__legal {
     display: flex;
     gap: var(--space-md);
+  }
+
+  .moru-footer__social {
+    display: flex;
+    gap: var(--space-sm);
+    margin-block-start: var(--space-sm);
+  }
+
+  .moru-footer__social-icon {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background-color: rgb(255 255 255 / 0.08);
+    font-size: var(--font-size-xs);
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  .moru-footer__social-icon:hover {
+    background-color: var(--color-bg);
+    color: var(--color-text);
   }
 
   .moru-footer__copyright {
@@ -176,9 +214,16 @@
     opacity: 0.6;
   }
 
-  @media (max-width: 749px) {
+  @media (max-width: 989px) {
     .moru-footer__columns {
       grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .moru-footer__columns {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
     }
   }
 {% endstylesheet %}
@@ -191,6 +236,12 @@
       "type": "image_picker",
       "id": "logo",
       "label": "t:moru.footer.logo_label"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_text",
+      "label": "t:moru.footer.brand_text_label",
+      "default": "t:moru.footer.brand_text_default"
     },
     {
       "type": "checkbox",

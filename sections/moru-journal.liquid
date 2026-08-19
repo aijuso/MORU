@@ -27,6 +27,9 @@
                 {%- endif -%}
               </span>
               <span class="moru-journal__title">{{ article.title }}</span>
+              {% if article.excerpt_or_content != blank %}
+                <span class="moru-journal__excerpt">{{ article.excerpt_or_content | strip_html | truncate: 60 }}</span>
+              {% endif %}
               <span class="moru-journal__more">{{ section.settings.read_more_label }} &rarr;</span>
             </span>
           </a>
@@ -40,6 +43,7 @@
             <span class="moru-journal__body">
               <span class="moru-journal__tag">{{ 'moru.placeholder.article_tag' | t }}</span>
               <span class="moru-journal__title">{{ 'moru.placeholder.article_title' | t }}</span>
+              <span class="moru-journal__excerpt">{{ 'moru.placeholder.article_excerpt' | t }}</span>
               <span class="moru-journal__more">{{ section.settings.read_more_label }} &rarr;</span>
             </span>
           </div>
@@ -69,6 +73,17 @@
 
   .moru-journal__card {
     background-color: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    transition: transform 300ms ease, box-shadow 300ms ease;
+  }
+
+  .moru-journal__card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .moru-journal__card:hover .moru-journal__media img {
+    transform: scale(1.04);
   }
 
   .moru-journal__link {
@@ -89,6 +104,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 500ms ease;
   }
 
   .moru-journal__body {
@@ -113,10 +129,20 @@
     line-height: var(--line-height-heading);
   }
 
+  .moru-journal__excerpt {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+    line-height: 1.6;
+  }
+
   .moru-journal__more {
     margin-block-start: auto;
     font-size: var(--font-size-xs);
     letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .moru-journal__card:hover .moru-journal__more {
+    color: var(--color-accent-terracotta);
   }
 
   .moru-journal__hint {
