@@ -164,7 +164,7 @@
     },
     "journal": {
       "name": "MORU journal",
-      "title_default": "Journal / Living tips",
+      "title_default": "Journal / Styling guide",
       "blog_label": "Blog",
       "articles_to_show_label": "Articles to show",
       "read_more_label": "Article link label",
@@ -180,7 +180,7 @@
     },
     "footer": {
       "name": "MORU footer",
-      "logo_label": "Logo image (cream / knockout version)",
+      "logo_label": "Logo image",
       "brand_text_label": "Brand description",
       "brand_text_default": "A lifestyle brand that sees the room people and pets share as one landscape. Comfortable pieces for everyday living.",
       "newsletter_heading_label": "Newsletter heading",

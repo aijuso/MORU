@@ -59,10 +59,16 @@
       "cart": "Cart",
       "menu": "Menu"
     },
+    "instagram": {
+      "view_link": "VIEW ON INSTAGRAM"
+    },
     "footer": {
       "newsletter_placeholder": "Enter your email",
       "newsletter_submit": "Subscribe",
-      "newsletter_success": "Thanks for subscribing."
+      "newsletter_success": "Thanks for subscribing.",
+      "legal_tokushoho": "Legal notice (SCTA)",
+      "legal_privacy": "Privacy policy",
+      "legal_terms": "Terms of service"
     },
     "badge": {
       "new": "NEW"
@@ -75,6 +81,7 @@
       "article_title": "Sample article title",
       "article_tag": "Living tips",
       "article_excerpt": "Sample excerpt text. Select a blog to display real articles.",
+      "article_date": "----.--.--",
       "select_collection": "Select a collection to display products",
       "select_blog": "Select a blog to display articles"
     }

@@ -59,10 +59,16 @@
       "cart": "カート",
       "menu": "メニュー"
     },
+    "instagram": {
+      "view_link": "INSTAGRAMで見る"
+    },
     "footer": {
       "newsletter_placeholder": "メールアドレスを入力",
       "newsletter_submit": "登録する",
-      "newsletter_success": "ご登録ありがとうございます。"
+      "newsletter_success": "ご登録ありがとうございます。",
+      "legal_tokushoho": "特定商取引法に基づく表記",
+      "legal_privacy": "プライバシーポリシー",
+      "legal_terms": "利用規約"
     },
     "badge": {
       "new": "NEW"
@@ -75,6 +81,7 @@
       "article_title": "記事タイトルが入ります",
       "article_tag": "暮らしのヒント",
       "article_excerpt": "記事の抜粋テキストが入ります。ブログを選択すると実際の記事が表示されます。",
+      "article_date": "----.--.--",
       "select_collection": "コレクションを選択すると商品が表示されます",
       "select_blog": "ブログを選択すると記事が表示されます"
     }
