@@ -73,6 +73,34 @@
     "badge": {
       "new": "NEW"
     },
+    "product": {
+      "breadcrumbs": "Breadcrumbs",
+      "home": "Home",
+      "prev_image": "Previous image",
+      "next_image": "Next image",
+      "zoom": "Zoom",
+      "close": "Close",
+      "thumbnail": "Show image {{ index }}",
+      "quantity": "Quantity",
+      "qty_minus": "Decrease quantity",
+      "qty_plus": "Increase quantity",
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "low_stock": {
+        "one": "{{ count }} left",
+        "other": "{{ count }} left"
+      },
+      "wishlist": "Add to wishlist",
+      "express_checkout": "Express checkout",
+      "review_count": {
+        "one": "({{ count }} review)",
+        "other": "({{ count }} reviews)"
+      },
+      "no_reviews": "No reviews yet. Only reviews from verified buyers are published here."
+    },
+    "bundle": {
+      "total": "Total for 2 items"
+    },
     "placeholder": {
       "product_title": "Sample product",
       "product_subtitle": "Material / Color",
@@ -83,6 +111,7 @@
       "article_excerpt": "Sample excerpt text. Select a blog to display real articles.",
       "article_date": "----.--.--",
       "select_collection": "Select a collection to display products",
+      "select_product": "Select a product to display it here",
       "select_blog": "Select a blog to display articles"
     }
   }

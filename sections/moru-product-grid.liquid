@@ -5,7 +5,7 @@
   endif
 %}
 
-<div class="moru-product-grid">
+<div class="moru-product-grid" style="--grid-columns: {{ section.settings.columns }}">
   {% if has_header %}
     <div class="moru-section-header">
       <h2>{{ section.settings.title }}</h2>
@@ -65,7 +65,7 @@
 
   .moru-product-grid__grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(var(--grid-columns, 4), 1fr);
     gap: var(--space-md) var(--space-sm);
     margin: 0;
     padding: 0;
@@ -90,7 +90,7 @@
 
   @media (max-width: 1023px) {
     .moru-product-grid__grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(min(var(--grid-columns, 4), 3), 1fr);
     }
   }
 
@@ -121,11 +121,27 @@
     {
       "type": "range",
       "id": "products_to_show",
-      "min": 4,
+      "min": 3,
       "max": 12,
       "step": 1,
       "label": "t:moru.product_grid.products_to_show_label",
       "default": 8
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "t:moru.product_grid.columns_label",
+      "options": [
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "4"
     },
     {
       "type": "checkbox",

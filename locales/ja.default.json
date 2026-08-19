@@ -73,6 +73,34 @@
     "badge": {
       "new": "NEW"
     },
+    "product": {
+      "breadcrumbs": "パンくずリスト",
+      "home": "ホーム",
+      "prev_image": "前の画像",
+      "next_image": "次の画像",
+      "zoom": "拡大して見る",
+      "close": "閉じる",
+      "thumbnail": "画像 {{ index }} を表示",
+      "quantity": "数量",
+      "qty_minus": "数量を減らす",
+      "qty_plus": "数量を増やす",
+      "add_to_cart": "カートに追加",
+      "sold_out": "売り切れ",
+      "low_stock": {
+        "one": "残り{{ count }}点",
+        "other": "残り{{ count }}点"
+      },
+      "wishlist": "お気に入りに追加",
+      "express_checkout": "エクスプレスチェックアウト",
+      "review_count": {
+        "one": "({{ count }}件のレビュー)",
+        "other": "({{ count }}件のレビュー)"
+      },
+      "no_reviews": "レビューはまだありません。ご購入いただいたお客様のレビューのみを掲載します。"
+    },
+    "bundle": {
+      "total": "2点の合計"
+    },
     "placeholder": {
       "product_title": "商品名(サンプル)",
       "product_subtitle": "素材 / カラー",
@@ -83,6 +111,7 @@
       "article_excerpt": "記事の抜粋テキストが入ります。ブログを選択すると実際の記事が表示されます。",
       "article_date": "----.--.--",
       "select_collection": "コレクションを選択すると商品が表示されます",
+      "select_product": "商品を選択すると、ここに表示されます",
       "select_blog": "ブログを選択すると記事が表示されます"
     }
   }

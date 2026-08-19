@@ -1,0 +1,255 @@
+{% liquid
+  assign companion = section.settings.companion_product
+  assign current_variant = product.selected_or_first_available_variant
+  assign companion_variant = companion.selected_or_first_available_variant
+  assign total = 0
+  if current_variant != blank
+    assign total = current_variant.price
+  endif
+  if companion_variant != blank
+    assign total = total | plus: companion_variant.price
+  endif
+%}
+
+<div class="moru-bundle">
+  <div class="moru-bundle__inner">
+    <div class="moru-bundle__text">
+      <h2 class="moru-bundle__title">{{ section.settings.title }}</h2>
+      {% if companion != blank %}
+        <p class="moru-bundle__name">
+          <a href="{{ companion.url }}">{{ companion.title }}</a>
+        </p>
+        <p class="moru-bundle__price">{{ companion_variant.price | money }}</p>
+      {% else %}
+        <p class="moru-bundle__hint">{{ 'moru.placeholder.select_product' | t }}</p>
+      {% endif %}
+    </div>
+
+    <div class="moru-bundle__visual">
+      <span class="moru-bundle__thumb moru-card">
+        {% if product.featured_image %}
+          {{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' | image_tag: loading: 'lazy' }}
+        {% else %}
+          {{ 'product-1' | placeholder_svg_tag }}
+        {% endif %}
+      </span>
+      <span class="moru-bundle__plus" aria-hidden="true">＋</span>
+      <span class="moru-bundle__thumb moru-card">
+        {% if companion.featured_image %}
+          {{ companion.featured_image | image_url: width: 200, height: 200, crop: 'center' | image_tag: loading: 'lazy' }}
+        {% else %}
+          {{ 'product-2' | placeholder_svg_tag }}
+        {% endif %}
+      </span>
+    </div>
+
+    <div class="moru-bundle__action">
+      {% if companion != blank %}
+        <p class="moru-bundle__total">
+          <span class="moru-bundle__total-label">{{ 'moru.bundle.total' | t }}</span>
+          <span class="moru-bundle__total-value">{{ total | money }}</span>
+        </p>
+        <moru-bundle-add>
+          <button
+            type="button"
+            class="moru-button moru-bundle__cta"
+            data-bundle-add
+            data-items='[{"id":{{ current_variant.id }},"quantity":1},{"id":{{ companion_variant.id }},"quantity":1}]'
+            {% unless current_variant.available and companion_variant.available %}disabled{% endunless %}
+          >
+            {{ section.settings.button_label }}
+          </button>
+        </moru-bundle-add>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .moru-bundle {
+    padding-block: var(--space-lg) var(--space-2xl);
+  }
+
+  .moru-bundle__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-xl);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-bundle__title {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-lg);
+  }
+
+  .moru-bundle__name {
+    margin: 0;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-bundle__name a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .moru-bundle__name a:hover {
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-bundle__price {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .moru-bundle__hint {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-bundle__visual {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .moru-bundle__thumb {
+    display: block;
+    width: 5.5rem;
+    height: 5.5rem;
+    overflow: hidden;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+  }
+
+  .moru-bundle__thumb img,
+  .moru-bundle__thumb svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-bundle__plus {
+    font-size: var(--font-size-lg);
+    color: var(--color-muted);
+  }
+
+  .moru-bundle__action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-sm);
+  }
+
+  .moru-bundle__total {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+  }
+
+  .moru-bundle__total-value {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .moru-bundle__cta[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 989px) {
+    .moru-bundle__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+
+    .moru-bundle__action {
+      align-items: flex-start;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class MoruBundleAdd extends HTMLElement {
+    connectedCallback() {
+      this.button = this.querySelector('[data-bundle-add]');
+      if (!this.button) return;
+      this.button.addEventListener('click', () => this.add());
+    }
+
+    async add() {
+      let items;
+      try {
+        items = JSON.parse(this.button.dataset.items);
+      } catch (error) {
+        return;
+      }
+
+      this.button.disabled = true;
+      const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+
+      try {
+        const response = await fetch(root + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: items }),
+        });
+        if (response.ok) {
+          window.location.href = root + 'cart';
+          return;
+        }
+      } catch (error) {
+        // fall through to re-enable the button
+      }
+
+      this.button.disabled = false;
+    }
+  }
+
+  if (!customElements.get('moru-bundle-add')) {
+    customElements.define('moru-bundle-add', MoruBundleAdd);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:moru.bundle.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "default": "t:moru.bundle.title_default"
+    },
+    {
+      "type": "product",
+      "id": "companion_product",
+      "label": "t:moru.bundle.companion_label",
+      "info": "t:moru.bundle.companion_info"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:moru.common.button_label",
+      "default": "t:moru.bundle.button_label_default"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.bundle.name"
+    }
+  ]
+}
+{% endschema %}

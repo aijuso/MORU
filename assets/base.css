@@ -38,6 +38,7 @@
   /* Derived neutrals — hairline borders and secondary text, from the token palette */
   --color-border: color-mix(in srgb, var(--color-text) 12%, var(--color-bg));
   --color-muted: color-mix(in srgb, var(--color-text) 60%, var(--color-bg));
+  --color-surface: #ffffff;
   --shadow-soft: 0 4px 20px rgb(0 0 0 / 0.03);
   --shadow-lift: 0 8px 24px rgb(0 0 0 / 0.05);
 }

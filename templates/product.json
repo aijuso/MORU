@@ -10,11 +10,152 @@
 {
   "sections": {
     "main": {
-      "type": "product",
+      "type": "moru-main-product",
+      "blocks": {
+        "trust_shipping": {
+          "type": "trust",
+          "settings": {
+            "icon": "truck",
+            "title": "海外パートナーより手配",
+            "text": "ご注文後に手配し、検品のうえ発送します"
+          }
+        },
+        "trust_return": {
+          "type": "trust",
+          "settings": {
+            "icon": "return",
+            "title": "不良・誤配送は交換または返金",
+            "text": "商品到着後7日以内にご連絡ください"
+          }
+        },
+        "trust_payment": {
+          "type": "trust",
+          "settings": {
+            "icon": "lock",
+            "title": "安全なお支払い",
+            "text": "Shopifyの安全な決済システムを利用しています"
+          }
+        },
+        "trust_tracking": {
+          "type": "trust",
+          "settings": {
+            "icon": "box",
+            "title": "発送のご連絡",
+            "text": "発送時にメールでお知らせします"
+          }
+        }
+      },
+      "block_order": [
+        "trust_shipping",
+        "trust_return",
+        "trust_payment",
+        "trust_tracking"
+      ],
       "settings": {}
+    },
+    "bundle": {
+      "type": "moru-product-bundle",
+      "settings": {}
+    },
+    "details": {
+      "type": "moru-product-details",
+      "blocks": {
+        "acc_description": {
+          "type": "accordion",
+          "settings": {
+            "heading": "商品説明",
+            "use_description": true,
+            "open_by_default": true
+          }
+        },
+        "acc_spec": {
+          "type": "accordion",
+          "settings": {
+            "heading": "素材・サイズ",
+            "content": "<p>素材・サイズ・セット内容・組み立てについて記載します。未確認の仕様は記載しないでください。</p>"
+          }
+        },
+        "acc_shipping": {
+          "type": "accordion",
+          "settings": {
+            "heading": "配送について",
+            "content": "<p>海外の提携先より、ご注文後に手配いたします。お届け目安はご注文から約2〜3週間です。在庫状況・国際輸送・通関・天候等により4週間以上かかる場合があります。土日祝日・休業日は営業日に含みません。到着日の確約はいたしかねます。</p>"
+          }
+        },
+        "acc_variance": {
+          "type": "accordion",
+          "settings": {
+            "heading": "海外製品の個体差について",
+            "content": "<p>木目・節・色合いの違い、積層部分の見え方、サイズの軽微な誤差、使用に支障のない小さな擦れ、パッケージの傷やへこみが生じる場合があります。なお、破損や機能不良は個体差には含みません。</p>"
+          }
+        },
+        "acc_returns": {
+          "type": "accordion",
+          "settings": {
+            "heading": "キャンセル・返品について",
+            "content": "<p>ご注文後すぐに手配へ入るため、手配開始後のお客様都合によるキャンセル・変更は原則承れません(手配前であれば対応できる場合があります)。不良・誤配送の場合は、商品到着後7日以内にご連絡ください。交換または返金にて対応いたします。</p>"
+          }
+        }
+      },
+      "block_order": [
+        "acc_description",
+        "acc_spec",
+        "acc_shipping",
+        "acc_variance",
+        "acc_returns"
+      ],
+      "settings": {}
+    },
+    "styling": {
+      "type": "moru-product-styling",
+      "blocks": {
+        "style_1": {
+          "type": "image",
+          "settings": {}
+        },
+        "style_2": {
+          "type": "image",
+          "settings": {}
+        },
+        "style_3": {
+          "type": "image",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "style_1",
+        "style_2",
+        "style_3"
+      ],
+      "settings": {}
+    },
+    "bought_together": {
+      "type": "moru-product-grid",
+      "settings": {
+        "title": "よく一緒に購入されています",
+        "products_to_show": 3,
+        "columns": "3",
+        "show_view_all": false,
+        "show_subtitle": true
+      }
+    },
+    "related": {
+      "type": "moru-product-grid",
+      "settings": {
+        "title": "あわせて楽しむアイテム",
+        "products_to_show": 3,
+        "columns": "3",
+        "show_view_all": false,
+        "show_subtitle": true
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "bundle",
+    "details",
+    "styling",
+    "bought_together",
+    "related"
   ]
 }
