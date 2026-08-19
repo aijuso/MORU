@@ -1,0 +1,270 @@
+<div class="moru-room">
+  <div class="moru-room__card moru-card">
+    <div class="moru-room__media">
+      {% if section.settings.image %}
+        {{ section.settings.image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '750, 1200, 1600', sizes: '(min-width: 750px) 66vw, 100vw' }}
+      {% else %}
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'moru-room__placeholder' }}
+      {% endif %}
+
+      {% for block in section.blocks %}
+        <span
+          class="moru-room__hotspot"
+          style="--top: {{ block.settings.top }}%; --left: {{ block.settings.left }}%"
+          {{ block.shopify_attributes }}
+          aria-hidden="true"
+        >+</span>
+      {% endfor %}
+    </div>
+
+    <div class="moru-room__panel">
+      <p class="moru-room__label">{{ section.settings.room_label }}</p>
+      {% if section.settings.description != blank %}
+        <p class="moru-room__description">{{ section.settings.description }}</p>
+      {% endif %}
+
+      <ul class="moru-room__products" role="list">
+        {% for block in section.blocks %}
+          <li class="moru-room__product" {{ block.shopify_attributes }}>
+            {% if block.settings.product != blank %}
+              <a href="{{ block.settings.product.url }}" class="moru-room__product-link">
+                <span class="moru-room__thumb moru-card">
+                  {% if block.settings.product.featured_image %}
+                    {{ block.settings.product.featured_image | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy' }}
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag }}
+                  {% endif %}
+                </span>
+                <span class="moru-room__product-title">{{ block.settings.product.title }}</span>
+                <span class="moru-room__product-price">{{ block.settings.product.price | money }}</span>
+              </a>
+            {% else %}
+              <div class="moru-room__product-link">
+                <span class="moru-room__thumb moru-card">{{ 'product-2' | placeholder_svg_tag }}</span>
+                <span class="moru-room__product-title">{{ 'moru.placeholder.product_title' | t }}</span>
+                <span class="moru-room__product-price">{{ 'moru.placeholder.price' | t }}</span>
+              </div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% if section.settings.button_label != blank %}
+        <a class="moru-button moru-room__button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .moru-room {
+    padding-block: var(--section-padding-block);
+  }
+
+  .moru-room__card {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-room__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background-color: var(--color-bg);
+  }
+
+  .moru-room__media img,
+  .moru-room__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-room__hotspot {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.2);
+  }
+
+  .moru-room__label {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: var(--font-size-lg);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .moru-room__description {
+    margin-block: var(--space-xs) 0;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-room__products {
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .moru-room__product-link {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-room__thumb {
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: var(--color-bg);
+  }
+
+  .moru-room__thumb img,
+  .moru-room__thumb svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-room__button {
+    margin-block-start: var(--space-md);
+    width: 100%;
+  }
+
+  @media (max-width: 749px) {
+    .moru-room__card {
+      grid-template-columns: 1fr;
+      padding: var(--space-md);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.shop_the_room.name",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:moru.shop_the_room.image_label"
+    },
+    {
+      "type": "text",
+      "id": "room_label",
+      "label": "t:moru.shop_the_room.room_label_label",
+      "default": "t:moru.shop_the_room.room_label_default"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "t:moru.shop_the_room.description_label",
+      "default": "t:moru.shop_the_room.description_default"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:moru.common.button_label",
+      "default": "t:moru.shop_the_room.button_label_default"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:moru.common.button_link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "t:moru.shop_the_room.block_product_name",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:moru.shop_the_room.block_product_label"
+        },
+        {
+          "type": "range",
+          "id": "top",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "label": "t:moru.shop_the_room.block_top_label",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "left",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "label": "t:moru.shop_the_room.block_left_label",
+          "default": 50
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.shop_the_room.name",
+      "blocks": [
+        {
+          "type": "product",
+          "settings": {
+            "top": 30,
+            "left": 25
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "top": 55,
+            "left": 55
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "top": 70,
+            "left": 80
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "top": 40,
+            "left": 70
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

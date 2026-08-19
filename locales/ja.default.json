@@ -48,5 +48,27 @@
     "submit": "検索",
     "no_results_html": "{{ terms }} に一致する結果は見つかりませんでした",
     "results_for_html": "{{ terms }} の検索結果 {{ count }}件"
+  },
+  "moru": {
+    "header": {
+      "search": "検索",
+      "account": "アカウント",
+      "cart": "カート",
+      "menu": "メニュー"
+    },
+    "footer": {
+      "newsletter_placeholder": "メールアドレスを入力",
+      "newsletter_submit": "登録する",
+      "newsletter_success": "ご登録ありがとうございます。"
+    },
+    "placeholder": {
+      "product_title": "商品名(サンプル)",
+      "price": "¥ ---",
+      "category": "カテゴリ",
+      "article_title": "記事タイトルが入ります",
+      "article_tag": "暮らしのヒント",
+      "select_collection": "コレクションを選択すると商品が表示されます",
+      "select_blog": "ブログを選択すると記事が表示されます"
+    }
   }
 }

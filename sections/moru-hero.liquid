@@ -1,0 +1,109 @@
+<div class="moru-hero full-width">
+  <div class="moru-hero__media">
+    {% if section.settings.image %}
+      {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750, 1200, 1800, 2400', sizes: '100vw' }}
+    {% else %}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'moru-hero__placeholder' }}
+    {% endif %}
+  </div>
+
+  <div class="moru-hero__content">
+    <h1 class="moru-hero__title">{{ section.settings.title }}</h1>
+    {% if section.settings.subtitle != blank %}
+      <p class="moru-hero__subtitle">{{ section.settings.subtitle }}</p>
+    {% endif %}
+    {% if section.settings.button_label != blank %}
+      <a class="moru-button moru-button--outline moru-hero__button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .moru-hero {
+    position: relative;
+    min-height: clamp(420px, 68vh, 720px);
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-hero__media,
+  .moru-hero__media img,
+  .moru-hero__media svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-hero__content {
+    position: relative;
+    max-width: 34rem;
+    margin: var(--space-xl) var(--page-margin);
+    padding: var(--space-lg);
+    background-color: var(--color-bg);
+    border-radius: var(--radius-card);
+  }
+
+  .moru-hero__title {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+  }
+
+  .moru-hero__subtitle {
+    margin-block: var(--space-sm) 0;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-hero__button {
+    margin-block-start: var(--space-md);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.hero.name",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:moru.hero.image_label"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "default": "t:moru.hero.title_default"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:moru.hero.subtitle_label",
+      "default": "t:moru.hero.subtitle_default"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:moru.common.button_label",
+      "default": "t:moru.hero.button_label_default"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:moru.common.button_link"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.hero.name"
+    }
+  ]
+}
+{% endschema %}

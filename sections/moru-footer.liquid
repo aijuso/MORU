@@ -1,0 +1,275 @@
+<footer class="moru-footer full-width">
+  <div class="moru-footer__inner">
+    <div class="moru-footer__brand">
+      {% if section.settings.logo %}
+        {{ section.settings.logo | image_url: width: 320 | image_tag: alt: shop.name, loading: 'lazy', widths: '160, 320' }}
+      {% else %}
+        <span class="moru-footer__wordmark">{{ shop.name }}</span>
+      {% endif %}
+    </div>
+
+    <div class="moru-footer__columns">
+      {% for block in section.blocks %}
+        <nav class="moru-footer__column" {{ block.shopify_attributes }}>
+          <p class="moru-footer__heading">{{ block.settings.heading }}</p>
+          {% for link in block.settings.menu.links %}
+            {{ link.title | link_to: link.url }}
+          {% endfor %}
+        </nav>
+      {% endfor %}
+
+      {% if section.settings.show_newsletter %}
+        <div class="moru-footer__column moru-footer__newsletter">
+          <p class="moru-footer__heading">{{ section.settings.newsletter_heading }}</p>
+          {% if section.settings.newsletter_text != blank %}
+            <p class="moru-footer__text">{{ section.settings.newsletter_text }}</p>
+          {% endif %}
+          {% form 'customer', class: 'moru-footer__form' %}
+            {% if form.posted_successfully? %}
+              <p class="moru-footer__text">{{ 'moru.footer.newsletter_success' | t }}</p>
+            {% else %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <input
+                type="email"
+                name="contact[email]"
+                required
+                placeholder="{{ 'moru.footer.newsletter_placeholder' | t }}"
+                aria-label="{{ 'moru.footer.newsletter_placeholder' | t }}"
+              >
+              <button type="submit" class="moru-footer__submit">{{ 'moru.footer.newsletter_submit' | t }}</button>
+            {% endif %}
+          {% endform %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="moru-footer__bottom">
+      <div class="moru-footer__social">
+        {% if section.settings.instagram_url != blank %}
+          <a href="{{ section.settings.instagram_url }}">Instagram</a>
+        {% endif %}
+        {% if section.settings.pinterest_url != blank %}
+          <a href="{{ section.settings.pinterest_url }}">Pinterest</a>
+        {% endif %}
+        {% if section.settings.line_url != blank %}
+          <a href="{{ section.settings.line_url }}">LINE</a>
+        {% endif %}
+      </div>
+
+      <div class="moru-footer__legal">
+        {% for link in section.settings.legal_menu.links %}
+          {{ link.title | link_to: link.url }}
+        {% endfor %}
+      </div>
+
+      <p class="moru-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+    </div>
+  </div>
+</footer>
+
+{% stylesheet %}
+  .moru-footer {
+    background-color: var(--color-text);
+    color: var(--color-bg-alt);
+  }
+
+  .moru-footer__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: var(--space-2xl) var(--page-margin) var(--space-lg);
+  }
+
+  .moru-footer a {
+    color: var(--color-bg-alt);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-footer a:hover {
+    color: var(--color-bg);
+  }
+
+  .moru-footer__brand img {
+    width: 8rem;
+    height: auto;
+  }
+
+  .moru-footer__wordmark {
+    font-family: var(--font-heading--family);
+    font-size: var(--font-size-xl);
+    letter-spacing: 0.12em;
+    color: var(--color-bg);
+  }
+
+  .moru-footer__columns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+    margin-block: var(--space-xl);
+  }
+
+  .moru-footer__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: flex-start;
+  }
+
+  .moru-footer__heading {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+    opacity: 0.7;
+  }
+
+  .moru-footer__text {
+    margin: 0;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-footer__form {
+    display: flex;
+    width: 100%;
+    margin-block-start: var(--space-xs);
+  }
+
+  .moru-footer__form input[type="email"] {
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-bg-alt);
+    border-radius: var(--style-border-radius-inputs) 0 0 var(--style-border-radius-inputs);
+    background-color: transparent;
+    color: var(--color-bg);
+  }
+
+  .moru-footer__submit {
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-bg-alt);
+    border-inline-start: none;
+    border-radius: 0 var(--style-border-radius-inputs) var(--style-border-radius-inputs) 0;
+    background-color: var(--color-bg-alt);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+  }
+
+  .moru-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-block-start: var(--space-lg);
+    border-block-start: 1px solid rgb(255 255 255 / 0.15);
+  }
+
+  .moru-footer__social,
+  .moru-footer__legal {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .moru-footer__copyright {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 749px) {
+    .moru-footer__columns {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.footer.name",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:moru.footer.logo_label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "t:moru.footer.show_newsletter_label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "t:moru.footer.newsletter_heading_label",
+      "default": "t:moru.footer.newsletter_heading_default"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "t:moru.footer.newsletter_text_label",
+      "default": "t:moru.footer.newsletter_text_default"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "t:moru.footer.instagram_url_label"
+    },
+    {
+      "type": "url",
+      "id": "pinterest_url",
+      "label": "t:moru.footer.pinterest_url_label"
+    },
+    {
+      "type": "url",
+      "id": "line_url",
+      "label": "t:moru.footer.line_url_label"
+    },
+    {
+      "type": "link_list",
+      "id": "legal_menu",
+      "label": "t:moru.footer.legal_menu_label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "t:moru.footer.block_menu_name",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:moru.footer.block_heading_label",
+          "default": "t:moru.footer.block_heading_default"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "t:labels.menu"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.footer.name",
+      "blocks": [
+        {
+          "type": "menu"
+        },
+        {
+          "type": "menu"
+        },
+        {
+          "type": "menu"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

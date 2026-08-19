@@ -1,0 +1,181 @@
+<div class="moru-journal">
+  <div class="moru-section-header">
+    <h2>{{ section.settings.title }}</h2>
+    {% if section.settings.blog != blank %}
+      <a class="moru-section-header__link" href="{{ section.settings.blog.url }}">{{ section.settings.view_all_label }} &rarr;</a>
+    {% endif %}
+  </div>
+
+  <ul class="moru-journal__grid" role="list">
+    {% if section.settings.blog != blank and section.settings.blog.articles_count > 0 %}
+      {% for article in section.settings.blog.articles limit: section.settings.articles_to_show %}
+        <li class="moru-journal__card moru-card">
+          <a href="{{ article.url }}" class="moru-journal__link">
+            <span class="moru-journal__media">
+              {% if article.image %}
+                {{ article.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '450, 900' }}
+              {% else %}
+                {{ 'image' | placeholder_svg_tag }}
+              {% endif %}
+            </span>
+            <span class="moru-journal__body">
+              <span class="moru-journal__tag">
+                {%- if article.tags.size > 0 -%}
+                  {{ article.tags | first }}
+                {%- else -%}
+                  {{ 'moru.placeholder.article_tag' | t }}
+                {%- endif -%}
+              </span>
+              <span class="moru-journal__title">{{ article.title }}</span>
+              <span class="moru-journal__more">{{ section.settings.read_more_label }} &rarr;</span>
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    {% else %}
+      {% for i in (1..2) %}
+        <li class="moru-journal__card moru-card">
+          <div class="moru-journal__link">
+            <span class="moru-journal__media">{{ 'image' | placeholder_svg_tag }}</span>
+            <span class="moru-journal__body">
+              <span class="moru-journal__tag">{{ 'moru.placeholder.article_tag' | t }}</span>
+              <span class="moru-journal__title">{{ 'moru.placeholder.article_title' | t }}</span>
+              <span class="moru-journal__more">{{ section.settings.read_more_label }} &rarr;</span>
+            </span>
+          </div>
+        </li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+
+  {% if section.settings.blog == blank %}
+    <p class="moru-journal__hint">{{ 'moru.placeholder.select_blog' | t }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .moru-journal {
+    padding-block: var(--section-padding-block);
+  }
+
+  .moru-journal__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-journal__card {
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-journal__link {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    color: var(--color-text);
+    text-decoration: none;
+    min-height: 10rem;
+  }
+
+  .moru-journal__media {
+    display: block;
+    overflow: hidden;
+  }
+
+  .moru-journal__media img,
+  .moru-journal__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-journal__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+  }
+
+  .moru-journal__tag {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+    padding: var(--space-2xs) var(--space-xs);
+    background-color: var(--color-bg);
+    border-radius: var(--style-border-radius-inputs);
+  }
+
+  .moru-journal__title {
+    font-family: var(--font-heading--family);
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-heading);
+  }
+
+  .moru-journal__more {
+    margin-block-start: auto;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .moru-journal__hint {
+    margin-block-start: var(--space-md);
+    font-size: var(--font-size-xs);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 749px) {
+    .moru-journal__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.journal.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "default": "t:moru.journal.title_default"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "t:moru.journal.blog_label"
+    },
+    {
+      "type": "range",
+      "id": "articles_to_show",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "t:moru.journal.articles_to_show_label",
+      "default": 2
+    },
+    {
+      "type": "text",
+      "id": "read_more_label",
+      "label": "t:moru.journal.read_more_label",
+      "default": "t:moru.journal.read_more_default"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "t:moru.common.view_all_label",
+      "default": "t:moru.common.view_all_default"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.journal.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,75 @@
+{% doc %}
+  Renders a MORU product card: square image, Japanese title, price.
+  Falls back to a wireframe placeholder when no product is given.
+
+  @param {product} [product] - The product to render
+  @param {number} [ph_index] - Placeholder variation 1-6 when product is empty
+
+  @example
+  {% render 'moru-product-card', product: product %}
+  {% render 'moru-product-card', ph_index: 3 %}
+{% enddoc %}
+
+{% liquid
+  assign ph = ph_index | default: 1 | modulo: 6 | plus: 1
+  assign ph_name = 'product-' | append: ph
+%}
+
+{% if product != blank %}
+  <a class="moru-product-card" href="{{ product.url }}">
+    <div class="moru-product-card__media moru-card">
+      {% if product.featured_image %}
+        {{ product.featured_image | image_url: width: 600, height: 600, crop: 'center' | image_tag: loading: 'lazy', widths: '300, 450, 600' }}
+      {% else %}
+        {{ ph_name | placeholder_svg_tag: 'moru-product-card__placeholder' }}
+      {% endif %}
+    </div>
+    <p class="moru-product-card__title">{{ product.title }}</p>
+    <p class="moru-product-card__price">{{ product.price | money }}</p>
+  </a>
+{% else %}
+  <div class="moru-product-card">
+    <div class="moru-product-card__media moru-card">
+      {{ ph_name | placeholder_svg_tag: 'moru-product-card__placeholder' }}
+    </div>
+    <p class="moru-product-card__title">{{ 'moru.placeholder.product_title' | t }}</p>
+    <p class="moru-product-card__price">{{ 'moru.placeholder.price' | t }}</p>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .moru-product-card {
+    display: block;
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .moru-product-card__media {
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-product-card__media img,
+  .moru-product-card__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-product-card__title {
+    margin-block: var(--space-sm) 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+  }
+
+  .moru-product-card__price {
+    margin-block: var(--space-2xs) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    opacity: 0.75;
+  }
+
+  a.moru-product-card:hover .moru-product-card__title {
+    color: var(--color-accent-terracotta);
+  }
+{% endstylesheet %}

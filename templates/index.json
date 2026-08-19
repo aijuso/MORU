@@ -9,12 +9,136 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "hero": {
+      "type": "moru-hero",
+      "settings": {}
+    },
+    "new_arrivals": {
+      "type": "moru-product-carousel",
+      "settings": {}
+    },
+    "shop_the_room": {
+      "type": "moru-shop-the-room",
+      "blocks": {
+        "spot_1": {
+          "type": "product",
+          "settings": {
+            "top": 30,
+            "left": 25
+          }
+        },
+        "spot_2": {
+          "type": "product",
+          "settings": {
+            "top": 55,
+            "left": 55
+          }
+        },
+        "spot_3": {
+          "type": "product",
+          "settings": {
+            "top": 70,
+            "left": 80
+          }
+        },
+        "spot_4": {
+          "type": "product",
+          "settings": {
+            "top": 40,
+            "left": 70
+          }
+        }
+      },
+      "block_order": [
+        "spot_1",
+        "spot_2",
+        "spot_3",
+        "spot_4"
+      ],
+      "settings": {}
+    },
+    "category_browser": {
+      "type": "moru-category-browser",
+      "blocks": {
+        "cat_1": {
+          "type": "category",
+          "settings": {}
+        },
+        "cat_2": {
+          "type": "category",
+          "settings": {}
+        },
+        "cat_3": {
+          "type": "category",
+          "settings": {}
+        },
+        "cat_4": {
+          "type": "category",
+          "settings": {}
+        },
+        "cat_5": {
+          "type": "category",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "cat_1",
+        "cat_2",
+        "cat_3",
+        "cat_4",
+        "cat_5"
+      ],
+      "settings": {}
+    },
+    "journal": {
+      "type": "moru-journal",
+      "settings": {}
+    },
+    "instagram": {
+      "type": "moru-instagram",
+      "blocks": {
+        "ig_1": {
+          "type": "image",
+          "settings": {}
+        },
+        "ig_2": {
+          "type": "image",
+          "settings": {}
+        },
+        "ig_3": {
+          "type": "image",
+          "settings": {}
+        },
+        "ig_4": {
+          "type": "image",
+          "settings": {}
+        },
+        "ig_5": {
+          "type": "image",
+          "settings": {}
+        },
+        "ig_6": {
+          "type": "image",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "ig_1",
+        "ig_2",
+        "ig_3",
+        "ig_4",
+        "ig_5",
+        "ig_6"
+      ],
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "hero",
+    "new_arrivals",
+    "shop_the_room",
+    "category_browser",
+    "journal",
+    "instagram"
   ]
 }

@@ -1,0 +1,51 @@
+<div class="moru-announcement full-width">
+  {% if section.settings.link != blank %}
+    <a class="moru-announcement__text" href="{{ section.settings.link }}">{{ section.settings.text }}</a>
+  {% else %}
+    <p class="moru-announcement__text">{{ section.settings.text }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .moru-announcement {
+    background-color: var(--color-text);
+    padding-block: var(--space-xs);
+    text-align: center;
+  }
+
+  .moru-announcement__text {
+    display: block;
+    margin: 0;
+    color: var(--color-bg-alt);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+    text-decoration: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.announcement.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:moru.announcement.text_label",
+      "default": "t:moru.announcement.text_default"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:moru.announcement.link_label"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.announcement.name"
+    }
+  ]
+}
+{% endschema %}

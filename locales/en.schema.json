@@ -1,0 +1,188 @@
+{
+  "general": {
+    "404": "Not found",
+    "article": "Article",
+    "block": "Block",
+    "blog": "Blog",
+    "cart": "Cart",
+    "collection": "Collection",
+    "collections": "Collections",
+    "collection_card": "Collection card",
+    "collections_grid": "Collections grid",
+    "colors": "Colors",
+    "column": "Column",
+    "content": "Content",
+    "custom_section": "Custom section",
+    "fonts": "Fonts",
+    "footer": "Footer",
+    "group": "Group",
+    "header": "Header",
+    "layout": "Layout",
+    "main": "Main",
+    "page": "Page",
+    "password": "Password",
+    "primary": "Primary",
+    "product": "Product",
+    "row": "Row",
+    "search": "Search",
+    "secondary": "Secondary",
+    "section": "Section",
+    "settings": "Settings",
+    "sidebar": "Sidebar",
+    "text": "Text",
+    "theme": "Theme",
+    "typography": "Typography"
+  },
+  "labels": {
+    "alignment": "Alignment",
+    "accent_colors": "Accent colors",
+    "accent_blue": "Accent: Dusty Blue",
+    "accent_burgundy": "Accent: Burgundy",
+    "accent_olive": "Accent: Olive",
+    "accent_terracotta": "Accent: Terracotta",
+    "background": "Background (Warm Ivory)",
+    "background_alt": "Alternate background (Soft Cream)",
+    "base_colors": "Base colors",
+    "body_font": "Body font",
+    "card_corner_radius": "Card corner radius",
+    "customer_account_menu": "Customer account menu",
+    "foreground": "Text (Charcoal)",
+    "grid_gap": "Grid spacing",
+    "grid_item_width": "Grid item width",
+    "heading_font": "Heading font",
+    "input_corner_radius": "Input corner radius",
+    "layout_direction": "Layout direction",
+    "menu": "Menu",
+    "padding": "Padding",
+    "page_margin": "Page margin",
+    "page_width": "Page width",
+    "shape": "Corners",
+    "show_payment_icons": "Show payment icons",
+    "text_style": "Text style",
+    "text": "Text",
+    "wood": "Wood accent (Natural Wood)"
+  },
+  "info": {
+    "accent_colors": "Use at most 1–2 accent colors per screen (docs/01).",
+    "background": "Page background",
+    "background_alt": "Alternate section and card background",
+    "body_font": "Japanese body and UI font. Recommended: Noto Sans Japanese / Zen Kaku Gothic New.",
+    "foreground": "Text, footer, and buttons",
+    "heading_font": "Editorial serif for headings. Recommended: DM Serif Display / Playfair Display / Cormorant.",
+    "wood": "Active rings and thin rule accents"
+  },
+  "options": {
+    "alignment": {
+      "left": "Left",
+      "center": "Center",
+      "right": "Right"
+    },
+    "direction": {
+      "horizontal": "Horizontal",
+      "vertical": "Vertical"
+    },
+    "page_width": {
+      "narrow": "Narrow",
+      "wide": "Wide"
+    },
+    "size": {
+      "large": "Large",
+      "small": "Small"
+    },
+    "text_style": {
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "normal": "Normal text"
+    }
+  },
+  "moru": {
+    "common": {
+      "title": "Heading",
+      "image": "Image",
+      "link": "Link",
+      "collection": "Collection",
+      "button_label": "Button label",
+      "button_link": "Button link",
+      "view_all_label": "\"View all\" link label",
+      "view_all_default": "View all"
+    },
+    "announcement": {
+      "name": "MORU announcement bar",
+      "text_label": "Text",
+      "text_default": "Launch coupon available now",
+      "link_label": "Link (optional)"
+    },
+    "header": {
+      "name": "MORU header",
+      "logo_label": "Logo image",
+      "logo_info": "The logo stays replaceable from settings until trademark clearance. Shows the store name when unset.",
+      "logo_width_label": "Logo width"
+    },
+    "hero": {
+      "name": "MORU hero",
+      "image_label": "Background image",
+      "title_default": "When the cat lies down, the room is complete.",
+      "subtitle_label": "Subheading",
+      "subtitle_default": "A soft hour drifting through my room.",
+      "button_label_default": "View the Flower Lounge"
+    },
+    "product_carousel": {
+      "name": "MORU product carousel",
+      "title_default": "New arrivals",
+      "products_to_show_label": "Products to show"
+    },
+    "shop_the_room": {
+      "name": "MORU shop the room",
+      "image_label": "Room photo",
+      "room_label_label": "Room name",
+      "room_label_default": "MORU LIVING ROOM",
+      "description_label": "Description",
+      "description_default": "A living room where soft light and rounded furniture come together.",
+      "button_label_default": "Shop all items in this room",
+      "block_product_name": "Product (hotspot)",
+      "block_product_label": "Product",
+      "block_top_label": "Dot vertical position",
+      "block_left_label": "Dot horizontal position"
+    },
+    "category_browser": {
+      "name": "MORU category browser",
+      "title_default": "Shop by category",
+      "wireframe_info": "The wireframe stage shows products from the first category (tab switching comes later).",
+      "block_category_name": "Category",
+      "block_label_label": "Label",
+      "block_image_label": "Thumbnail image"
+    },
+    "journal": {
+      "name": "MORU journal",
+      "title_default": "Journal / Living tips",
+      "blog_label": "Blog",
+      "articles_to_show_label": "Articles to show",
+      "read_more_label": "Article link label",
+      "read_more_default": "READ MORE"
+    },
+    "instagram": {
+      "name": "MORU Instagram",
+      "handle_label": "Account handle",
+      "handle_default": "@MORU_LIVING",
+      "link_label": "Profile link",
+      "block_image_name": "Photo",
+      "block_url_label": "Link (optional)"
+    },
+    "footer": {
+      "name": "MORU footer",
+      "logo_label": "Logo image (cream / knockout version)",
+      "newsletter_heading_label": "Newsletter heading",
+      "newsletter_heading_default": "NEWSLETTER",
+      "newsletter_text_label": "Newsletter description",
+      "newsletter_text_default": "News and new arrivals, delivered to your inbox.",
+      "show_newsletter_label": "Show newsletter",
+      "instagram_url_label": "Instagram URL",
+      "pinterest_url_label": "Pinterest URL",
+      "line_url_label": "LINE URL",
+      "legal_menu_label": "Legal & policy menu",
+      "block_menu_name": "Link column",
+      "block_heading_label": "Column heading",
+      "block_heading_default": "SHOP"
+    }
+  }
+}

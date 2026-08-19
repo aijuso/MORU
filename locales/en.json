@@ -48,5 +48,27 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "moru": {
+    "header": {
+      "search": "Search",
+      "account": "Account",
+      "cart": "Cart",
+      "menu": "Menu"
+    },
+    "footer": {
+      "newsletter_placeholder": "Enter your email",
+      "newsletter_submit": "Subscribe",
+      "newsletter_success": "Thanks for subscribing."
+    },
+    "placeholder": {
+      "product_title": "Sample product",
+      "price": "¥ ---",
+      "category": "Category",
+      "article_title": "Sample article title",
+      "article_tag": "Living tips",
+      "select_collection": "Select a collection to display products",
+      "select_blog": "Select a blog to display articles"
+    }
   }
 }

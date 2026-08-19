@@ -1,0 +1,188 @@
+{
+  "general": {
+    "404": "ページが見つかりません",
+    "article": "記事",
+    "block": "ブロック",
+    "blog": "ブログ",
+    "cart": "カート",
+    "collection": "コレクション",
+    "collections": "コレクション一覧",
+    "collection_card": "コレクションカード",
+    "collections_grid": "コレクショングリッド",
+    "colors": "カラー",
+    "column": "カラム",
+    "content": "コンテンツ",
+    "custom_section": "カスタムセクション",
+    "fonts": "フォント",
+    "footer": "フッター",
+    "group": "グループ",
+    "header": "ヘッダー",
+    "layout": "レイアウト",
+    "main": "メイン",
+    "page": "ページ",
+    "password": "パスワード",
+    "primary": "プライマリ",
+    "product": "商品",
+    "row": "行",
+    "search": "検索",
+    "secondary": "セカンダリ",
+    "section": "セクション",
+    "settings": "設定",
+    "sidebar": "サイドバー",
+    "text": "テキスト",
+    "theme": "テーマ",
+    "typography": "タイポグラフィ"
+  },
+  "labels": {
+    "alignment": "配置",
+    "accent_colors": "アクセントカラー",
+    "accent_blue": "アクセント:ダスティブルー",
+    "accent_burgundy": "アクセント:バーガンディ",
+    "accent_olive": "アクセント:オリーブ",
+    "accent_terracotta": "アクセント:テラコッタ",
+    "background": "背景色(Warm Ivory)",
+    "background_alt": "切り替え背景色(Soft Cream)",
+    "base_colors": "ベースカラー",
+    "body_font": "本文フォント",
+    "card_corner_radius": "カードの角丸",
+    "customer_account_menu": "アカウントメニュー",
+    "foreground": "テキスト色(Charcoal)",
+    "grid_gap": "グリッド間隔",
+    "grid_item_width": "グリッドアイテム幅",
+    "heading_font": "見出しフォント",
+    "input_corner_radius": "入力欄の角丸",
+    "layout_direction": "並び方向",
+    "menu": "メニュー",
+    "padding": "余白",
+    "page_margin": "ページ余白",
+    "page_width": "ページ幅",
+    "shape": "角丸",
+    "show_payment_icons": "決済アイコンを表示",
+    "text_style": "テキストスタイル",
+    "text": "テキスト",
+    "wood": "木目アクセント(Natural Wood)"
+  },
+  "info": {
+    "accent_colors": "アクセント色は1画面につき1〜2色まで(docs/01)。",
+    "background": "ページ全体の背景",
+    "background_alt": "セクション・カード背景の切り替え用",
+    "body_font": "日本語本文・UI用。推奨: Noto Sans Japanese / Zen Kaku Gothic New",
+    "foreground": "テキスト・フッター・ボタン",
+    "heading_font": "見出し用のセリフ体。推奨: DM Serif Display / Playfair Display / Cormorant",
+    "wood": "アクティブリング・罫線アクセント用"
+  },
+  "options": {
+    "alignment": {
+      "left": "左",
+      "center": "中央",
+      "right": "右"
+    },
+    "direction": {
+      "horizontal": "横",
+      "vertical": "縦"
+    },
+    "page_width": {
+      "narrow": "狭い",
+      "wide": "広い"
+    },
+    "size": {
+      "large": "大",
+      "small": "小"
+    },
+    "text_style": {
+      "title": "タイトル",
+      "subtitle": "サブタイトル",
+      "normal": "標準テキスト"
+    }
+  },
+  "moru": {
+    "common": {
+      "title": "見出し",
+      "image": "画像",
+      "link": "リンク",
+      "collection": "コレクション",
+      "button_label": "ボタンのラベル",
+      "button_link": "ボタンのリンク",
+      "view_all_label": "「すべて見る」リンクのラベル",
+      "view_all_default": "すべて見る"
+    },
+    "announcement": {
+      "name": "MORU アナウンスバー",
+      "text_label": "表示テキスト",
+      "text_default": "発売記念クーポン配布中",
+      "link_label": "リンク(任意)"
+    },
+    "header": {
+      "name": "MORU ヘッダー",
+      "logo_label": "ロゴ画像",
+      "logo_info": "商標クリアランス完了までロゴは設定から差し替え可能にしています。未設定時はストア名を表示します。",
+      "logo_width_label": "ロゴの幅"
+    },
+    "hero": {
+      "name": "MORU ヒーロー",
+      "image_label": "背景画像",
+      "title_default": "猫が寝転ぶと、部屋が完成する。",
+      "subtitle_label": "サブコピー",
+      "subtitle_default": "やわらかい時間が流れる、私の部屋。",
+      "button_label_default": "フラワーラウンジを見る"
+    },
+    "product_carousel": {
+      "name": "MORU 商品カルーセル",
+      "title_default": "新着アイテム",
+      "products_to_show_label": "表示する商品数"
+    },
+    "shop_the_room": {
+      "name": "MORU 部屋で見る",
+      "image_label": "部屋の写真",
+      "room_label_label": "ルーム名",
+      "room_label_default": "MORU LIVING ROOM",
+      "description_label": "説明文",
+      "description_default": "やわらかな光と丸みのある家具が調和する、リビングのコーディネート。",
+      "button_label_default": "この部屋のアイテムをすべて見る",
+      "block_product_name": "商品(ホットスポット)",
+      "block_product_label": "商品",
+      "block_top_label": "ドットの縦位置",
+      "block_left_label": "ドットの横位置"
+    },
+    "category_browser": {
+      "name": "MORU カテゴリーから探す",
+      "title_default": "カテゴリーから探す",
+      "wireframe_info": "ワイヤーフレーム段階では最初のカテゴリの商品を表示します(タブ切替は後続実装)。",
+      "block_category_name": "カテゴリ",
+      "block_label_label": "ラベル",
+      "block_image_label": "サムネイル画像"
+    },
+    "journal": {
+      "name": "MORU 読みもの",
+      "title_default": "読みもの / 暮らしのヒント",
+      "blog_label": "ブログ",
+      "articles_to_show_label": "表示する記事数",
+      "read_more_label": "記事リンクのラベル",
+      "read_more_default": "READ MORE"
+    },
+    "instagram": {
+      "name": "MORU Instagram",
+      "handle_label": "アカウント表記",
+      "handle_default": "@MORU_LIVING",
+      "link_label": "プロフィールのリンク",
+      "block_image_name": "写真",
+      "block_url_label": "リンク先(任意)"
+    },
+    "footer": {
+      "name": "MORU フッター",
+      "logo_label": "ロゴ画像(Cream・白抜き版)",
+      "newsletter_heading_label": "ニュースレター見出し",
+      "newsletter_heading_default": "NEWSLETTER",
+      "newsletter_text_label": "ニュースレター説明文",
+      "newsletter_text_default": "最新情報や新着アイテムをお届けします。",
+      "show_newsletter_label": "ニュースレターを表示",
+      "instagram_url_label": "Instagram URL",
+      "pinterest_url_label": "Pinterest URL",
+      "line_url_label": "LINE URL",
+      "legal_menu_label": "規約・ポリシーメニュー",
+      "block_menu_name": "リンク列",
+      "block_heading_label": "列の見出し",
+      "block_heading_default": "SHOP"
+    }
+  }
+}
