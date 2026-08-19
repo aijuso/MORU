@@ -126,6 +126,26 @@
     "recent": {
       "clear": "履歴を消す"
     },
+    "cart": {
+      "step_cart": "カート",
+      "step_info": "情報",
+      "step_shipping": "配送",
+      "step_payment": "支払い",
+      "empty": "カートに商品がありません。",
+      "continue": "お買い物を続ける",
+      "item_count": {
+        "one": "{{ count }}点",
+        "other": "{{ count }}点"
+      },
+      "subtotal": "小計",
+      "shipping": "送料",
+      "tax_included": "消費税 ({{ rate }}%・内税)",
+      "total": "合計",
+      "coupon_placeholder": "クーポンコード",
+      "coupon_apply": "適用",
+      "upsell_add": "追加する",
+      "upsell_added": "追加済み"
+    },
     "bundle": {
       "total": "2点の合計",
       "discount_tag": "セットで {{ amount }} OFF（{{ percent }}%）",

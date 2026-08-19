@@ -1,0 +1,1389 @@
+{% liquid
+  assign tax_amount = 0
+  if section.settings.tax_display == 'included' and cart.total_price > 0
+    assign divisor = section.settings.tax_rate | plus: 100
+    assign tax_amount = cart.total_price | times: section.settings.tax_rate | divided_by: divisor
+  endif
+
+  assign trust_blocks = section.blocks | where: 'type', 'trust'
+  assign assurance_blocks = section.blocks | where: 'type', 'assurance'
+  assign upsell_blocks = section.blocks | where: 'type', 'upsell'
+  assign review_blocks = section.blocks | where: 'type', 'review'
+%}
+
+<div class="moru-cart" data-cart-section data-section-id="{{ section.id }}">
+  <div class="moru-cart__top">
+    {% if section.settings.show_steps %}
+      <ol class="moru-cart__steps" role="list">
+        <li class="is-current">{{ 'moru.cart.step_cart' | t }}</li>
+        <li>{{ 'moru.cart.step_info' | t }}</li>
+        <li>{{ 'moru.cart.step_shipping' | t }}</li>
+        <li>{{ 'moru.cart.step_payment' | t }}</li>
+      </ol>
+    {% else %}
+      <span></span>
+    {% endif %}
+
+    {% if section.settings.notice_text != blank %}
+      <p class="moru-cart__notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        {{ section.settings.notice_text }}
+      </p>
+    {% endif %}
+  </div>
+
+  {% if cart.item_count == 0 %}
+    <div class="moru-cart__empty">
+      <h1 class="moru-cart__title">{{ 'cart.title' | t }}</h1>
+      <p>{{ 'moru.cart.empty' | t }}</p>
+      <a class="moru-button" href="{{ routes.all_products_collection_url }}">{{ 'moru.cart.continue' | t }}</a>
+    </div>
+  {% else %}
+    <form action="{{ routes.cart_url }}" method="post" class="moru-cart__layout" novalidate>
+      <div class="moru-cart__items-column">
+        <h1 class="moru-cart__title">
+          {{ 'cart.title' | t }}
+          <span class="moru-cart__title-count">{{ 'moru.cart.item_count' | t: count: cart.item_count }}</span>
+        </h1>
+
+        <ul class="moru-cart__items" role="list">
+          {% for item in cart.items %}
+            <li class="moru-cart__item" data-line="{{ forloop.index }}">
+              <a class="moru-cart__item-media" href="{{ item.url }}">
+                {% if item.image %}
+                  {{ item.image | image_url: width: 200, height: 200, crop: 'center' | image_tag: loading: 'lazy', alt: item.image.alt }}
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag }}
+                {% endif %}
+              </a>
+
+              <div class="moru-cart__item-body">
+                <a class="moru-cart__item-title" href="{{ item.url }}">{{ item.product.title }}</a>
+                {% unless item.product.has_only_default_variant %}
+                  <p class="moru-cart__item-variant">{{ item.variant.title }}</p>
+                {% endunless %}
+
+                {% if item.line_level_discount_allocations.size > 0 %}
+                  <ul class="moru-cart__item-discounts" role="list">
+                    {% for allocation in item.line_level_discount_allocations %}
+                      <li>{{ allocation.discount_application.title }} (&minus;{{ allocation.amount | money }})</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+
+                <div class="moru-cart__item-controls">
+                  <div class="moru-cart__stepper">
+                    <button type="button" data-cart-minus aria-label="{{ 'moru.product.qty_minus' | t }}">&minus;</button>
+                    <input
+                      type="number"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                      step="1"
+                      aria-label="{{ 'moru.product.quantity' | t }}"
+                      data-cart-qty
+                    >
+                    <button type="button" data-cart-plus aria-label="{{ 'moru.product.qty_plus' | t }}">&plus;</button>
+                  </div>
+
+                  <a class="moru-cart__remove" href="{{ item.url_to_remove }}" data-cart-remove>
+                    {{ 'cart.remove' | t }}
+                  </a>
+                </div>
+              </div>
+
+              <div class="moru-cart__item-price">
+                {% if item.original_line_price > item.final_line_price %}
+                  <s>{{ item.original_line_price | money }}</s>
+                {% endif %}
+                <span>{{ item.final_line_price | money }}</span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <noscript>
+          <button type="submit" name="update" class="moru-button moru-button--outline moru-cart__update">
+            {{ 'cart.update' | t }}
+          </button>
+        </noscript>
+
+        {% if section.settings.show_gift_wrap %}
+          <label class="moru-cart__checkbox">
+            <input
+              type="checkbox"
+              data-cart-attribute="{{ section.settings.gift_wrap_label | escape }}"
+              {% if cart.attributes[section.settings.gift_wrap_label] == 'true' %}checked{% endif %}
+            >
+            <span class="moru-cart__checkbox-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>
+            <span class="moru-cart__checkbox-text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                <rect x="2" y="7" width="20" height="5"></rect>
+                <line x1="12" y1="22" x2="12" y2="7"></line>
+                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+              </svg>
+              {{ section.settings.gift_wrap_label }}
+            </span>
+          </label>
+        {% endif %}
+
+        <div class="moru-cart__actions">
+          <a class="moru-cart__back" href="{{ routes.all_products_collection_url }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            {{ 'moru.cart.continue' | t }}
+          </a>
+        </div>
+
+        {% if trust_blocks.size > 0 %}
+          <ul class="moru-cart__trust" role="list">
+            {% for block in trust_blocks %}
+              <li class="moru-cart__trust-item" {{ block.shopify_attributes }}>
+                {% case block.settings.icon %}
+                  {% when 'return' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                      <path d="M3 3v5h5"></path>
+                    </svg>
+                  {% when 'shield' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      <polyline points="9 12 11 14 15 10"></polyline>
+                    </svg>
+                  {% when 'truck' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                      <rect x="1" y="4" width="14" height="12" rx="1"></rect>
+                      <path d="M15 9h4l3 3v4h-7V9Z"></path>
+                      <circle cx="5.5" cy="18.5" r="2"></circle>
+                      <circle cx="18.5" cy="18.5" r="2"></circle>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                      <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                {% endcase %}
+                <span>{{ block.settings.label }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <aside class="moru-cart__summary">
+        {% if section.settings.show_coupon %}
+          <div class="moru-cart__coupon">
+            <input
+              type="text"
+              class="moru-cart__coupon-input"
+              placeholder="{{ 'moru.cart.coupon_placeholder' | t }}"
+              aria-label="{{ 'moru.cart.coupon_placeholder' | t }}"
+              data-coupon-input
+            >
+            <button type="button" class="moru-cart__coupon-apply" data-coupon-apply>
+              {{ 'moru.cart.coupon_apply' | t }}
+            </button>
+          </div>
+        {% endif %}
+
+        {% if cart.cart_level_discount_applications.size > 0 %}
+          <ul class="moru-cart__discounts" role="list">
+            {% for discount in cart.cart_level_discount_applications %}
+              <li>
+                <span>{{ discount.title }}</span>
+                <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <div class="moru-cart__breakdown">
+          <div class="moru-cart__line">
+            <span>{{ 'moru.cart.subtotal' | t }}</span>
+            <span class="moru-cart__line-value">{{ cart.items_subtotal_price | money }}</span>
+          </div>
+          <div class="moru-cart__line">
+            <span>{{ 'moru.cart.shipping' | t }}</span>
+            <span class="moru-cart__line-value">{{ section.settings.shipping_note }}</span>
+          </div>
+          {% if section.settings.tax_display == 'included' %}
+            <div class="moru-cart__line">
+              <span>{{ 'moru.cart.tax_included' | t: rate: section.settings.tax_rate }}</span>
+              <span class="moru-cart__line-value">{{ tax_amount | money }}</span>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="moru-cart__total">
+          <span class="moru-cart__total-label">{{ 'moru.cart.total' | t }}</span>
+          <span class="moru-cart__total-value">
+            <span class="moru-cart__currency">{{ cart.currency.iso_code }}</span>
+            <strong>{{ cart.total_price | money }}</strong>
+          </span>
+        </div>
+
+        <button type="submit" name="checkout" class="moru-cart__checkout">
+          {{ 'cart.checkout' | t }}
+        </button>
+
+        {% if section.settings.show_express_checkout %}
+          <div class="moru-cart__express">
+            <div class="moru-cart__express-divider"><span>{{ 'moru.product.express_checkout' | t }}</span></div>
+            {{ content_for_additional_checkout_buttons }}
+          </div>
+        {% endif %}
+
+        {% for block in assurance_blocks %}
+          <div class="moru-cart__assurance" {{ block.shopify_attributes }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+            <span>
+              <span class="moru-cart__assurance-title">{{ block.settings.title }}</span>
+              {% if block.settings.text != blank %}
+                <span class="moru-cart__assurance-sub">{{ block.settings.text }}</span>
+              {% endif %}
+            </span>
+          </div>
+        {% endfor %}
+
+        {% if upsell_blocks.size > 0 %}
+          <div class="moru-cart__upsell">
+            <p class="moru-cart__upsell-title">{{ section.settings.upsell_title }}</p>
+            {% for block in upsell_blocks %}
+              {% liquid
+                assign upsell_product = block.settings.product
+                assign upsell_variant = upsell_product.selected_or_first_available_variant
+                assign in_cart = false
+                for item in cart.items
+                  if item.variant_id == upsell_variant.id
+                    assign in_cart = true
+                  endif
+                endfor
+              %}
+              <div class="moru-cart__upsell-item" {{ block.shopify_attributes }}>
+                <div class="moru-cart__upsell-left">
+                  <span class="moru-cart__upsell-thumb">
+                    {% if upsell_product.featured_image %}
+                      {{ upsell_product.featured_image | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy' }}
+                    {% else %}
+                      {{ 'product-2' | placeholder_svg_tag }}
+                    {% endif %}
+                  </span>
+                  <span class="moru-cart__upsell-details">
+                    <span class="moru-cart__upsell-name">
+                      {%- if upsell_product != blank -%}
+                        {{ upsell_product.title }}
+                      {%- else -%}
+                        {{ 'moru.placeholder.product_title' | t }}
+                      {%- endif -%}
+                    </span>
+                    {% if block.settings.text != blank %}
+                      <span class="moru-cart__upsell-desc">{{ block.settings.text }}</span>
+                    {% endif %}
+                    <span class="moru-cart__upsell-price">
+                      {%- if upsell_variant != blank -%}
+                        {{ upsell_variant.price | money }}
+                      {%- else -%}
+                        {{ 'moru.placeholder.price' | t }}
+                      {%- endif -%}
+                    </span>
+                  </span>
+                </div>
+
+                {% if upsell_variant != blank %}
+                  <button
+                    type="button"
+                    class="moru-cart__upsell-add{% if in_cart %} is-added{% endif %}"
+                    data-upsell-add
+                    data-variant-id="{{ upsell_variant.id }}"
+                    {% if in_cart %}disabled{% endif %}
+                  >
+                    {%- if in_cart -%}
+                      {{ 'moru.cart.upsell_added' | t }}
+                    {%- else -%}
+                      {{ 'moru.cart.upsell_add' | t }}
+                    {%- endif -%}
+                  </button>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% for block in review_blocks %}
+          {% assign stars = block.settings.stars | plus: 0 %}
+          <div class="moru-cart__review" {{ block.shopify_attributes }}>
+            <div class="moru-cart__review-head">
+              <span class="moru-cart__review-stars" aria-hidden="true">
+                {%- for i in (1..5) -%}
+                  {%- if i <= stars -%}★{%- else -%}☆{%- endif -%}
+                {%- endfor -%}
+              </span>
+              {% if block.settings.score != blank %}
+                <strong>{{ block.settings.score }}</strong>
+              {% endif %}
+              {% if block.settings.count != blank %}
+                <span class="moru-cart__review-count">{{ block.settings.count }}</span>
+              {% endif %}
+            </div>
+            {% if block.settings.text != blank %}
+              <p class="moru-cart__review-text">{{ block.settings.text }}</p>
+            {% endif %}
+            <div class="moru-cart__review-foot">
+              <span>{{ block.settings.author }}</span>
+              {% if block.settings.verified_label != blank %}
+                <span class="moru-cart__review-verified">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                  </svg>
+                  {{ block.settings.verified_label }}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </aside>
+    </form>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .moru-cart {
+    padding-block: var(--space-lg) var(--space-2xl);
+  }
+
+  .moru-cart__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-block-end: var(--space-lg);
+  }
+
+  .moru-cart__steps {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart__steps li + li::before {
+    content: '›';
+    margin-inline-end: var(--space-xs);
+    color: var(--color-border);
+  }
+
+  .moru-cart__steps .is-current {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .moru-cart__notice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+  }
+
+  .moru-cart__notice svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .moru-cart__title {
+    margin: 0 0 var(--space-lg);
+    font-family: var(--font-body--family);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+  }
+
+  .moru-cart__title-count {
+    margin-inline-start: var(--space-xs);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+
+  .moru-cart__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding-block: var(--space-3xl);
+    text-align: center;
+  }
+
+  .moru-cart__empty p {
+    margin: 0;
+    color: var(--color-muted);
+  }
+
+  .moru-cart__layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.95fr;
+    gap: var(--space-3xl);
+    align-items: start;
+    margin: 0;
+  }
+
+  /* Items */
+  .moru-cart__items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-cart__item {
+    display: grid;
+    grid-template-columns: 5rem 1fr auto;
+    gap: var(--space-md);
+    align-items: start;
+    padding-block-end: var(--space-lg);
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .moru-cart__item-media {
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-cart__item-media img,
+  .moru-cart__item-media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-cart__item-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .moru-cart__item-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .moru-cart__item-title:hover {
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-cart__item-variant,
+  .moru-cart__item-discounts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart__item-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-block-start: var(--space-xs);
+  }
+
+  .moru-cart__stepper {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+  }
+
+  .moru-cart__stepper button {
+    width: 1.875rem;
+    height: 1.875rem;
+    display: grid;
+    place-items: center;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+  }
+
+  .moru-cart__stepper button:hover {
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-cart__stepper input {
+    width: 2.25rem;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    -moz-appearance: textfield;
+  }
+
+  .moru-cart__stepper input::-webkit-outer-spin-button,
+  .moru-cart__stepper input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  .moru-cart__remove {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+    text-decoration: underline;
+  }
+
+  .moru-cart__remove:hover {
+    color: var(--color-text);
+  }
+
+  .moru-cart__item-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+  }
+
+  .moru-cart__item-price s {
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+
+  .moru-cart__update {
+    align-self: flex-start;
+    margin-block-start: var(--space-md);
+  }
+
+  /* Gift wrap checkbox */
+  .moru-cart__checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-block-start: var(--space-lg);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .moru-cart__checkbox input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .moru-cart__checkbox-box {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+    color: transparent;
+  }
+
+  .moru-cart__checkbox-box svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .moru-cart__checkbox input:checked + .moru-cart__checkbox-box {
+    border-color: var(--color-text);
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .moru-cart__checkbox-text {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .moru-cart__checkbox-text svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .moru-cart__actions {
+    margin-block-start: var(--space-lg);
+  }
+
+  .moru-cart__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .moru-cart__back svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .moru-cart__back:hover {
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-cart__trust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin: var(--space-lg) 0 0;
+    padding: var(--space-lg) 0 0;
+    border-block-start: 1px solid var(--color-border);
+    list-style: none;
+  }
+
+  .moru-cart__trust-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart__trust-item svg {
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-text);
+  }
+
+  /* Summary */
+  .moru-cart__summary {
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-cart__coupon {
+    display: flex;
+    gap: var(--space-sm);
+    margin-block-end: var(--space-lg);
+  }
+
+  .moru-cart__coupon-input {
+    flex: 1;
+    min-width: 0;
+    height: 2.625rem;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+  }
+
+  .moru-cart__coupon-input:focus {
+    outline: none;
+    border-color: var(--color-text);
+  }
+
+  .moru-cart__coupon-apply {
+    height: 2.625rem;
+    padding-inline: var(--space-md);
+    border: none;
+    border-radius: 4px;
+    background-color: var(--color-border);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  .moru-cart__coupon-apply:hover {
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .moru-cart__discounts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    margin: 0 0 var(--space-md);
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-xs);
+    color: var(--color-accent-olive);
+  }
+
+  .moru-cart__discounts li {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .moru-cart__breakdown {
+    padding-block-end: var(--space-md);
+    margin-block-end: var(--space-md);
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .moru-cart__line {
+    display: flex;
+    justify-content: space-between;
+    margin-block-end: var(--space-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart__line:last-child {
+    margin-block-end: 0;
+  }
+
+  .moru-cart__line-value {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .moru-cart__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-block-end: var(--space-lg);
+  }
+
+  .moru-cart__total-label {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+  }
+
+  .moru-cart__total-value {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+  }
+
+  .moru-cart__currency {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart__total-value strong {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+  }
+
+  .moru-cart__checkout {
+    width: 100%;
+    padding-block: var(--space-md);
+    border: none;
+    border-radius: 4px;
+    background-color: var(--color-text);
+    color: var(--color-bg);
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: opacity 200ms ease;
+  }
+
+  .moru-cart__checkout:hover {
+    opacity: 0.85;
+  }
+
+  .moru-cart__express {
+    margin-block-start: var(--space-md);
+  }
+
+  .moru-cart__express-divider {
+    display: flex;
+    align-items: center;
+    margin-block-end: var(--space-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart__express-divider::before,
+  .moru-cart__express-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-border);
+  }
+
+  .moru-cart__express-divider span {
+    padding-inline: var(--space-sm);
+  }
+
+  .moru-cart__assurance {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: flex-start;
+    margin-block-start: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-surface);
+  }
+
+  .moru-cart__assurance svg {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-block-start: 2px;
+  }
+
+  .moru-cart__assurance-title {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+  }
+
+  .moru-cart__assurance-sub {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--color-muted);
+  }
+
+  .moru-cart__upsell,
+  .moru-cart__review {
+    margin-block-start: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-surface);
+  }
+
+  .moru-cart__upsell-title {
+    margin: 0 0 var(--space-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+  }
+
+  .moru-cart__upsell-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding-block: var(--space-xs);
+  }
+
+  .moru-cart__upsell-item + .moru-cart__upsell-item {
+    border-block-start: 1px solid var(--color-border);
+    padding-block-start: var(--space-sm);
+  }
+
+  .moru-cart__upsell-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .moru-cart__upsell-thumb {
+    display: block;
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-cart__upsell-thumb img,
+  .moru-cart__upsell-thumb svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-cart__upsell-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .moru-cart__upsell-name {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+  }
+
+  .moru-cart__upsell-desc {
+    font-size: 0.6875rem;
+    color: var(--color-muted);
+  }
+
+  .moru-cart__upsell-price {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+  }
+
+  .moru-cart__upsell-add {
+    flex-shrink: 0;
+    padding: 6px var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+  }
+
+  .moru-cart__upsell-add:hover {
+    background-color: var(--color-text);
+    border-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .moru-cart__upsell-add.is-added {
+    border-color: var(--color-accent-olive);
+    background-color: color-mix(in srgb, var(--color-accent-olive) 12%, var(--color-surface));
+    color: var(--color-accent-olive);
+    cursor: default;
+  }
+
+  .moru-cart__review-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-block-end: var(--space-xs);
+    font-size: var(--font-size-xs);
+  }
+
+  .moru-cart__review-stars {
+    letter-spacing: 2px;
+    color: var(--color-wood);
+  }
+
+  .moru-cart__review-count {
+    color: var(--color-muted);
+  }
+
+  .moru-cart__review-text {
+    margin: 0 0 var(--space-sm);
+    font-size: var(--font-size-xs);
+    line-height: 1.7;
+  }
+
+  .moru-cart__review-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    font-size: 0.6875rem;
+    color: var(--color-muted);
+  }
+
+  .moru-cart__review-verified {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+  }
+
+  .moru-cart__review-verified svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  @media (max-width: 959px) {
+    .moru-cart__layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+
+    .moru-cart__items-column {
+      order: 2;
+    }
+
+    .moru-cart__summary {
+      order: 1;
+    }
+  }
+
+  @media (max-width: 579px) {
+    .moru-cart__top {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-xs);
+    }
+
+    .moru-cart__item {
+      grid-template-columns: 4rem 1fr;
+    }
+
+    .moru-cart__item-price {
+      grid-column: 2;
+      align-items: flex-start;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class MoruCart {
+    constructor(root) {
+      this.root = root;
+      this.sectionId = root.dataset.sectionId;
+
+      root.addEventListener('click', (event) => {
+        const minus = event.target.closest('[data-cart-minus]');
+        const plus = event.target.closest('[data-cart-plus]');
+        const remove = event.target.closest('[data-cart-remove]');
+        const coupon = event.target.closest('[data-coupon-apply]');
+        const upsell = event.target.closest('[data-upsell-add]');
+
+        if (minus || plus) {
+          const item = (minus || plus).closest('[data-line]');
+          const input = item.querySelector('[data-cart-qty]');
+          const next = Math.max(0, (parseInt(input.value, 10) || 0) + (plus ? 1 : -1));
+          this.change(item.dataset.line, next);
+        } else if (remove) {
+          event.preventDefault();
+          const item = remove.closest('[data-line]');
+          this.change(item.dataset.line, 0);
+        } else if (coupon) {
+          this.applyCoupon();
+        } else if (upsell) {
+          this.addUpsell(upsell);
+        }
+      });
+
+      root.addEventListener('change', (event) => {
+        const input = event.target.closest('[data-cart-qty]');
+        if (!input) return;
+        const item = input.closest('[data-line]');
+        this.change(item.dataset.line, Math.max(0, parseInt(input.value, 10) || 0));
+      });
+    }
+
+    get root_url() {
+      return (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+    }
+
+    async change(line, quantity) {
+      await this.post('cart/change.js', { line: Number(line), quantity: quantity });
+    }
+
+    async addUpsell(button) {
+      button.disabled = true;
+      await this.post('cart/add.js', {
+        items: [{ id: Number(button.dataset.variantId), quantity: 1 }],
+      });
+    }
+
+    async post(path, body) {
+      try {
+        const response = await fetch(this.root_url + path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!response.ok) throw new Error('cart request failed');
+        await this.refresh();
+      } catch (error) {
+        window.location.reload();
+      }
+    }
+
+    async refresh() {
+      const response = await fetch(window.location.pathname + '?section_id=' + this.sectionId);
+      const html = await response.text();
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const next = parsed.querySelector('[data-cart-section]');
+      if (!next) {
+        window.location.reload();
+        return;
+      }
+      this.root.innerHTML = next.innerHTML;
+      document.dispatchEvent(new CustomEvent('moru:cart:updated'));
+    }
+
+    applyCoupon() {
+      const input = this.root.querySelector('[data-coupon-input]');
+      const code = input ? input.value.trim() : '';
+      if (!code) {
+        if (input) input.focus();
+        return;
+      }
+      window.location.href =
+        this.root_url + 'discount/' + encodeURIComponent(code) + '?redirect=' + this.root_url + 'cart';
+    }
+  }
+
+  document.querySelectorAll('[data-cart-section]').forEach((root) => {
+    if (root.dataset.moruInit === 'true') return;
+    root.dataset.moruInit = 'true';
+    new MoruCart(root);
+  });
+
+  document.addEventListener('change', async (event) => {
+    const checkbox = event.target.closest('[data-cart-attribute]');
+    if (!checkbox) return;
+    const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+    const attributes = {};
+    attributes[checkbox.dataset.cartAttribute] = checkbox.checked ? 'true' : '';
+    await fetch(root + 'cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ attributes: attributes }),
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:moru.cart.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_steps",
+      "label": "t:moru.cart.show_steps_label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "notice_text",
+      "label": "t:moru.cart.notice_text_label",
+      "default": "t:moru.cart.notice_text_default"
+    },
+    {
+      "type": "header",
+      "content": "t:moru.cart.summary_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_coupon",
+      "label": "t:moru.cart.show_coupon_label",
+      "info": "t:moru.cart.show_coupon_info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "shipping_note",
+      "label": "t:moru.cart.shipping_note_label",
+      "info": "t:moru.cart.shipping_note_info",
+      "default": "t:moru.cart.shipping_note_default"
+    },
+    {
+      "type": "select",
+      "id": "tax_display",
+      "label": "t:moru.cart.tax_display_label",
+      "info": "t:moru.cart.tax_display_info",
+      "options": [
+        {
+          "value": "included",
+          "label": "t:moru.cart.tax_included_option"
+        },
+        {
+          "value": "hidden",
+          "label": "t:moru.cart.tax_hidden_option"
+        }
+      ],
+      "default": "included"
+    },
+    {
+      "type": "range",
+      "id": "tax_rate",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "label": "t:moru.cart.tax_rate_label",
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "show_express_checkout",
+      "label": "t:moru.main_product.show_express_checkout_label",
+      "info": "t:moru.main_product.show_express_checkout_info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:moru.cart.options_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gift_wrap",
+      "label": "t:moru.cart.show_gift_wrap_label",
+      "info": "t:moru.cart.show_gift_wrap_info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "gift_wrap_label",
+      "label": "t:moru.cart.gift_wrap_label_label",
+      "default": "t:moru.cart.gift_wrap_label_default"
+    },
+    {
+      "type": "text",
+      "id": "upsell_title",
+      "label": "t:moru.cart.upsell_title_label",
+      "default": "t:moru.cart.upsell_title_default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "t:moru.cart.block_trust_name",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:moru.main_product.block_icon_label",
+          "options": [
+            {
+              "value": "return",
+              "label": "t:moru.main_product.icon_return"
+            },
+            {
+              "value": "shield",
+              "label": "t:moru.cart.icon_shield"
+            },
+            {
+              "value": "truck",
+              "label": "t:moru.main_product.icon_truck"
+            },
+            {
+              "value": "lock",
+              "label": "t:moru.main_product.icon_lock"
+            }
+          ],
+          "default": "return"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:moru.common.title",
+          "default": "t:moru.main_product.block_title_default"
+        }
+      ]
+    },
+    {
+      "type": "assurance",
+      "name": "t:moru.cart.block_assurance_name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:moru.common.title",
+          "default": "t:moru.cart.assurance_title_default"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:moru.main_product.block_text_label"
+        }
+      ]
+    },
+    {
+      "type": "upsell",
+      "name": "t:moru.cart.block_upsell_name",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:moru.bundle.companion_label"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:moru.main_product.block_text_label"
+        }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "t:moru.product_details.block_review_name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "stars",
+          "label": "t:moru.product_details.block_stars_label",
+          "options": [
+            {
+              "value": "5",
+              "label": "5"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            }
+          ],
+          "default": "5"
+        },
+        {
+          "type": "text",
+          "id": "score",
+          "label": "t:moru.cart.review_score_label"
+        },
+        {
+          "type": "text",
+          "id": "count",
+          "label": "t:moru.cart.review_count_label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:moru.product_details.block_body_label"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "t:moru.cart.review_author_label"
+        },
+        {
+          "type": "text",
+          "id": "verified_label",
+          "label": "t:moru.cart.review_verified_label",
+          "default": "t:moru.cart.review_verified_default"
+        }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "templates": ["cart"]
+  }
+}
+{% endschema %}

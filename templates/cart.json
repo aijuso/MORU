@@ -10,11 +10,78 @@
 {
   "sections": {
     "main": {
-      "type": "cart",
+      "type": "moru-main-cart",
+      "blocks": {
+        "trust_return": {
+          "type": "trust",
+          "settings": {
+            "icon": "return",
+            "label": "30日返品対応"
+          }
+        },
+        "trust_warranty": {
+          "type": "trust",
+          "settings": {
+            "icon": "shield",
+            "label": "2年保証"
+          }
+        },
+        "trust_tracking": {
+          "type": "trust",
+          "settings": {
+            "icon": "truck",
+            "label": "追跡可能な配送"
+          }
+        },
+        "trust_payment": {
+          "type": "trust",
+          "settings": {
+            "icon": "lock",
+            "label": "安全な決済"
+          }
+        },
+        "assurance": {
+          "type": "assurance",
+          "settings": {
+            "title": "安心してお買い物いただけます",
+            "text": "30日返品対応・2年保証・追跡可能な配送・安全な決済"
+          }
+        },
+        "upsell_1": {
+          "type": "upsell",
+          "settings": {}
+        },
+        "upsell_2": {
+          "type": "upsell",
+          "settings": {}
+        },
+        "review": {
+          "type": "review",
+          "settings": {
+            "stars": "5",
+            "verified_label": "検証済みの購入者"
+          }
+        }
+      },
+      "block_order": [
+        "trust_return",
+        "trust_warranty",
+        "trust_tracking",
+        "trust_payment",
+        "assurance",
+        "upsell_1",
+        "upsell_2",
+        "review"
+      ],
+      "settings": {}
+    },
+    "recently_viewed": {
+      "type": "moru-recently-viewed",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "recently_viewed"
   ]
 }

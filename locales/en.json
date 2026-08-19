@@ -126,6 +126,26 @@
     "recent": {
       "clear": "Clear history"
     },
+    "cart": {
+      "step_cart": "Cart",
+      "step_info": "Information",
+      "step_shipping": "Shipping",
+      "step_payment": "Payment",
+      "empty": "Your cart is empty.",
+      "continue": "Continue shopping",
+      "item_count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      },
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "tax_included": "Tax ({{ rate }}%, included)",
+      "total": "Total",
+      "coupon_placeholder": "Discount code",
+      "coupon_apply": "Apply",
+      "upsell_add": "Add",
+      "upsell_added": "Added"
+    },
     "bundle": {
       "total": "Total for 2 items",
       "discount_tag": "{{ amount }} off as a set ({{ percent }}%)",
