@@ -1,4 +1,8 @@
 <div class="moru-room">
+  <div class="moru-section-header">
+    <h2>{{ section.settings.title }}</h2>
+  </div>
+
   <div class="moru-room__card moru-card">
     <div class="moru-room__media">
       {% if section.settings.image %}
@@ -196,6 +200,12 @@
 {
   "name": "t:moru.shop_the_room.name",
   "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "default": "t:moru.shop_the_room.title_default"
+    },
     {
       "type": "image_picker",
       "id": "image",

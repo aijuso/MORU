@@ -27,7 +27,7 @@
         {% endif %}
       </li>
     {% else %}
-      {% for i in (1..6) %}
+      {% for i in (1..7) %}
         <li class="moru-instagram__item moru-card">{{ 'image' | placeholder_svg_tag }}</li>
       {% endfor %}
     {% endfor %}
@@ -53,7 +53,7 @@
 
   .moru-instagram__strip {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: var(--space-xs);
     margin: 0;
     padding: 0;
@@ -85,14 +85,13 @@
     filter: brightness(0.8);
   }
 
-  @media (max-width: 749px) {
+  @media (max-width: 1023px) {
     .moru-instagram__strip {
-      display: flex;
-      overflow-x: auto;
+      grid-template-columns: repeat(4, 1fr);
     }
 
-    .moru-instagram__item {
-      flex: 0 0 40%;
+    .moru-instagram__item:nth-child(n + 5) {
+      display: none;
     }
   }
 {% endstylesheet %}
@@ -117,7 +116,7 @@
     {
       "type": "image",
       "name": "t:moru.instagram.block_image_name",
-      "limit": 6,
+      "limit": 7,
       "settings": [
         {
           "type": "image_picker",
@@ -132,7 +131,7 @@
       ]
     }
   ],
-  "max_blocks": 6,
+  "max_blocks": 7,
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -140,6 +139,9 @@
     {
       "name": "t:moru.instagram.name",
       "blocks": [
+        {
+          "type": "image"
+        },
         {
           "type": "image"
         },

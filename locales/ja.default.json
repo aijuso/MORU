@@ -61,8 +61,12 @@
       "newsletter_submit": "登録する",
       "newsletter_success": "ご登録ありがとうございます。"
     },
+    "badge": {
+      "new": "NEW"
+    },
     "placeholder": {
       "product_title": "商品名(サンプル)",
+      "product_subtitle": "素材 / カラー",
       "price": "¥ ---",
       "category": "カテゴリ",
       "article_title": "記事タイトルが入ります",

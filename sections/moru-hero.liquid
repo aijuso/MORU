@@ -25,9 +25,15 @@
 {% stylesheet %}
   .moru-hero {
     position: relative;
-    min-height: clamp(420px, 60vh, 640px);
+    height: 520px;
     overflow: hidden;
     background-color: var(--color-bg-alt);
+  }
+
+  @media (max-width: 749px) {
+    .moru-hero {
+      height: 420px;
+    }
   }
 
   .moru-hero__media,

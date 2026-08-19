@@ -61,8 +61,12 @@
       "newsletter_submit": "Subscribe",
       "newsletter_success": "Thanks for subscribing."
     },
+    "badge": {
+      "new": "NEW"
+    },
     "placeholder": {
       "product_title": "Sample product",
+      "product_subtitle": "Material / Color",
       "price": "¥ ---",
       "category": "Category",
       "article_title": "Sample article title",

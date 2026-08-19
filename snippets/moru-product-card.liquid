@@ -4,20 +4,44 @@
 
   @param {product} [product] - The product to render
   @param {number} [ph_index] - Placeholder variation 1-6 when product is empty
+  @param {boolean} [show_new_badge] - Show a NEW badge on recently published products
+  @param {boolean} [show_subtitle] - Show the product type as a muted subtitle
 
   @example
   {% render 'moru-product-card', product: product %}
-  {% render 'moru-product-card', ph_index: 3 %}
+  {% render 'moru-product-card', ph_index: 3, show_new_badge: true %}
 {% enddoc %}
 
 {% liquid
   assign ph = ph_index | default: 1 | modulo: 6 | plus: 1
   assign ph_name = 'product-' | append: ph
+
+  assign is_new = false
+  if show_new_badge
+    if product != blank
+      assign now_s = 'now' | date: '%s' | times: 1
+      assign published_s = product.published_at | date: '%s' | times: 1
+      assign age = now_s | minus: published_s
+      if age < 2592000
+        assign is_new = true
+      endif
+    elsif ph_index <= 2
+      assign is_new = true
+    endif
+  endif
 %}
 
 {% if product != blank %}
   <a class="moru-product-card" href="{{ product.url }}">
     <div class="moru-product-card__media moru-card">
+      {% if is_new %}
+        <span class="moru-product-card__badge">{{ 'moru.badge.new' | t }}</span>
+      {% endif %}
+      <span class="moru-product-card__fav" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+        </svg>
+      </span>
       {% if product.featured_image %}
         {{ product.featured_image | image_url: width: 600, height: 600, crop: 'center' | image_tag: loading: 'lazy', widths: '300, 450, 600' }}
       {% else %}
@@ -25,14 +49,28 @@
       {% endif %}
     </div>
     <p class="moru-product-card__title">{{ product.title }}</p>
+    {% if show_subtitle and product.type != blank %}
+      <p class="moru-product-card__subtitle">{{ product.type }}</p>
+    {% endif %}
     <p class="moru-product-card__price">{{ product.price | money }}</p>
   </a>
 {% else %}
   <div class="moru-product-card">
     <div class="moru-product-card__media moru-card">
+      {% if is_new %}
+        <span class="moru-product-card__badge">{{ 'moru.badge.new' | t }}</span>
+      {% endif %}
+      <span class="moru-product-card__fav" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+        </svg>
+      </span>
       {{ ph_name | placeholder_svg_tag: 'moru-product-card__placeholder' }}
     </div>
     <p class="moru-product-card__title">{{ 'moru.placeholder.product_title' | t }}</p>
+    {% if show_subtitle %}
+      <p class="moru-product-card__subtitle">{{ 'moru.placeholder.product_subtitle' | t }}</p>
+    {% endif %}
     <p class="moru-product-card__price">{{ 'moru.placeholder.price' | t }}</p>
   </div>
 {% endif %}
@@ -45,20 +83,62 @@
   }
 
   .moru-product-card__media {
+    position: relative;
     aspect-ratio: 1 / 1;
     background-color: var(--color-bg-alt);
   }
 
-  .moru-product-card__media img,
-  .moru-product-card__media svg {
+  .moru-product-card__media > img,
+  .moru-product-card__media > svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  a.moru-product-card:hover .moru-product-card__media img {
+  a.moru-product-card:hover .moru-product-card__media > img {
     transform: scale(1.05);
+  }
+
+  .moru-product-card__badge {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    z-index: 2;
+    padding: 2px var(--space-xs);
+    border-radius: var(--style-border-radius-inputs);
+    background-color: rgb(255 255 255 / 0.92);
+    color: var(--color-text);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .moru-product-card__fav {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background-color: rgb(255 255 255 / 0.85);
+    color: var(--color-muted);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+
+  .moru-product-card__fav svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .moru-product-card:hover .moru-product-card__fav {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .moru-product-card__title {
@@ -67,10 +147,16 @@
     line-height: 1.5;
   }
 
+  .moru-product-card__subtitle {
+    margin-block: var(--space-2xs) 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
   .moru-product-card__price {
     margin-block: var(--space-2xs) 0;
     font-size: var(--font-size-sm);
-    color: var(--color-muted);
+    font-weight: 500;
   }
 
   a.moru-product-card:hover .moru-product-card__title {

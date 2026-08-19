@@ -1,0 +1,171 @@
+{% liquid
+  assign has_header = false
+  if section.settings.title != blank
+    assign has_header = true
+  endif
+%}
+
+<div class="moru-product-grid">
+  {% if has_header %}
+    <div class="moru-section-header">
+      <h2>{{ section.settings.title }}</h2>
+      {% if section.settings.show_view_all and section.settings.collection != blank %}
+        <a class="moru-section-header__link" href="{{ section.settings.collection.url }}">{{ section.settings.view_all_label }} &rarr;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <ul class="moru-product-grid__grid" role="list">
+    {% if section.settings.collection != blank %}
+      {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+        <li>
+          {% render 'moru-product-card',
+            product: product,
+            show_new_badge: section.settings.show_new_badge,
+            show_subtitle: section.settings.show_subtitle
+          %}
+        </li>
+      {% endfor %}
+    {% else %}
+      {% for i in (1..section.settings.products_to_show) %}
+        <li>
+          {% render 'moru-product-card',
+            ph_index: forloop.index,
+            show_new_badge: section.settings.show_new_badge,
+            show_subtitle: section.settings.show_subtitle
+          %}
+        </li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+
+  {% if section.settings.bottom_button_label != blank %}
+    <div class="moru-product-grid__footer">
+      {% liquid
+        assign bottom_url = routes.all_products_collection_url
+        if section.settings.collection != blank
+          assign bottom_url = section.settings.collection.url
+        endif
+      %}
+      <a class="moru-button moru-button--outline moru-product-grid__button" href="{{ bottom_url }}">
+        {{ section.settings.bottom_button_label }}
+      </a>
+    </div>
+  {% endif %}
+
+  {% if section.settings.collection == blank %}
+    <p class="moru-product-grid__hint">{{ 'moru.placeholder.select_collection' | t }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .moru-product-grid {
+    padding-block: var(--space-2xl);
+  }
+
+  .moru-product-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md) var(--space-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-product-grid__footer {
+    display: flex;
+    justify-content: center;
+    margin-block-start: var(--space-xl);
+  }
+
+  .moru-product-grid__button {
+    padding-inline: var(--space-2xl);
+  }
+
+  .moru-product-grid__hint {
+    margin-block-start: var(--space-md);
+    font-size: var(--font-size-xs);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 1023px) {
+    .moru-product-grid__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .moru-product-grid__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm) var(--space-xs);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.product_grid.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "info": "t:moru.product_grid.title_info",
+      "default": "t:moru.product_grid.title_default"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:moru.common.collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "label": "t:moru.product_grid.products_to_show_label",
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "t:moru.product_grid.show_view_all_label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "t:moru.common.view_all_label",
+      "default": "t:moru.common.view_all_default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_new_badge",
+      "label": "t:moru.product_grid.show_new_badge_label",
+      "info": "t:moru.product_grid.show_new_badge_info",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subtitle",
+      "label": "t:moru.product_grid.show_subtitle_label",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "bottom_button_label",
+      "label": "t:moru.product_grid.bottom_button_label_label",
+      "info": "t:moru.product_grid.bottom_button_label_info"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.product_grid.name"
+    }
+  ]
+}
+{% endschema %}

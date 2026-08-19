@@ -14,8 +14,10 @@
       "settings": {}
     },
     "new_arrivals": {
-      "type": "moru-product-carousel",
-      "settings": {}
+      "type": "moru-product-grid",
+      "settings": {
+        "show_new_badge": true
+      }
     },
     "shop_the_room": {
       "type": "moru-shop-the-room",
@@ -90,6 +92,15 @@
       ],
       "settings": {}
     },
+    "category_products": {
+      "type": "moru-product-grid",
+      "settings": {
+        "title": "",
+        "show_view_all": false,
+        "show_subtitle": true,
+        "bottom_button_label": "すべてのチェアを見る"
+      }
+    },
     "journal": {
       "type": "moru-journal",
       "settings": {}
@@ -120,6 +131,10 @@
         "ig_6": {
           "type": "image",
           "settings": {}
+        },
+        "ig_7": {
+          "type": "image",
+          "settings": {}
         }
       },
       "block_order": [
@@ -128,7 +143,8 @@
         "ig_3",
         "ig_4",
         "ig_5",
-        "ig_6"
+        "ig_6",
+        "ig_7"
       ],
       "settings": {}
     }
@@ -138,6 +154,7 @@
     "new_arrivals",
     "shop_the_room",
     "category_browser",
+    "category_products",
     "journal",
     "instagram"
   ]

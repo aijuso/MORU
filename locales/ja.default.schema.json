@@ -126,13 +126,21 @@
       "subtitle_default": "やわらかい時間が流れる、私の部屋。",
       "button_label_default": "フラワーラウンジを見る"
     },
-    "product_carousel": {
-      "name": "MORU 商品カルーセル",
+    "product_grid": {
+      "name": "MORU 商品グリッド",
       "title_default": "新着アイテム",
-      "products_to_show_label": "表示する商品数"
+      "title_info": "空にすると見出し行を非表示にします",
+      "products_to_show_label": "表示する商品数",
+      "show_view_all_label": "「すべて見る」リンクを表示",
+      "show_new_badge_label": "NEWバッジを表示",
+      "show_new_badge_info": "公開から30日以内の商品に表示します",
+      "show_subtitle_label": "サブタイトル(商品タイプ)を表示",
+      "bottom_button_label_label": "下部ボタンのラベル",
+      "bottom_button_label_info": "空にすると非表示。リンク先は選択したコレクションです"
     },
     "shop_the_room": {
       "name": "MORU 部屋で見る",
+      "title_default": "部屋で見る",
       "image_label": "部屋の写真",
       "room_label_label": "ルーム名",
       "room_label_default": "MORU LIVING ROOM",
@@ -147,7 +155,7 @@
     "category_browser": {
       "name": "MORU カテゴリーから探す",
       "title_default": "カテゴリーから探す",
-      "wireframe_info": "ワイヤーフレーム段階では最初のカテゴリの商品を表示します(タブ切替は後続実装)。",
+      "view_all_link_label": "「すべて見る」のリンク先",
       "block_category_name": "カテゴリ",
       "block_label_label": "ラベル",
       "block_image_label": "サムネイル画像"

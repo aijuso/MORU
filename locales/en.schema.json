@@ -126,13 +126,21 @@
       "subtitle_default": "A soft hour drifting through my room.",
       "button_label_default": "View the Flower Lounge"
     },
-    "product_carousel": {
-      "name": "MORU product carousel",
+    "product_grid": {
+      "name": "MORU product grid",
       "title_default": "New arrivals",
-      "products_to_show_label": "Products to show"
+      "title_info": "Leave blank to hide the heading row",
+      "products_to_show_label": "Products to show",
+      "show_view_all_label": "Show \"View all\" link",
+      "show_new_badge_label": "Show NEW badge",
+      "show_new_badge_info": "Shown on products published within the last 30 days",
+      "show_subtitle_label": "Show subtitle (product type)",
+      "bottom_button_label_label": "Bottom button label",
+      "bottom_button_label_info": "Leave blank to hide. Links to the selected collection"
     },
     "shop_the_room": {
       "name": "MORU shop the room",
+      "title_default": "Shop the room",
       "image_label": "Room photo",
       "room_label_label": "Room name",
       "room_label_default": "MORU LIVING ROOM",
@@ -147,7 +155,7 @@
     "category_browser": {
       "name": "MORU category browser",
       "title_default": "Shop by category",
-      "wireframe_info": "The wireframe stage shows products from the first category (tab switching comes later).",
+      "view_all_link_label": "\"View all\" link URL",
       "block_category_name": "Category",
       "block_label_label": "Label",
       "block_image_label": "Thumbnail image"
