@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
+    "theme_name": "MORU LIVING",
     "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_author": "MORU LIVING",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -16,9 +16,17 @@
       },
       {
         "type": "font_picker",
-        "id": "type_primary_font",
-        "default": "work_sans_n4",
-        "label": "t:general.primary"
+        "id": "type_heading_font",
+        "default": "dm_serif_display_n4",
+        "label": "t:labels.heading_font",
+        "info": "t:info.heading_font"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "noto_sans_japanese_n4",
+        "label": "t:labels.body_font",
+        "info": "t:info.body_font"
       }
     ]
   },
@@ -57,16 +65,69 @@
     "name": "t:general.colors",
     "settings": [
       {
+        "type": "header",
+        "content": "t:labels.base_colors"
+      },
+      {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
-        "label": "t:labels.background"
+        "default": "#F4EEE5",
+        "label": "t:labels.background",
+        "info": "t:info.background"
+      },
+      {
+        "type": "color",
+        "id": "background_alt_color",
+        "default": "#E8DDCD",
+        "label": "t:labels.background_alt",
+        "info": "t:info.background_alt"
+      },
+      {
+        "type": "color",
+        "id": "wood_color",
+        "default": "#C69A6A",
+        "label": "t:labels.wood",
+        "info": "t:info.wood"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
-        "label": "t:labels.foreground"
+        "default": "#2C2926",
+        "label": "t:labels.foreground",
+        "info": "t:info.foreground"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.accent_colors",
+        "info": "t:info.accent_colors"
+      },
+      {
+        "type": "color",
+        "id": "accent_olive_color",
+        "default": "#777A52",
+        "label": "t:labels.accent_olive"
+      },
+      {
+        "type": "color",
+        "id": "accent_terracotta_color",
+        "default": "#C9653D",
+        "label": "t:labels.accent_terracotta"
+      },
+      {
+        "type": "color",
+        "id": "accent_blue_color",
+        "default": "#71899A",
+        "label": "t:labels.accent_blue"
+      },
+      {
+        "type": "color",
+        "id": "accent_burgundy_color",
+        "default": "#713C3D",
+        "label": "t:labels.accent_burgundy"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.shape"
       },
       {
         "type": "range",
@@ -76,7 +137,17 @@
         "step": 1,
         "unit": "px",
         "label": "t:labels.input_corner_radius",
-        "default": 4
+        "default": 6
+      },
+      {
+        "type": "range",
+        "id": "card_corner_radius",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "unit": "px",
+        "label": "t:labels.card_corner_radius",
+        "default": 8
       }
     ]
   }

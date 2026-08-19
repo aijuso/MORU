@@ -35,20 +35,41 @@
   },
   "labels": {
     "alignment": "Alignment",
-    "background": "Background",
-    "foreground": "Foreground",
+    "accent_colors": "Accent colors",
+    "accent_blue": "Accent: Dusty Blue",
+    "accent_burgundy": "Accent: Burgundy",
+    "accent_olive": "Accent: Olive",
+    "accent_terracotta": "Accent: Terracotta",
+    "background": "Background (Warm Ivory)",
+    "background_alt": "Alternate background (Soft Cream)",
+    "base_colors": "Base colors",
+    "body_font": "Body font",
+    "card_corner_radius": "Card corner radius",
+    "customer_account_menu": "Customer account menu",
+    "foreground": "Text (Charcoal)",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
+    "heading_font": "Heading font",
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
     "menu": "Menu",
-    "customer_account_menu": "Customer account menu",
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
+    "shape": "Corners",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+    "wood": "Wood accent (Natural Wood)"
+  },
+  "info": {
+    "accent_colors": "Use at most 1–2 accent colors per screen (docs/01).",
+    "background": "Page background",
+    "background_alt": "Alternate section and card background",
+    "body_font": "Japanese body and UI font. Recommended: Noto Sans Japanese / Zen Kaku Gothic New.",
+    "foreground": "Text, footer, and buttons",
+    "heading_font": "Editorial serif for headings. Recommended: DM Serif Display / Playfair Display / Cormorant.",
+    "wood": "Active rings and thin rule accents"
   },
   "options": {
     "alignment": {
@@ -72,6 +93,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }
