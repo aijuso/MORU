@@ -91,7 +91,22 @@
         "other": "残り{{ count }}点"
       },
       "wishlist": "お気に入りに追加",
+      "wishlist_added": "お気に入りに追加済み",
       "express_checkout": "エクスプレスチェックアウト",
+      "rating_pending": "レビュー準備中",
+      "remaining": {
+        "one": "(残り{{ count }}点)",
+        "other": "(残り{{ count }}点)"
+      },
+      "review_badge": "購入者",
+      "sample_color": "カラー",
+      "sample_color_1": "ウォールナット / クローム",
+      "sample_color_2": "ブラックステイン / ブラック",
+      "sample_color_3": "アイボリー / アイボリー",
+      "sample_size": "サイズ",
+      "sample_size_1": "W450",
+      "sample_size_2": "W600",
+      "sample_note": "※ バリエーション未登録のためサンプル表示です。商品にオプションを登録すると実際の選択肢に切り替わります。",
       "review_count": {
         "one": "({{ count }}件のレビュー)",
         "other": "({{ count }}件のレビュー)"
@@ -99,7 +114,10 @@
       "no_reviews": "レビューはまだありません。ご購入いただいたお客様のレビューのみを掲載します。"
     },
     "bundle": {
-      "total": "2点の合計"
+      "total": "2点の合計",
+      "discount_tag": "セットで {{ amount }} OFF（{{ percent }}%）",
+      "regular_price": "通常価格",
+      "set_price": "セット価格"
     },
     "placeholder": {
       "product_title": "商品名(サンプル)",
@@ -110,6 +128,8 @@
       "article_tag": "暮らしのヒント",
       "article_excerpt": "記事の抜粋テキストが入ります。ブログを選択すると実際の記事が表示されます。",
       "article_date": "----.--.--",
+      "review_title": "レビューのタイトルが入ります",
+      "review_body": "レビュー本文が入ります。実際にご購入いただいたお客様のレビューのみを掲載してください。",
       "select_collection": "コレクションを選択すると商品が表示されます",
       "select_product": "商品を選択すると、ここに表示されます",
       "select_blog": "ブログを選択すると記事が表示されます"

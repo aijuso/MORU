@@ -91,7 +91,22 @@
         "other": "{{ count }} left"
       },
       "wishlist": "Add to wishlist",
+      "wishlist_added": "Saved to wishlist",
       "express_checkout": "Express checkout",
+      "rating_pending": "Reviews coming soon",
+      "remaining": {
+        "one": "({{ count }} left)",
+        "other": "({{ count }} left)"
+      },
+      "review_badge": "Verified buyer",
+      "sample_color": "Color",
+      "sample_color_1": "Walnut / Chrome",
+      "sample_color_2": "Black stain / Black",
+      "sample_color_3": "Ivory / Ivory",
+      "sample_size": "Size",
+      "sample_size_1": "W450",
+      "sample_size_2": "W600",
+      "sample_note": "Sample options shown because this product has no variants yet. Add options to the product to show the real choices.",
       "review_count": {
         "one": "({{ count }} review)",
         "other": "({{ count }} reviews)"
@@ -99,7 +114,10 @@
       "no_reviews": "No reviews yet. Only reviews from verified buyers are published here."
     },
     "bundle": {
-      "total": "Total for 2 items"
+      "total": "Total for 2 items",
+      "discount_tag": "{{ amount }} off as a set ({{ percent }}%)",
+      "regular_price": "Regular price",
+      "set_price": "Set price"
     },
     "placeholder": {
       "product_title": "Sample product",
@@ -110,6 +128,8 @@
       "article_tag": "Living tips",
       "article_excerpt": "Sample excerpt text. Select a blog to display real articles.",
       "article_date": "----.--.--",
+      "review_title": "Review title goes here",
+      "review_body": "Review body goes here. Publish reviews from verified buyers only.",
       "select_collection": "Select a collection to display products",
       "select_product": "Select a product to display it here",
       "select_blog": "Select a blog to display articles"

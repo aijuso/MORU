@@ -1,10 +1,14 @@
 {% style %}
-  {% # Loads heading and body font variations with display: swap %}
+  {% # Loads display, heading and body font variations with display: swap %}
+  {{ settings.type_display_font | font_face: font_display: 'swap' }}
   {{ settings.type_heading_font | font_face: font_display: 'swap' }}
   {{ settings.type_body_font | font_face: font_display: 'swap' }}
   {{ settings.type_body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
 
   :root {
+    --font-display--family: {{ settings.type_display_font.family }}, {{ settings.type_display_font.fallback_families }};
+    --font-display--style: {{ settings.type_display_font.style }};
+    --font-display--weight: {{ settings.type_display_font.weight }};
     --font-heading--family: {{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }};
     --font-heading--style: {{ settings.type_heading_font.style }};
     --font-heading--weight: {{ settings.type_heading_font.weight }};

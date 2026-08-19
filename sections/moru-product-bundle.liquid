@@ -9,6 +9,14 @@
   if companion_variant != blank
     assign total = total | plus: companion_variant.price
   endif
+
+  assign discount_percent = section.settings.discount_percent
+  assign discount_amount = 0
+  if discount_percent > 0
+    assign discount_amount = total | times: discount_percent | divided_by: 100 | round
+  endif
+  assign bundle_price = total | minus: discount_amount
+  assign discount_display = discount_amount | money
 %}
 
 <div class="moru-bundle">
@@ -45,10 +53,23 @@
 
     <div class="moru-bundle__action">
       {% if companion != blank %}
-        <p class="moru-bundle__total">
-          <span class="moru-bundle__total-label">{{ 'moru.bundle.total' | t }}</span>
-          <span class="moru-bundle__total-value">{{ total | money }}</span>
-        </p>
+        {% if discount_amount > 0 %}
+          <p class="moru-bundle__discount">
+            {{ 'moru.bundle.discount_tag' | t: amount: discount_display, percent: discount_percent }}
+          </p>
+          <p class="moru-bundle__total">
+            <span class="moru-bundle__total-label">{{ 'moru.bundle.regular_price' | t }}</span>
+            <del>{{ total | money }}</del>
+            <span aria-hidden="true">&rarr;</span>
+            <span class="moru-bundle__total-label">{{ 'moru.bundle.set_price' | t }}</span>
+            <span class="moru-bundle__total-value">{{ bundle_price | money }}</span>
+          </p>
+        {% else %}
+          <p class="moru-bundle__total">
+            <span class="moru-bundle__total-label">{{ 'moru.bundle.total' | t }}</span>
+            <span class="moru-bundle__total-value">{{ total | money }}</span>
+          </p>
+        {% endif %}
         <moru-bundle-add>
           <button
             type="button"
@@ -146,12 +167,20 @@
     gap: var(--space-sm);
   }
 
-  .moru-bundle__total {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-xs);
+  .moru-bundle__discount {
     margin: 0;
     font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-bundle__total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    margin: 0;
+    font-size: var(--font-size-xs);
     color: var(--color-muted);
   }
 
@@ -235,6 +264,17 @@
       "id": "companion_product",
       "label": "t:moru.bundle.companion_label",
       "info": "t:moru.bundle.companion_info"
+    },
+    {
+      "type": "range",
+      "id": "discount_percent",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "t:moru.bundle.discount_percent_label",
+      "info": "t:moru.bundle.discount_percent_info",
+      "default": 0
     },
     {
       "type": "text",

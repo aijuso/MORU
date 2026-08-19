@@ -15,6 +15,9 @@
     {% endunless %}
 
     {% comment %} Preload the base variant of each font for initial page render {% endcomment %}
+    {% unless settings.type_display_font.system? %}
+      {{ settings.type_display_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {% endunless %}
     {% unless settings.type_heading_font.system? %}
       {{ settings.type_heading_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
     {% endunless %}

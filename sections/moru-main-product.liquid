@@ -1,6 +1,10 @@
 {% liquid
   assign current_variant = product.selected_or_first_available_variant
   assign swatch_names = section.settings.swatch_option_names | downcase | split: ','
+  assign has_real_options = false
+  if product != blank and product.has_only_default_variant == false
+    assign has_real_options = true
+  endif
 %}
 
 <div class="moru-product" data-moru-product data-section-id="{{ section.id }}">
@@ -11,7 +15,7 @@
         {% if collection %}
           <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
         {% endif %}
-        <li aria-current="page">{{ product.title }}</li>
+        <li aria-current="page">{%- if product != blank -%}{{ product.title }}{%- else -%}{{ 'moru.placeholder.product_title' | t }}{%- endif -%}</li>
       </ol>
     </nav>
   {% endif %}
@@ -40,39 +44,37 @@
               </div>
             {% endfor %}
           {% else %}
-            <div class="moru-product__slide is-active">
-              {{ 'product-1' | placeholder_svg_tag: 'moru-product__placeholder' }}
-            </div>
+            {% for i in (1..5) %}
+              <div class="moru-product__slide{% if forloop.first %} is-active{% endif %}" data-media-id="ph-{{ forloop.index }}">
+                {{ 'product-1' | placeholder_svg_tag: 'moru-product__placeholder' }}
+              </div>
+            {% endfor %}
           {% endif %}
         </div>
 
-        {% if product.media.size > 1 %}
-          <button type="button" class="moru-product__nav moru-product__nav--prev" data-gallery-prev aria-label="{{ 'moru.product.prev_image' | t }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button type="button" class="moru-product__nav moru-product__nav--next" data-gallery-next aria-label="{{ 'moru.product.next_image' | t }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        {% endif %}
+        <button type="button" class="moru-product__nav moru-product__nav--prev" data-gallery-prev aria-label="{{ 'moru.product.prev_image' | t }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button type="button" class="moru-product__nav moru-product__nav--next" data-gallery-next aria-label="{{ 'moru.product.next_image' | t }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
 
-        {% if product.media.size > 0 %}
-          <button type="button" class="moru-product__zoom" data-gallery-zoom aria-label="{{ 'moru.product.zoom' | t }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              <line x1="11" y1="8" x2="11" y2="14"></line>
-              <line x1="8" y1="11" x2="14" y2="11"></line>
-            </svg>
-          </button>
-        {% endif %}
+        <button type="button" class="moru-product__zoom" data-gallery-zoom aria-label="{{ 'moru.product.zoom' | t }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </button>
       </div>
 
-      {% if product.media.size > 1 %}
-        <ul class="moru-product__thumbs" role="list">
+      <ul class="moru-product__thumbs" role="list">
+        {% if product.media.size > 0 %}
           {% for media in product.media %}
             <li>
               <button
@@ -86,52 +88,80 @@
               </button>
             </li>
           {% endfor %}
-        </ul>
-      {% endif %}
+        {% else %}
+          {% for i in (1..5) %}
+            <li>
+              <button
+                type="button"
+                class="moru-product__thumb{% if forloop.first %} is-active{% endif %}"
+                data-gallery-thumb
+                data-media-id="ph-{{ forloop.index }}"
+                aria-label="{{ 'moru.product.thumbnail' | t: index: forloop.index }}"
+              >
+                {{ 'product-1' | placeholder_svg_tag }}
+              </button>
+            </li>
+          {% endfor %}
+        {% endif %}
+      </ul>
 
-      {% if product.media.size > 0 %}
-        <dialog class="moru-product__lightbox" data-gallery-dialog scroll-lock>
-          <button type="button" class="moru-product__lightbox-close" data-gallery-close aria-label="{{ 'moru.product.close' | t }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false">
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-            </svg>
-          </button>
-          <div class="moru-product__lightbox-media" data-gallery-dialog-media></div>
-        </dialog>
-      {% endif %}
+      <dialog class="moru-product__lightbox" data-gallery-dialog scroll-lock>
+        <button type="button" class="moru-product__lightbox-close" data-gallery-close aria-label="{{ 'moru.product.close' | t }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false">
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+          </svg>
+        </button>
+        <div class="moru-product__lightbox-media" data-gallery-dialog-media></div>
+      </dialog>
     </moru-product-gallery>
 
     <div class="moru-product__info">
-      <h1 class="moru-product__title">{{ product.title }}</h1>
+      <h1 class="moru-product__title">{%- if product != blank -%}{{ product.title }}{%- else -%}{{ 'moru.placeholder.product_title' | t }}{%- endif -%}</h1>
 
       <p class="moru-product__subtitle" data-moru-variant-subtitle>
-        {%- if product.has_only_default_variant -%}
-          {{ section.settings.subtitle }}
-        {%- else -%}
+        {%- if has_real_options -%}
           {{ current_variant.title }}
+        {%- else -%}
+          {{ section.settings.subtitle }}
         {%- endif -%}
       </p>
 
-      {% if section.settings.show_rating and product.metafields.reviews.rating.value != blank %}
+      {% if section.settings.show_rating %}
         {% liquid
-          assign rating = product.metafields.reviews.rating.value.rating
+          assign rating_value = product.metafields.reviews.rating.value
           assign rating_count = product.metafields.reviews.rating_count.value | default: 0
-          assign rating_rounded = rating | round
         %}
         <div class="moru-product__rating">
-          <span class="moru-rating-stars" aria-hidden="true">
-            {%- for i in (1..5) -%}
-              {%- if i <= rating_rounded -%}★{%- else -%}☆{%- endif -%}
-            {%- endfor -%}
-          </span>
-          <strong>{{ rating }}</strong>
-          <span class="moru-product__rating-count">{{ 'moru.product.review_count' | t: count: rating_count }}</span>
+          {% if rating_value != blank %}
+            {% assign rating_rounded = rating_value.rating | round %}
+            <span class="moru-rating-stars" aria-hidden="true">
+              {%- for i in (1..5) -%}
+                {%- if i <= rating_rounded -%}★{%- else -%}☆{%- endif -%}
+              {%- endfor -%}
+            </span>
+            <strong>{{ rating_value.rating }}</strong>
+            <span class="moru-product__rating-count">{{ 'moru.product.review_count' | t: count: rating_count }}</span>
+          {% else %}
+            <span class="moru-rating-stars moru-rating-stars--empty" aria-hidden="true">☆☆☆☆☆</span>
+            <span class="moru-product__rating-count">{{ 'moru.product.rating_pending' | t }}</span>
+          {% endif %}
         </div>
       {% endif %}
 
       <div class="moru-product__price-row">
-        <span class="moru-product__price" data-moru-price>{{ current_variant.price | money }}</span>
+        <span class="moru-product__price" data-moru-price>
+          {%- if product != blank -%}
+            {{ current_variant.price | money }}
+          {%- else -%}
+            {{ 'moru.placeholder.price' | t }}
+          {%- endif -%}
+        </span>
+        {% if current_variant.compare_at_price > current_variant.price %}
+          <s class="moru-product__compare" data-moru-compare>{{ current_variant.compare_at_price | money }}</s>
+        {% else %}
+          <s class="moru-product__compare" data-moru-compare hidden></s>
+        {% endif %}
         {% if section.settings.tax_note != blank %}
           <span class="moru-product__tax-note">{{ section.settings.tax_note }}</span>
         {% endif %}
@@ -144,7 +174,7 @@
       {% form 'product', product, class: 'moru-product__form', novalidate: 'novalidate' %}
         <input type="hidden" name="id" value="{{ current_variant.id }}" data-moru-variant-id>
 
-        {% unless product.has_only_default_variant %}
+        {% if has_real_options %}
           <moru-variant-picker class="moru-product__options" data-url="{{ product.url }}">
             {% for option in product.options_with_values %}
               {% liquid
@@ -160,9 +190,11 @@
               <fieldset class="moru-option{% if is_swatch %} moru-option--swatch{% endif %}">
                 <legend class="moru-option__label">
                   {{ option.name }}
-                  <span class="moru-option__value" data-moru-option-value="{{ option.position }}">
-                    {{- option.selected_value -}}
-                  </span>
+                  {% if is_swatch %}
+                    <span class="moru-option__value" data-moru-option-value="{{ option.position }}">
+                      {{- option.selected_value -}}
+                    </span>
+                  {% endif %}
                 </legend>
 
                 <div class="moru-option__list">
@@ -204,7 +236,97 @@
               {{ product.variants | json }}
             </script>
           </moru-variant-picker>
-        {% endunless %}
+        {% elsif section.settings.show_sample_options %}
+          <div class="moru-product__options moru-product__options--sample">
+            <fieldset class="moru-option moru-option--swatch">
+              <legend class="moru-option__label">
+                {{ 'moru.product.sample_color' | t }}
+                <span class="moru-option__value">{{ 'moru.product.sample_color_1' | t }}</span>
+              </legend>
+              <div class="moru-option__list">
+                {% for i in (1..3) %}
+                  {% liquid
+                    assign sample_id = section.id | append: '-sample-color-' | append: forloop.index
+                    assign sample_name = 'moru.product.sample_color_' | append: forloop.index
+                  %}
+                  <input
+                    type="radio"
+                    class="moru-option__input"
+                    id="{{ sample_id }}"
+                    name="{{ section.id }}-sample-color"
+                    {% if forloop.first %}checked{% endif %}
+                  >
+                  <label class="moru-option__item" for="{{ sample_id }}">
+                    <span class="moru-option__swatch moru-option__swatch--sample-{{ forloop.index }}"></span>
+                    <span class="moru-option__swatch-name">{{ sample_name | t }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+
+            <fieldset class="moru-option">
+              <legend class="moru-option__label">{{ 'moru.product.sample_size' | t }}</legend>
+              <div class="moru-option__list">
+                {% for i in (1..2) %}
+                  {% liquid
+                    assign sample_id = section.id | append: '-sample-size-' | append: forloop.index
+                    assign sample_name = 'moru.product.sample_size_' | append: forloop.index
+                  %}
+                  <input
+                    type="radio"
+                    class="moru-option__input"
+                    id="{{ sample_id }}"
+                    name="{{ section.id }}-sample-size"
+                    {% if forloop.first %}checked{% endif %}
+                  >
+                  <label class="moru-option__item" for="{{ sample_id }}">
+                    <span class="moru-option__pill">{{ sample_name | t }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+
+            <p class="moru-product__sample-note">{{ 'moru.product.sample_note' | t }}</p>
+          </div>
+        {% endif %}
+
+        {%- capture inventory_json -%}
+          {
+          {%- for variant in product.variants -%}
+            "{{ variant.id }}": {{ variant.inventory_quantity | default: 0 }}{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+          }
+        {%- endcapture -%}
+
+        {%- liquid
+          assign stock_mode = section.settings.stock_display
+          assign low_threshold = section.settings.low_stock_threshold
+          assign sold_out_text = 'moru.product.sold_out' | t
+          assign stock_label = ''
+
+          assign remaining_text = ''
+          assign tracked_quantity = 0
+          if current_variant.inventory_management != blank
+            assign tracked_quantity = current_variant.inventory_quantity
+          endif
+          if tracked_quantity > 0
+            assign remaining_text = 'moru.product.remaining' | t: count: tracked_quantity
+          endif
+
+          if product == blank
+            unless stock_mode == 'hidden'
+              assign stock_label = section.settings.low_stock_text
+            endunless
+          elsif current_variant.available == false
+            assign stock_label = sold_out_text
+          elsif stock_mode == 'always'
+            assign stock_label = section.settings.low_stock_text | append: ' ' | append: remaining_text | strip
+          elsif stock_mode == 'inventory'
+            if tracked_quantity > 0 and tracked_quantity <= low_threshold
+              assign stock_label = section.settings.low_stock_text | append: ' ' | append: remaining_text | strip
+            endif
+          endif
+        -%}
 
         <div class="moru-product__qty-row">
           <div class="moru-product__qty">
@@ -224,39 +346,16 @@
             </moru-quantity>
           </div>
 
-          {%- capture inventory_json -%}
-            {
-            {%- for variant in product.variants -%}
-              "{{ variant.id }}": {{ variant.inventory_quantity | default: 0 }}{% unless forloop.last %},{% endunless %}
-            {%- endfor -%}
-            }
-          {%- endcapture -%}
           <span
             class="moru-product__stock"
             data-moru-stock
+            data-mode="{{ stock_mode }}"
             data-inventory="{{ inventory_json | strip | escape }}"
-            data-threshold="{{ section.settings.low_stock_threshold }}"
+            data-threshold="{{ low_threshold }}"
+            data-label="{{ section.settings.low_stock_text | escape }}"
+            data-remaining="{{ 'moru.product.remaining' | t: count: '__COUNT__' | escape }}"
             data-sold-out="{{ 'moru.product.sold_out' | t | escape }}"
-            data-low-stock="{{ 'moru.product.low_stock' | t: count: '__COUNT__' | escape }}"
-          >
-            {%- liquid
-              assign low_threshold = section.settings.low_stock_threshold
-              assign stock_state = ''
-              unless current_variant.available
-                assign stock_state = 'soldout'
-              endunless
-              if current_variant.available and current_variant.inventory_management != blank and current_variant.inventory_policy == 'deny'
-                if current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= low_threshold
-                  assign stock_state = 'low'
-                endif
-              endif
-            -%}
-            {%- if stock_state == 'soldout' -%}
-              {{ 'moru.product.sold_out' | t }}
-            {%- elsif stock_state == 'low' -%}
-              {{ 'moru.product.low_stock' | t: count: current_variant.inventory_quantity }}
-            {%- endif -%}
-          </span>
+          >{{ stock_label }}</span>
         </div>
 
         <div class="moru-product__actions">
@@ -265,7 +364,7 @@
             name="add"
             class="moru-product__add"
             data-moru-add-button
-            {% unless current_variant.available %}disabled{% endunless %}
+            {% if product != blank and current_variant.available == false %}disabled{% endif %}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
@@ -277,20 +376,24 @@
               data-available="{{ 'moru.product.add_to_cart' | t | escape }}"
               data-sold-out="{{ 'moru.product.sold_out' | t | escape }}"
             >
-              {%- if current_variant.available -%}
-                {{ 'moru.product.add_to_cart' | t }}
-              {%- else -%}
+              {%- if product != blank and current_variant.available == false -%}
                 {{ 'moru.product.sold_out' | t }}
+              {%- else -%}
+                {{ 'moru.product.add_to_cart' | t }}
               {%- endif -%}
             </span>
           </button>
 
           {% if section.settings.show_wishlist %}
-            <button type="button" class="moru-product__wishlist" data-moru-wishlist>
+            <button type="button" class="moru-product__wishlist" data-moru-wishlist aria-pressed="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
               </svg>
-              {{ 'moru.product.wishlist' | t }}
+              <span
+                data-moru-wishlist-label
+                data-add="{{ 'moru.product.wishlist' | t | escape }}"
+                data-added="{{ 'moru.product.wishlist_added' | t | escape }}"
+              >{{ 'moru.product.wishlist' | t }}</span>
             </button>
           {% endif %}
         </div>
@@ -304,23 +407,6 @@
           </div>
         {% endif %}
       {% endform %}
-
-      {% if section.settings.delivery_title != blank %}
-        <div class="moru-product__delivery">
-          <div class="moru-product__delivery-head">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <rect x="1" y="4" width="14" height="12" rx="1"></rect>
-              <path d="M15 9h4l3 3v4h-7V9Z"></path>
-              <circle cx="5.5" cy="18.5" r="2"></circle>
-              <circle cx="18.5" cy="18.5" r="2"></circle>
-            </svg>
-            <span class="moru-product__delivery-title">{{ section.settings.delivery_title }}</span>
-          </div>
-          {% if section.settings.delivery_text != blank %}
-            <p class="moru-product__delivery-text">{{ section.settings.delivery_text | newline_to_br }}</p>
-          {% endif %}
-        </div>
-      {% endif %}
     </div>
   </div>
 
@@ -365,11 +451,50 @@
       {% endfor %}
     </ul>
   {% endif %}
+
+  {% if section.settings.delivery_title != blank %}
+    <div class="moru-delivery">
+      <div class="moru-delivery__info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <rect x="1" y="4" width="14" height="12" rx="1"></rect>
+          <path d="M15 9h4l3 3v4h-7V9Z"></path>
+          <circle cx="5.5" cy="18.5" r="2"></circle>
+          <circle cx="18.5" cy="18.5" r="2"></circle>
+        </svg>
+        <span class="moru-delivery__title">{{ section.settings.delivery_title }}</span>
+        <span class="moru-delivery__dates">
+          {% if section.settings.delivery_main != blank %}
+            <span class="moru-delivery__main">{{ section.settings.delivery_main }}</span>
+          {% endif %}
+          {% if section.settings.delivery_sub != blank %}
+            <span class="moru-delivery__sub">{{ section.settings.delivery_sub }}</span>
+          {% endif %}
+        </span>
+      </div>
+
+      {% if section.settings.zip_label != blank %}
+        <a class="moru-delivery__zip" href="{{ section.settings.zip_link | default: '#' }}">
+          {{ section.settings.zip_label }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
 </div>
 
 {% stylesheet %}
   .moru-product {
-    padding-block: var(--space-md) var(--space-2xl);
+    padding-block: var(--space-sm) var(--space-xl);
+  }
+
+  .moru-product h1,
+  .moru-product h2,
+  .moru-product h3 {
+    font-family: var(--font-body--family);
+    letter-spacing: 0.04em;
   }
 
   .moru-breadcrumbs {
@@ -421,7 +546,7 @@
     position: relative;
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    border-radius: var(--radius-card);
+    border-radius: 2px;
     background-color: var(--color-bg-alt);
   }
 
@@ -459,6 +584,7 @@
     background-color: color-mix(in srgb, var(--color-bg-alt) 92%, transparent);
     color: var(--color-text);
     font-size: var(--font-size-xs);
+    font-weight: 500;
     letter-spacing: 0.05em;
   }
 
@@ -470,11 +596,11 @@
     place-items: center;
     border: none;
     border-radius: 50%;
-    background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
-    color: var(--color-text);
+    background-color: color-mix(in srgb, var(--color-surface) 85%, transparent);
+    color: var(--color-muted);
     box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
     cursor: pointer;
-    transition: background-color 200ms ease, transform 200ms ease;
+    transition: background-color 200ms ease, color 200ms ease;
   }
 
   .moru-product__nav {
@@ -487,6 +613,7 @@
   .moru-product__nav:hover,
   .moru-product__zoom:hover {
     background-color: var(--color-surface);
+    color: var(--color-text);
   }
 
   .moru-product__nav--prev {
@@ -526,14 +653,15 @@
     padding: 0;
     overflow: hidden;
     border: 1px solid transparent;
-    border-radius: var(--style-border-radius-inputs);
+    border-radius: 2px;
     background-color: var(--color-bg-alt);
     opacity: 0.75;
     cursor: pointer;
     transition: opacity 200ms ease, border-color 200ms ease;
   }
 
-  .moru-product__thumb img {
+  .moru-product__thumb img,
+  .moru-product__thumb svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -551,14 +679,15 @@
     padding: 0;
     border: none;
     border-radius: var(--radius-card);
-    background-color: var(--color-bg);
+    background-color: var(--color-surface);
   }
 
   .moru-product__lightbox::backdrop {
     background-color: rgb(0 0 0 / 0.6);
   }
 
-  .moru-product__lightbox-media img {
+  .moru-product__lightbox-media img,
+  .moru-product__lightbox-media svg {
     width: 100%;
     height: auto;
   }
@@ -576,6 +705,7 @@
     border-radius: 50%;
     background-color: var(--color-surface);
     color: var(--color-text);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
     cursor: pointer;
   }
 
@@ -593,8 +723,8 @@
   .moru-product__title {
     margin: 0 0 var(--space-2xs);
     font-size: var(--font-size-xl);
+    font-weight: 500;
     line-height: 1.35;
-    letter-spacing: 0.04em;
   }
 
   .moru-product__subtitle {
@@ -611,11 +741,6 @@
     font-size: var(--font-size-sm);
   }
 
-  .moru-rating-stars {
-    letter-spacing: 2px;
-    color: var(--color-text);
-  }
-
   .moru-product__rating-count {
     color: var(--color-muted);
   }
@@ -624,12 +749,21 @@
     display: flex;
     align-items: baseline;
     gap: var(--space-xs);
-    margin-block-end: var(--space-sm);
+    margin-block-end: var(--space-md);
   }
 
   .moru-product__price {
     font-size: var(--font-size-xl);
     font-weight: 600;
+  }
+
+  .moru-product__compare {
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+  }
+
+  .moru-product__compare[hidden] {
+    display: none;
   }
 
   .moru-product__tax-note {
@@ -666,6 +800,10 @@
     font-weight: 500;
   }
 
+  .moru-option__label::after {
+    content: '';
+  }
+
   .moru-option__value {
     font-weight: 400;
     color: var(--color-muted);
@@ -674,7 +812,7 @@
   .moru-option__list {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-md);
+    gap: var(--space-sm);
   }
 
   .moru-option--swatch .moru-option__list {
@@ -697,22 +835,37 @@
     cursor: pointer;
   }
 
+  .moru-option:not(.moru-option--swatch) .moru-option__item {
+    flex: 1;
+  }
+
   .moru-option__swatch {
     position: relative;
     display: block;
     width: 2.125rem;
     height: 2.125rem;
-    overflow: hidden;
     border-radius: 50%;
     background-color: var(--swatch-color, var(--color-bg-alt));
     box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
-    transition: transform 200ms ease;
   }
 
   .moru-option__swatch img {
     width: 100%;
     height: 100%;
+    border-radius: 50%;
     object-fit: cover;
+  }
+
+  .moru-option__swatch--sample-1 {
+    background: linear-gradient(135deg, var(--color-wood) 0%, var(--color-accent-burgundy) 100%);
+  }
+
+  .moru-option__swatch--sample-2 {
+    background-color: var(--color-text);
+  }
+
+  .moru-option__swatch--sample-3 {
+    background-color: var(--color-bg-alt);
   }
 
   .moru-option__input:checked + .moru-option__item .moru-option__swatch::after {
@@ -721,10 +874,6 @@
     inset: -4px;
     border: 1.5px solid var(--color-text);
     border-radius: 50%;
-  }
-
-  .moru-option__input:checked + .moru-option__item .moru-option__swatch {
-    overflow: visible;
   }
 
   .moru-option__swatch-name {
@@ -737,10 +886,9 @@
 
   .moru-option__pill {
     display: block;
-    min-width: 5rem;
     padding: var(--space-xs) var(--space-md);
     border: 1px solid var(--color-border);
-    border-radius: var(--style-border-radius-inputs);
+    border-radius: 2px;
     background-color: var(--color-surface);
     font-size: var(--font-size-sm);
     text-align: center;
@@ -759,6 +907,12 @@
   .moru-option__input:focus-visible + .moru-option__item {
     outline: 2px solid var(--color-accent-terracotta);
     outline-offset: 3px;
+  }
+
+  .moru-product__sample-note {
+    margin: calc(var(--space-md) * -1) 0 var(--space-md);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
   }
 
   /* Quantity + stock */
@@ -786,7 +940,7 @@
     align-items: center;
     overflow: hidden;
     border: 1px solid var(--color-border);
-    border-radius: var(--style-border-radius-inputs);
+    border-radius: 2px;
     background-color: var(--color-surface);
   }
 
@@ -808,11 +962,12 @@
   }
 
   .moru-product__stepper input {
-    width: 2.5rem;
+    width: 2.25rem;
     border: none;
     background: transparent;
     text-align: center;
     font-size: var(--font-size-sm);
+    font-weight: 500;
     -moz-appearance: textfield;
   }
 
@@ -843,9 +998,9 @@
     gap: var(--space-xs);
     height: 3rem;
     border: 1px solid var(--color-text);
-    border-radius: var(--style-border-radius-inputs);
+    border-radius: 2px;
     background-color: var(--color-text);
-    color: var(--color-bg);
+    color: var(--color-surface);
     font-family: inherit;
     font-size: var(--font-size-sm);
     font-weight: 500;
@@ -875,7 +1030,7 @@
     gap: var(--space-xs);
     height: 2.75rem;
     border: 1px solid var(--color-border);
-    border-radius: var(--style-border-radius-inputs);
+    border-radius: 2px;
     background-color: var(--color-surface);
     color: var(--color-text);
     font-family: inherit;
@@ -921,47 +1076,16 @@
     padding-inline: var(--space-sm);
   }
 
-  /* Delivery */
-  .moru-product__delivery {
-    margin-block-start: var(--space-md);
-    padding: var(--space-md);
-    border-radius: var(--radius-card);
-    background-color: var(--color-bg-alt);
-  }
-
-  .moru-product__delivery-head {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-  }
-
-  .moru-product__delivery-head svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .moru-product__delivery-title {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-  }
-
-  .moru-product__delivery-text {
-    margin: var(--space-xs) 0 0;
-    font-size: var(--font-size-xs);
-    line-height: 1.7;
-    color: var(--color-muted);
-  }
-
   /* Trust badges */
   .moru-product__trust {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--space-md);
-    margin: 0;
+    margin: 0 0 var(--space-md);
     padding: var(--space-md);
     list-style: none;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
+    border-radius: 4px;
     background-color: var(--color-bg-alt);
   }
 
@@ -993,6 +1117,67 @@
     color: var(--color-muted);
   }
 
+  /* Delivery bar */
+  .moru-delivery {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+  }
+
+  .moru-delivery__info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .moru-delivery__info svg {
+    flex-shrink: 0;
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+
+  .moru-delivery__title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .moru-delivery__dates {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-xs);
+  }
+
+  .moru-delivery__main {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+  }
+
+  .moru-delivery__sub {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-delivery__zip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    flex-shrink: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+
+  .moru-delivery__zip svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
   @media (max-width: 989px) {
     .moru-product__main {
       grid-template-columns: 1fr;
@@ -1002,11 +1187,20 @@
     .moru-product__trust {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    .moru-delivery {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   @media (max-width: 599px) {
     .moru-product__trust {
       grid-template-columns: 1fr;
+    }
+
+    .moru-delivery__info {
+      flex-wrap: wrap;
     }
   }
 {% endstylesheet %}
@@ -1035,8 +1229,8 @@
       const close = this.querySelector('[data-gallery-close]');
       if (close && this.dialog) close.addEventListener('click', () => this.dialog.close());
       if (this.dialog) {
-        this.dialog.addEventListener('click', (e) => {
-          if (e.target === this.dialog) this.dialog.close();
+        this.dialog.addEventListener('click', (event) => {
+          if (event.target === this.dialog) this.dialog.close();
         });
       }
     }
@@ -1056,10 +1250,10 @@
 
     openZoom() {
       const active = this.slides[this.index];
-      const img = active && active.querySelector('img');
-      if (!img) return;
+      const media = active && active.querySelector('img, svg');
+      if (!media) return;
       this.dialogMedia.innerHTML = '';
-      const clone = img.cloneNode(true);
+      const clone = media.cloneNode(true);
       clone.removeAttribute('sizes');
       clone.removeAttribute('loading');
       this.dialogMedia.appendChild(clone);
@@ -1095,6 +1289,13 @@
       return Array.from(this.querySelectorAll('input[type="radio"]:checked')).map((input) => input.value);
     }
 
+    formatMoney(cents) {
+      if (window.Shopify && typeof window.Shopify.formatMoney === 'function') {
+        return window.Shopify.formatMoney(cents);
+      }
+      return '¥' + Math.round(cents / 100).toLocaleString('ja-JP');
+    }
+
     onChange() {
       const values = this.selectedValues;
       const variant = this.variants.find((candidate) =>
@@ -1108,6 +1309,7 @@
 
       const idInput = this.product.querySelector('[data-moru-variant-id]');
       const priceEl = this.product.querySelector('[data-moru-price]');
+      const compareEl = this.product.querySelector('[data-moru-compare]');
       const subtitleEl = this.product.querySelector('[data-moru-variant-subtitle]');
       const addButton = this.product.querySelector('[data-moru-add-button]');
       const addLabel = this.product.querySelector('[data-moru-add-label]');
@@ -1116,33 +1318,52 @@
 
       if (!variant) {
         if (addButton) addButton.disabled = true;
-        if (addLabel) addLabel.textContent = addLabel.dataset.soldOut || addLabel.textContent;
+        if (addLabel) addLabel.textContent = addLabel.dataset.soldOut;
         return;
       }
 
       if (idInput) idInput.value = variant.id;
       if (subtitleEl) subtitleEl.textContent = variant.title;
-      if (priceEl && window.Shopify && window.Shopify.formatMoney) {
-        priceEl.textContent = window.Shopify.formatMoney(variant.price);
-      } else if (priceEl && variant.price != null) {
-        priceEl.textContent = '¥' + Math.round(variant.price / 100).toLocaleString('ja-JP');
+      if (priceEl) priceEl.textContent = this.formatMoney(variant.price);
+
+      if (compareEl) {
+        if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+          compareEl.textContent = this.formatMoney(variant.compare_at_price);
+          compareEl.hidden = false;
+        } else {
+          compareEl.hidden = true;
+        }
       }
 
       if (addButton) addButton.disabled = !variant.available;
       if (addLabel) {
-        addLabel.textContent = variant.available
-          ? addLabel.dataset.available || addLabel.textContent
-          : addLabel.dataset.soldOut || addLabel.textContent;
+        addLabel.textContent = variant.available ? addLabel.dataset.available : addLabel.dataset.soldOut;
       }
 
       if (stockEl) {
-        const inventory = stockEl.dataset.inventory ? JSON.parse(stockEl.dataset.inventory) : {};
+        const mode = stockEl.dataset.mode;
+        let inventory = {};
+        try {
+          inventory = JSON.parse(stockEl.dataset.inventory);
+        } catch (error) {
+          inventory = {};
+        }
         const threshold = parseInt(stockEl.dataset.threshold, 10) || 0;
         const remaining = inventory[variant.id];
+        const label = stockEl.dataset.label || '';
+        const remainingText =
+          typeof remaining === 'number' && remaining > 0
+            ? (stockEl.dataset.remaining || '').replace('__COUNT__', remaining)
+            : '';
+
         if (!variant.available) {
           stockEl.textContent = stockEl.dataset.soldOut || '';
+        } else if (mode === 'hidden') {
+          stockEl.textContent = '';
+        } else if (mode === 'always') {
+          stockEl.textContent = (label + ' ' + remainingText).trim();
         } else if (typeof remaining === 'number' && remaining > 0 && remaining <= threshold) {
-          stockEl.textContent = (stockEl.dataset.lowStock || '').replace('__COUNT__', remaining);
+          stockEl.textContent = (label + ' ' + remainingText).trim();
         } else {
           stockEl.textContent = '';
         }
@@ -1175,6 +1396,8 @@
     if (!button) return;
     const pressed = button.getAttribute('aria-pressed') === 'true';
     button.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+    const label = button.querySelector('[data-moru-wishlist-label]');
+    if (label) label.textContent = pressed ? label.dataset.add : label.dataset.added;
   });
 {% endjavascript %}
 
@@ -1192,13 +1415,15 @@
       "type": "text",
       "id": "badge_text",
       "label": "t:moru.main_product.badge_text_label",
-      "info": "t:moru.main_product.badge_text_info"
+      "info": "t:moru.main_product.badge_text_info",
+      "default": "t:moru.main_product.badge_text_default"
     },
     {
       "type": "text",
       "id": "subtitle",
       "label": "t:moru.main_product.subtitle_label",
-      "info": "t:moru.main_product.subtitle_info"
+      "info": "t:moru.main_product.subtitle_info",
+      "default": "t:moru.main_product.subtitle_default"
     },
     {
       "type": "checkbox",
@@ -1217,7 +1442,12 @@
       "type": "textarea",
       "id": "short_description",
       "label": "t:moru.main_product.short_description_label",
-      "info": "t:moru.main_product.short_description_info"
+      "info": "t:moru.main_product.short_description_info",
+      "default": "t:moru.main_product.short_description_default"
+    },
+    {
+      "type": "header",
+      "content": "t:moru.main_product.options_header"
     },
     {
       "type": "text",
@@ -1227,9 +1457,46 @@
       "default": "t:moru.main_product.swatch_option_names_default"
     },
     {
+      "type": "checkbox",
+      "id": "show_sample_options",
+      "label": "t:moru.main_product.show_sample_options_label",
+      "info": "t:moru.main_product.show_sample_options_info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:moru.main_product.stock_header"
+    },
+    {
+      "type": "select",
+      "id": "stock_display",
+      "label": "t:moru.main_product.stock_display_label",
+      "options": [
+        {
+          "value": "inventory",
+          "label": "t:moru.main_product.stock_inventory"
+        },
+        {
+          "value": "always",
+          "label": "t:moru.main_product.stock_always"
+        },
+        {
+          "value": "hidden",
+          "label": "t:moru.main_product.stock_hidden"
+        }
+      ],
+      "default": "inventory"
+    },
+    {
+      "type": "text",
+      "id": "low_stock_text",
+      "label": "t:moru.main_product.low_stock_text_label",
+      "default": "t:moru.main_product.low_stock_text_default"
+    },
+    {
       "type": "range",
       "id": "low_stock_threshold",
-      "min": 0,
+      "min": 1,
       "max": 20,
       "step": 1,
       "label": "t:moru.main_product.low_stock_threshold_label",
@@ -1237,16 +1504,21 @@
       "default": 5
     },
     {
+      "type": "header",
+      "content": "t:moru.main_product.actions_header"
+    },
+    {
       "type": "checkbox",
       "id": "show_wishlist",
       "label": "t:moru.main_product.show_wishlist_label",
       "info": "t:moru.main_product.show_wishlist_info",
-      "default": false
+      "default": true
     },
     {
       "type": "checkbox",
       "id": "show_express_checkout",
       "label": "t:moru.main_product.show_express_checkout_label",
+      "info": "t:moru.main_product.show_express_checkout_info",
       "default": true
     },
     {
@@ -1260,11 +1532,27 @@
       "default": "t:moru.main_product.delivery_title_default"
     },
     {
-      "type": "textarea",
-      "id": "delivery_text",
-      "label": "t:moru.main_product.delivery_text_label",
-      "info": "t:moru.main_product.delivery_text_info",
-      "default": "t:moru.main_product.delivery_text_default"
+      "type": "text",
+      "id": "delivery_main",
+      "label": "t:moru.main_product.delivery_main_label",
+      "default": "t:moru.main_product.delivery_main_default"
+    },
+    {
+      "type": "text",
+      "id": "delivery_sub",
+      "label": "t:moru.main_product.delivery_sub_label",
+      "default": "t:moru.main_product.delivery_sub_default"
+    },
+    {
+      "type": "text",
+      "id": "zip_label",
+      "label": "t:moru.main_product.zip_label_label",
+      "default": "t:moru.main_product.zip_label_default"
+    },
+    {
+      "type": "url",
+      "id": "zip_link",
+      "label": "t:moru.main_product.zip_link_label"
     }
   ],
   "blocks": [

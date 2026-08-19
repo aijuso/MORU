@@ -16,8 +16,15 @@
       },
       {
         "type": "font_picker",
+        "id": "type_display_font",
+        "default": "cormorant_n5",
+        "label": "t:labels.display_font",
+        "info": "t:info.display_font"
+      },
+      {
+        "type": "font_picker",
         "id": "type_heading_font",
-        "default": "dm_serif_display_n4",
+        "default": "noto_serif_japanese_n5",
         "label": "t:labels.heading_font",
         "info": "t:info.heading_font"
       },
@@ -71,14 +78,14 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#F4EEE5",
+        "default": "#FFFFFF",
         "label": "t:labels.background",
         "info": "t:info.background"
       },
       {
         "type": "color",
         "id": "background_alt_color",
-        "default": "#E8DDCD",
+        "default": "#F7F5F0",
         "label": "t:labels.background_alt",
         "info": "t:info.background_alt"
       },
@@ -92,7 +99,7 @@
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#2C2926",
+        "default": "#191919",
         "label": "t:labels.foreground",
         "info": "t:info.foreground"
       },

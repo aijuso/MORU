@@ -16,32 +16,32 @@
           "type": "trust",
           "settings": {
             "icon": "truck",
-            "title": "海外パートナーより手配",
-            "text": "ご注文後に手配し、検品のうえ発送します"
+            "title": "送料無料",
+            "text": "¥15,000以上のご注文で\n全国送料無料"
           }
         },
         "trust_return": {
           "type": "trust",
           "settings": {
             "icon": "return",
-            "title": "不良・誤配送は交換または返金",
-            "text": "商品到着後7日以内にご連絡ください"
+            "title": "30日返品対応",
+            "text": "イメージ違いでも安心の\n30日返品保証"
           }
         },
         "trust_payment": {
           "type": "trust",
           "settings": {
             "icon": "lock",
-            "title": "安全なお支払い",
-            "text": "Shopifyの安全な決済システムを利用しています"
+            "title": "安全な決済",
+            "text": "クレジット・後払いなど\n安心の決済システム"
           }
         },
         "trust_tracking": {
           "type": "trust",
           "settings": {
             "icon": "box",
-            "title": "発送のご連絡",
-            "text": "発送時にメールでお知らせします"
+            "title": "追跡配送で安心",
+            "text": "ご注文後、追跡番号を\nメールでご案内"
           }
         }
       },
@@ -55,7 +55,9 @@
     },
     "bundle": {
       "type": "moru-product-bundle",
-      "settings": {}
+      "settings": {
+        "discount_percent": 5
+      }
     },
     "details": {
       "type": "moru-product-details",
