@@ -1,0 +1,112 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "header": {
+      "type": "moru-page-header",
+      "settings": {
+        "show_breadcrumbs": true,
+        "eyebrow": "FAQ",
+        "heading": "よくあるご質問",
+        "lead": "<p>お届けまでの流れやご注文についてのご質問をまとめました。</p>",
+        "alignment": "left",
+        "background": "none"
+      }
+    },
+    "main": {
+      "type": "moru-page-faq",
+      "blocks": {
+        "cat_delivery": {
+          "type": "category",
+          "settings": {
+            "label": "配送について"
+          }
+        },
+        "q_lead_time": {
+          "type": "question",
+          "settings": {
+            "question": "注文してから、どのくらいで届きますか?",
+            "answer": "<p>ご注文後に海外の提携先から手配するため、通常2〜3週間前後でのお届けとなります。在庫状況・国際輸送・通関・天候などにより、4週間以上かかる場合があります。土日祝日および当店休業日は営業日に含みません。到着日のお約束はいたしかねますので、あらかじめご了承ください。</p>",
+            "open_by_default": true
+          }
+        },
+        "q_overseas": {
+          "type": "question",
+          "settings": {
+            "question": "商品はどこから発送されますか?",
+            "answer": "<p>海外の提携先から手配し、お客様のもとへお届けします。お届けまでのお時間は上記のとおりです。</p>",
+            "open_by_default": false
+          }
+        },
+        "cat_order": {
+          "type": "category",
+          "settings": {
+            "label": "ご注文の変更・キャンセル"
+          }
+        },
+        "q_cancel": {
+          "type": "question",
+          "settings": {
+            "question": "注文後にキャンセルや変更はできますか?",
+            "answer": "<p>ご注文後すぐに手配へ入るため、手配開始後のお客様都合によるキャンセル・変更は原則としてお受けできません。手配前であれば対応できる場合がありますので、お早めにご連絡ください。</p>",
+            "open_by_default": false
+          }
+        },
+        "cat_product": {
+          "type": "category",
+          "settings": {
+            "label": "商品について"
+          }
+        },
+        "q_defect": {
+          "type": "question",
+          "settings": {
+            "question": "届いた商品に不具合がありました。",
+            "answer": "<p>商品到着後7日以内に、ご注文ID・商品名・商品全体の写真・不具合箇所の写真・外箱の写真を添えてご連絡ください。不良品または誤配送の場合は、交換または返金にて対応します。交換用の在庫がない場合は返金いたします。</p>",
+            "open_by_default": false
+          }
+        },
+        "q_variation": {
+          "type": "question",
+          "settings": {
+            "question": "木目や色味に個体差はありますか?",
+            "answer": "<p>天然素材と海外製造のため、木目・節・色合いの違い、積層部分の見え方、サイズの軽微な誤差、使用に支障のない小さな擦れ、パッケージの傷やへこみ、製造時期による軽微な仕様変更が生じる場合があります。</p><p>なお、破損や機能不良は個体差には含まれません。その場合は上記の窓口へご連絡ください。</p>",
+            "open_by_default": false
+          }
+        }
+      },
+      "block_order": [
+        "cat_delivery",
+        "q_lead_time",
+        "q_overseas",
+        "cat_order",
+        "q_cancel",
+        "cat_product",
+        "q_defect",
+        "q_variation"
+      ],
+      "settings": {}
+    },
+    "cta": {
+      "type": "moru-page-cta",
+      "settings": {
+        "eyebrow": "CONTACT",
+        "heading": "お探しの内容が見つかりませんか?",
+        "text": "<p>ご不明な点はお気軽にお問い合わせください。内容を確認のうえ、順番にご返信します。</p>",
+        "background": "alt"
+      }
+    }
+  },
+  "order": [
+    "header",
+    "main",
+    "cta"
+  ]
+}

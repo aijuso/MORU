@@ -1,0 +1,168 @@
+<div class="moru-page-faq">
+  {% if section.settings.heading != blank %}
+    <h2 class="moru-page-faq__heading">{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  {% if section.settings.intro != blank %}
+    <div class="moru-page-faq__intro">{{ section.settings.intro }}</div>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <div class="moru-page-faq__list">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'category' %}
+            <h3 class="moru-page-faq__category" {{ block.shopify_attributes }}>{{ block.settings.label }}</h3>
+          {% when 'question' %}
+            <details
+              class="moru-accordion moru-page-faq__item"
+              {% if block.settings.open_by_default %}open{% endif %}
+              {{ block.shopify_attributes }}
+            >
+              <summary class="moru-accordion__summary">
+                <span>
+                  <span class="moru-page-faq__marker" aria-hidden="true">Q.</span>
+                  {{ block.settings.question }}
+                </span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </summary>
+              <div class="moru-accordion__content moru-page-faq__answer">
+                {%- if block.settings.answer != blank -%}
+                  {{ block.settings.answer }}
+                {%- else -%}
+                  <p>{{ 'moru.page.faq_todo' | t }}</p>
+                {%- endif -%}
+              </div>
+            </details>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="moru-page-faq__empty">{{ 'moru.page.faq_empty' | t }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .moru-page-faq {
+    max-width: 52rem;
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .moru-page-faq__heading {
+    margin: 0 0 var(--space-md);
+    font-size: var(--font-size-xl);
+  }
+
+  .moru-page-faq__intro {
+    margin-block-end: var(--space-lg);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-body);
+    color: var(--color-muted);
+  }
+
+  .moru-page-faq__category {
+    margin: var(--space-xl) 0 var(--space-xs);
+    font-family: var(--font-body--family);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-muted);
+  }
+
+  .moru-page-faq__category:first-child {
+    margin-block-start: 0;
+  }
+
+  .moru-page-faq__item .moru-accordion__summary {
+    align-items: flex-start;
+    font-size: var(--font-size-sm);
+    line-height: 1.7;
+  }
+
+  .moru-page-faq__marker {
+    margin-inline-end: var(--space-xs);
+    font-family: var(--font-display--family);
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-page-faq__answer > :first-child {
+    margin-block-start: 0;
+  }
+
+  .moru-page-faq__empty {
+    margin: 0;
+    padding: var(--space-lg);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-card);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.page_faq.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:moru.common.title",
+      "info": "t:moru.page_content.heading_info"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "t:moru.page_faq.intro_label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "t:moru.page_faq.block_category_name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:moru.page_faq.category_label_label",
+          "default": "t:moru.page_faq.category_label_default"
+        }
+      ]
+    },
+    {
+      "type": "question",
+      "name": "t:moru.page_faq.block_question_name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:moru.page_faq.question_label",
+          "default": "t:moru.page_faq.question_default"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:moru.page_faq.answer_label"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "t:moru.page_faq.open_by_default_label",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 40,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.page_faq.name",
+      "blocks": [{ "type": "question" }, { "type": "question" }, { "type": "question" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,133 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "header": {
+      "type": "moru-page-header",
+      "settings": {
+        "show_breadcrumbs": true,
+        "eyebrow": "LEGAL",
+        "heading": "特定商取引法に基づく表記",
+        "alignment": "left",
+        "background": "none"
+      }
+    },
+    "main": {
+      "type": "moru-page-legal",
+      "blocks": {
+        "seller": {
+          "type": "row",
+          "settings": {
+            "label": "販売業者"
+          }
+        },
+        "manager": {
+          "type": "row",
+          "settings": {
+            "label": "運営統括責任者"
+          }
+        },
+        "address": {
+          "type": "row",
+          "settings": {
+            "label": "所在地"
+          }
+        },
+        "tel": {
+          "type": "row",
+          "settings": {
+            "label": "電話番号"
+          }
+        },
+        "email": {
+          "type": "row",
+          "settings": {
+            "label": "メールアドレス"
+          }
+        },
+        "url": {
+          "type": "row",
+          "settings": {
+            "label": "ホームページURL"
+          }
+        },
+        "price": {
+          "type": "row",
+          "settings": {
+            "label": "販売価格",
+            "content": "<p>各商品ページに表示された価格(消費税込)によります。</p>"
+          }
+        },
+        "extra": {
+          "type": "row",
+          "settings": {
+            "label": "商品代金以外の必要料金"
+          }
+        },
+        "payment_method": {
+          "type": "row",
+          "settings": {
+            "label": "お支払い方法"
+          }
+        },
+        "payment_time": {
+          "type": "row",
+          "settings": {
+            "label": "お支払い時期"
+          }
+        },
+        "delivery": {
+          "type": "row",
+          "settings": {
+            "label": "商品の引渡し時期",
+            "content": "<p>ご注文後に海外の提携先から手配し、通常2〜3週間前後でお届けします。在庫状況・国際輸送・通関・天候などにより、4週間以上かかる場合があります。土日祝日および当店休業日は営業日に含みません。到着日のお約束はいたしかねます。</p>"
+          }
+        },
+        "cancel": {
+          "type": "row",
+          "settings": {
+            "label": "キャンセルについて",
+            "content": "<p>ご注文後すぐに手配へ入るため、手配開始後のお客様都合によるキャンセル・変更は原則としてお受けできません。手配前であれば対応できる場合がありますので、お早めにご連絡ください。</p>"
+          }
+        },
+        "returns": {
+          "type": "row",
+          "settings": {
+            "label": "返品・交換について",
+            "content": "<p>商品到着後7日以内に、ご注文ID・商品名・商品全体の写真・不具合箇所の写真・外箱の写真を添えてご連絡ください。不良品または誤配送の場合は、交換または返金にて対応します。交換用の在庫がない場合は返金いたします。</p><p>なお、天然素材と海外製造による木目・節・色合いの違い、サイズの軽微な誤差、使用に支障のない小さな擦れ、パッケージの傷やへこみは、不良には該当しません。破損や機能不良の場合は上記の窓口へご連絡ください。</p>"
+          }
+        }
+      },
+      "block_order": [
+        "seller",
+        "manager",
+        "address",
+        "tel",
+        "email",
+        "url",
+        "price",
+        "extra",
+        "payment_method",
+        "payment_time",
+        "delivery",
+        "cancel",
+        "returns"
+      ],
+      "settings": {
+        "intro": "<p>特定商取引法に基づき、以下のとおり表示します。</p>",
+        "note": "<p>事業者情報の各項目は、テーマエディタからストアの実際の情報を入力してください。</p>"
+      }
+    }
+  },
+  "order": [
+    "header",
+    "main"
+  ]
+}

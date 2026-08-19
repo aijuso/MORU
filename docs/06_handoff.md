@@ -1,7 +1,7 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
 > 最終更新: 2026-08-19
-> 作業ブランチ: `claude/moru-living-shopify-setup-tg2rzr`
+> 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
 > 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`(未公開)
 
@@ -33,6 +33,12 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 | `templates/product.json` | main-product / bundle / details / styling / product-grid×2 / recently-viewed |
 | `templates/collection.json` | collection-banner / collection-grid / recently-viewed |
 | `templates/cart.json` | main-cart / recently-viewed |
+| `templates/page.json` | page-header / page-content(汎用の固定ページ) |
+| `templates/page.about.json` | page-header / page-story×3 / page-cta |
+| `templates/page.tokushoho.json` | page-header / page-legal(法定13項目) |
+| `templates/page.privacy.json` | page-header / page-content(目次あり) |
+| `templates/page.terms.json` | page-header / page-content(目次あり) |
+| `templates/page.faq.json` | page-header / page-faq / page-cta |
 | `sections/header-group.json` | moru-announcement / moru-header |
 | `sections/footer-group.json` | moru-footer |
 
@@ -55,6 +61,12 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 - `moru-collection-grid` — タグピル絞り込み+並び替え+4列グリッド+さらに表示する
 - `moru-main-cart` — カート(明細/クーポン/内訳/合計/おすすめ/レビュー)
 - `moru-recently-viewed` — 閲覧した商品(localStorage)
+- `moru-page-header` — 固定ページ見出し(パンくず/英字サブ/見出し/リード文/最終更新日/背景切替)
+- `moru-page-content` — ページ本文(管理画面「ページ」の本文をRTEスタイルで表示・目次自動生成・幅切替)
+- `moru-page-legal` — 表形式の項目(項目名+内容のブロック)。特商法ページ用
+- `moru-page-faq` — よくある質問(カテゴリ見出し+質問ブロックのアコーディオン)
+- `moru-page-story` — 画像+テキストの交互ブロック。Aboutページ用
+- `moru-page-cta` — ページ下部の案内(見出し/説明/ボタン2つ)
 
 ### スニペット
 
@@ -101,7 +113,6 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 
 | 優先 | テンプレート | 現状のセクション | 内容 |
 |---|---|---|---|
-| 高 | `templates/page.json` | `sections/page.liquid` | 固定ページ。About / 特定商取引法 / プライバシーポリシー / 利用規約 / よくある質問。docs/00 第12章の文言が必要 |
 | 高 | `templates/search.json` | `sections/search.liquid` | 検索結果。`moru-collection-grid` の作りを流用できる |
 | 中 | `templates/blog.json` | `sections/blog.liquid` | 読みもの一覧。`moru-journal` のカードを流用 |
 | 中 | `templates/article.json` | `sections/article.liquid` | 読みもの詳細(記事本文・関連記事) |
@@ -121,6 +132,7 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 
 Skeleton の未使用ファイルが残っている。`moru-*` に置き換え済みなので削除してよい:
 `sections/header.liquid` `sections/footer.liquid` `sections/product.liquid` `sections/collection.liquid` `sections/hello-world.liquid` `sections/custom-section.liquid`
+(`sections/page.liquid` は固定ページ実装にあわせて削除済み)
 (削除前に `templates/*.json` と `*-group.json` から参照が無いことを確認する)
 
 ---
@@ -135,6 +147,9 @@ Skeleton の未使用ファイルが残っている。`moru-*` に置き換え�
 | エクスプレスチェックアウト | 「設定 → 決済 → スピードアップチェックアウト」を有効にすると Shop Pay / Apple Pay / Google Pay が出る |
 | セット割引 | カート/商品ページの割引表示は見た目のみ。実際に効かせるには管理画面「割引」で自動割引を作成する |
 | クーポン | カートのクーポン欄は Shopify の `/discount/CODE` を使うので、割引コードを作れば実際に効く |
+| 固定ページの作成 | 管理画面「オンラインストア → ページ」で About / 特定商取引法に基づく表記 / プライバシーポリシー / 利用規約 / よくあるご質問 の5ページを作成し、それぞれのテンプレート(page.about / page.tokushoho / page.privacy / page.terms / page.faq)を割り当てる |
+| 事業者情報 | 特商法ページの「販売業者・責任者・所在地・電話番号・メールアドレス・支払方法/時期・商品代金以外の必要料金」は**未入力**。テーマエディタで実際の情報を入力するまで、店頭に「未記入です」と表示される(架空の事業者情報は入れていない) |
+| ポリシー本文 | プライバシーポリシー・利用規約の本文は管理画面「ページ」の本文に入力する(見出し2を使うと目次が自動生成される)。Shopifyの「設定 → ポリシー」の自動生成文をコピーして使える |
 
 ---
 
@@ -156,6 +171,14 @@ docs/00 の絶対ルールと、ユーザーの「参考HTMLを完全再現し�
 - **レビュー** — メタフィールドかブロック入力から算出。未入力時は「レビュー準備中」とプレースホルダー表示(架空の評価値は入れていない)
 - **在庫「残りわずか」** — 実在庫に追従(「常に表示」「非表示」も設定で選べる)
 - **セット割引** — 表示のみで決済に反映されない旨をエディタの説明文に明記済み
+- **事業者情報(特商法)** — 未入力の項目は空欄のままにし、テーマエディタで入力を促す表示にしている(架空の住所・電話番号は入れない)
+
+### 未解決の文言の衝突
+
+アナウンスバーの初期値「本日15:00までのご注文で当日発送」と、
+固定ページ・商品ページの配送表示「通常2〜3週間前後」は内容が食い違う。
+docs/00 第12章は「『即納』『国内発送』と誤認させない」としているため、
+どちらの表記に寄せるかユーザーの判断が必要(現状は両方そのまま)。
 
 ---
 

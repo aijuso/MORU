@@ -1,0 +1,243 @@
+{% liquid
+  assign body = section.settings.custom_content
+  if body == blank
+    assign body = page.content
+  endif
+%}
+
+<moru-page-toc class="moru-page-content moru-page-content--{{ section.settings.width }}">
+  {% if section.settings.heading != blank %}
+    <h2 class="moru-page-content__heading">{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  {% if body != blank %}
+    {% if section.settings.show_toc %}
+      <nav class="moru-page-toc" data-moru-toc hidden aria-labelledby="moru-toc-title-{{ section.id }}">
+        <p class="moru-page-toc__title" id="moru-toc-title-{{ section.id }}">{{ 'moru.page.toc_title' | t }}</p>
+        <ol class="moru-page-toc__list" data-moru-toc-list></ol>
+      </nav>
+    {% endif %}
+
+    <div class="moru-page-rte" data-moru-rte>{{ body }}</div>
+  {% else %}
+    <p class="moru-page-content__empty">{{ 'moru.page.empty_content' | t }}</p>
+  {% endif %}
+</moru-page-toc>
+
+{% javascript %}
+  class MoruPageToc extends HTMLElement {
+    connectedCallback() {
+      const nav = this.querySelector('[data-moru-toc]');
+      const list = this.querySelector('[data-moru-toc-list]');
+      const rte = this.querySelector('[data-moru-rte]');
+
+      if (!nav || !list || !rte) return;
+
+      const headings = rte.querySelectorAll('h2');
+      if (headings.length < 2) return;
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) heading.id = `moru-section-${index + 1}`;
+
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent;
+        item.appendChild(link);
+        list.appendChild(item);
+      });
+
+      nav.hidden = false;
+    }
+  }
+
+  if (!customElements.get('moru-page-toc')) {
+    customElements.define('moru-page-toc', MoruPageToc);
+  }
+{% endjavascript %}
+
+{% stylesheet %}
+  .moru-page-content {
+    display: block;
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .moru-page-content--narrow {
+    max-width: 46rem;
+  }
+
+  .moru-page-content__heading {
+    margin: 0 0 var(--space-lg);
+    font-size: var(--font-size-xl);
+  }
+
+  .moru-page-content__empty {
+    margin: 0;
+    padding: var(--space-lg);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-card);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-page-toc {
+    margin-block-end: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-card);
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-page-toc__title {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-muted);
+  }
+
+  .moru-page-toc__list {
+    display: grid;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding-inline-start: 1.2em;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-page-toc__list a {
+    text-decoration: none;
+  }
+
+  .moru-page-toc__list a:hover {
+    text-decoration: underline;
+  }
+
+  .moru-page-rte {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-body);
+  }
+
+  .moru-page-rte > :first-child {
+    margin-block-start: 0;
+  }
+
+  .moru-page-rte > :last-child {
+    margin-block-end: 0;
+  }
+
+  .moru-page-rte h2 {
+    margin-block: var(--space-xl) var(--space-md);
+    padding-block-end: var(--space-xs);
+    border-block-end: 1px solid var(--color-border);
+    font-size: var(--font-size-xl);
+  }
+
+  .moru-page-rte h3 {
+    margin-block: var(--space-lg) var(--space-sm);
+    font-size: var(--font-size-lg);
+  }
+
+  .moru-page-rte h4 {
+    margin-block: var(--space-md) var(--space-xs);
+    font-size: var(--font-size-md);
+  }
+
+  .moru-page-rte p,
+  .moru-page-rte ul,
+  .moru-page-rte ol {
+    margin-block: 0 var(--space-md);
+  }
+
+  .moru-page-rte ul,
+  .moru-page-rte ol {
+    padding-inline-start: 1.4em;
+  }
+
+  .moru-page-rte li {
+    margin-block-end: var(--space-2xs);
+  }
+
+  .moru-page-rte img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+  }
+
+  .moru-page-rte blockquote {
+    margin: var(--space-lg) 0;
+    padding: var(--space-md) var(--space-lg);
+    border-inline-start: 2px solid var(--color-wood);
+    background-color: var(--color-bg-alt);
+    font-family: var(--font-heading--family);
+    line-height: 1.9;
+  }
+
+  .moru-page-rte table {
+    width: 100%;
+    margin-block-end: var(--space-md);
+    border-collapse: collapse;
+    font-size: var(--font-size-xs);
+  }
+
+  .moru-page-rte th,
+  .moru-page-rte td {
+    padding: var(--space-sm);
+    border: 1px solid var(--color-border);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .moru-page-rte th {
+    background-color: var(--color-bg-alt);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .moru-page-content {
+      padding-block: var(--space-lg) var(--space-xl);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.page_content.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:moru.common.title",
+      "info": "t:moru.page_content.heading_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_toc",
+      "label": "t:moru.page_content.show_toc_label",
+      "info": "t:moru.page_content.show_toc_info",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:moru.page_content.width_label",
+      "options": [
+        { "value": "narrow", "label": "t:moru.page_content.width_narrow" },
+        { "value": "wide", "label": "t:moru.page_content.width_wide" }
+      ],
+      "default": "narrow"
+    },
+    {
+      "type": "richtext",
+      "id": "custom_content",
+      "label": "t:moru.page_content.custom_content_label",
+      "info": "t:moru.page_content.custom_content_info"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.page_content.name"
+    }
+  ]
+}
+{% endschema %}

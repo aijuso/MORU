@@ -352,6 +352,72 @@
       "block_menu_name": "Link column",
       "block_heading_label": "Column heading",
       "block_heading_default": "SHOP"
+    },
+    "page_header": {
+      "name": "MORU page header",
+      "eyebrow_label": "Eyebrow (English)",
+      "eyebrow_info": "Shown above the heading (e.g. ABOUT)",
+      "heading_info": "Leave empty to use the page title",
+      "lead_label": "Lead text",
+      "updated_label": "Last updated",
+      "updated_info": "For policy pages. Leave empty to hide",
+      "align_left": "Left",
+      "align_center": "Center",
+      "background_label": "Background",
+      "background_none": "None (rule only)",
+      "background_alt": "Alternate background"
+    },
+    "page_content": {
+      "name": "MORU page content",
+      "heading_info": "Leave empty to hide the heading",
+      "show_toc_label": "Show table of contents",
+      "show_toc_info": "Built from the h2 headings in the content. Hidden when there are fewer than two",
+      "width_label": "Content width",
+      "width_narrow": "Readable width (recommended)",
+      "width_wide": "Full page width",
+      "custom_content_label": "Content (edited in the theme editor)",
+      "custom_content_info": "Replaces the page content when filled in. Normally leave empty and edit the page in the admin"
+    },
+    "page_legal": {
+      "name": "MORU definition table",
+      "intro_label": "Intro text",
+      "note_label": "Note",
+      "note_info": "Shown below the table in small type",
+      "block_row_name": "Row",
+      "row_label_label": "Label",
+      "row_label_default": "Label",
+      "row_content_label": "Content",
+      "row_content_info": "Use the store's real business details for legal pages"
+    },
+    "page_faq": {
+      "name": "MORU FAQ",
+      "intro_label": "Intro text",
+      "block_category_name": "Category heading",
+      "category_label_label": "Category name",
+      "category_label_default": "Shipping",
+      "block_question_name": "Question",
+      "question_label": "Question",
+      "question_default": "Enter a question",
+      "answer_label": "Answer",
+      "open_by_default_label": "Open by default"
+    },
+    "page_story": {
+      "name": "MORU story",
+      "lead_label": "Lead text",
+      "lead_info": "Shown above the blocks in larger type",
+      "block_story_name": "Story",
+      "image_position_label": "Image position",
+      "image_position_left": "Left",
+      "image_position_right": "Right",
+      "text_label": "Body"
+    },
+    "page_cta": {
+      "name": "MORU page CTA",
+      "heading_default": "Can't find what you're looking for?",
+      "text_label": "Text",
+      "text_default": "<p>Get in touch and we'll reply in order of receipt.</p>",
+      "button_2_label": "Second button label",
+      "button_2_link": "Second button link"
     }
   }
 }

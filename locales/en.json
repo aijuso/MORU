@@ -166,6 +166,16 @@
       "select_collection": "Select a collection to display products",
       "select_product": "Select a product to display it here",
       "select_blog": "Select a blog to display articles"
+    },
+    "page": {
+      "updated_prefix": "Last updated",
+      "toc_title": "Contents",
+      "empty_content": "This page has no content yet. Add it under Online Store → Pages in the admin and it will appear here.",
+      "legal_empty": "No rows yet. Add a “Row” block to this section in the theme editor.",
+      "legal_todo": "This row is empty. Add its content in the theme editor.",
+      "faq_empty": "No questions yet. Add a “Question” block to this section in the theme editor.",
+      "faq_todo": "This answer is empty. Add its content in the theme editor.",
+      "story_empty": "No blocks yet. Add a “Story” block to this section in the theme editor."
     }
   }
 }

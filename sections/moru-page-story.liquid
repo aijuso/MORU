@@ -1,0 +1,232 @@
+<div class="moru-page-story">
+  {% if section.settings.heading != blank %}
+    <div class="moru-section-header">
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+  {% endif %}
+
+  {% if section.settings.lead != blank %}
+    <div class="moru-page-story__lead">{{ section.settings.lead }}</div>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <div class="moru-page-story__blocks">
+      {% for block in section.blocks %}
+        <article
+          class="moru-page-story__row moru-page-story__row--{{ block.settings.image_position }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="moru-page-story__media moru-card">
+            {% if block.settings.image != blank %}
+              {{
+                block.settings.image
+                | image_url: width: 1200
+                | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: block.settings.image.alt
+              }}
+            {% else %}
+              {{ 'lifestyle-2' | placeholder_svg_tag }}
+            {% endif %}
+          </div>
+
+          <div class="moru-page-story__body">
+            {% if block.settings.eyebrow != blank %}
+              <p class="moru-page-story__eyebrow moru-display">{{ block.settings.eyebrow }}</p>
+            {% endif %}
+            {% if block.settings.heading != blank %}
+              <h3 class="moru-page-story__title">{{ block.settings.heading }}</h3>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <div class="moru-page-story__text">{{ block.settings.text }}</div>
+            {% endif %}
+            {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+              <a class="moru-button moru-button--outline moru-page-story__button" href="{{ block.settings.button_link }}">
+                {{- block.settings.button_label -}}
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="moru-page-story__empty">{{ 'moru.page.story_empty' | t }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .moru-page-story {
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .moru-page-story__lead {
+    max-width: 40rem;
+    margin-block-end: var(--space-2xl);
+    font-family: var(--font-heading--family);
+    font-size: var(--font-size-lg);
+    line-height: 2;
+    letter-spacing: var(--letter-spacing-heading);
+  }
+
+  .moru-page-story__blocks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+  }
+
+  .moru-page-story__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: var(--space-2xl);
+  }
+
+  .moru-page-story__row--right .moru-page-story__media {
+    order: 2;
+  }
+
+  .moru-page-story__media {
+    aspect-ratio: 4 / 3;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-page-story__media img,
+  .moru-page-story__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .moru-page-story__eyebrow {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-page-story__title {
+    margin: 0 0 var(--space-md);
+    font-size: var(--font-size-xl);
+  }
+
+  .moru-page-story__text {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-body);
+    color: var(--color-muted);
+  }
+
+  .moru-page-story__text > :last-child {
+    margin-block-end: 0;
+  }
+
+  .moru-page-story__button {
+    margin-block-start: var(--space-lg);
+  }
+
+  .moru-page-story__empty {
+    margin: 0;
+    padding: var(--space-lg);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-card);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 768px) {
+    .moru-page-story__row {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+
+    .moru-page-story__row--right .moru-page-story__media {
+      order: 0;
+    }
+
+    .moru-page-story__blocks {
+      gap: var(--space-xl);
+    }
+
+    .moru-page-story__lead {
+      margin-block-end: var(--space-xl);
+      font-size: var(--font-size-md);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.page_story.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:moru.common.title",
+      "info": "t:moru.page_content.heading_info"
+    },
+    {
+      "type": "richtext",
+      "id": "lead",
+      "label": "t:moru.page_story.lead_label",
+      "info": "t:moru.page_story.lead_info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "story",
+      "name": "t:moru.page_story.block_story_name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:moru.common.image"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "t:moru.page_story.image_position_label",
+          "options": [
+            { "value": "left", "label": "t:moru.page_story.image_position_left" },
+            { "value": "right", "label": "t:moru.page_story.image_position_right" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "t:moru.page_header.eyebrow_label"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:moru.common.title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:moru.page_story.text_label"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:moru.common.button_label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:moru.common.button_link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.page_story.name",
+      "blocks": [
+        { "type": "story" },
+        { "type": "story", "settings": { "image_position": "right" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

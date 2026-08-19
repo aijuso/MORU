@@ -352,6 +352,72 @@
       "block_menu_name": "リンク列",
       "block_heading_label": "列の見出し",
       "block_heading_default": "SHOP"
+    },
+    "page_header": {
+      "name": "MORU ページ見出し",
+      "eyebrow_label": "英字サブタイトル",
+      "eyebrow_info": "見出しの上に小さく表示します(例: ABOUT)",
+      "heading_info": "空にするとページ名を表示します",
+      "lead_label": "リード文",
+      "updated_label": "最終更新日",
+      "updated_info": "規約・ポリシーページ向け。空にすると非表示(例: 2026年8月1日)",
+      "align_left": "左寄せ",
+      "align_center": "中央寄せ",
+      "background_label": "背景",
+      "background_none": "なし(罫線のみ)",
+      "background_alt": "切り替え背景色"
+    },
+    "page_content": {
+      "name": "MORU ページ本文",
+      "heading_info": "空にすると見出しを非表示にします",
+      "show_toc_label": "目次を表示",
+      "show_toc_info": "本文の見出し2から自動で作ります。見出しが2つ未満のときは表示しません",
+      "width_label": "本文の幅",
+      "width_narrow": "読みやすい幅(推奨)",
+      "width_wide": "ページ幅いっぱい",
+      "custom_content_label": "本文(テーマエディタで入力)",
+      "custom_content_info": "入力するとページ本文の代わりにこちらを表示します。通常は空のままにして、管理画面の「ページ」で本文を編集してください"
+    },
+    "page_legal": {
+      "name": "MORU 表形式の項目",
+      "intro_label": "説明文",
+      "note_label": "注記",
+      "note_info": "表の下に小さく表示します",
+      "block_row_name": "項目",
+      "row_label_label": "項目名",
+      "row_label_default": "項目名",
+      "row_content_label": "内容",
+      "row_content_info": "特定商取引法に基づく表記など、事業者情報はストアの実際の情報を入力してください"
+    },
+    "page_faq": {
+      "name": "MORU よくある質問",
+      "intro_label": "説明文",
+      "block_category_name": "カテゴリ見出し",
+      "category_label_label": "カテゴリ名",
+      "category_label_default": "配送について",
+      "block_question_name": "質問",
+      "question_label": "質問",
+      "question_default": "質問を入力してください",
+      "answer_label": "回答",
+      "open_by_default_label": "最初から開いた状態にする"
+    },
+    "page_story": {
+      "name": "MORU ストーリー",
+      "lead_label": "リード文",
+      "lead_info": "ブロックの上に大きめの文字で表示します",
+      "block_story_name": "ストーリー",
+      "image_position_label": "画像の位置",
+      "image_position_left": "左",
+      "image_position_right": "右",
+      "text_label": "本文"
+    },
+    "page_cta": {
+      "name": "MORU ページ下部の案内",
+      "heading_default": "お探しの内容が見つかりませんか?",
+      "text_label": "説明文",
+      "text_default": "<p>ご不明な点はお気軽にお問い合わせください。内容を確認のうえ、順番にご返信します。</p>",
+      "button_2_label": "2つ目のボタンのラベル",
+      "button_2_link": "2つ目のボタンのリンク"
     }
   }
 }
