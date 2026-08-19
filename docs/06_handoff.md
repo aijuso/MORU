@@ -114,12 +114,25 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 | 優先 | テンプレート | 現状のセクション | 内容 |
 |---|---|---|---|
 | 高 | `templates/search.json` | `sections/search.liquid` | 検索結果。`moru-collection-grid` の作りを流用できる |
-| 中 | `templates/blog.json` | `sections/blog.liquid` | 読みもの一覧。`moru-journal` のカードを流用 |
-| 中 | `templates/article.json` | `sections/article.liquid` | 読みもの詳細(記事本文・関連記事) |
+| 保留 | `templates/blog.json` | `sections/blog.liquid` | 読みもの一覧。**ユーザー判断で「準備中」**。着手指示が出るまで作らない |
+| 保留 | `templates/article.json` | `sections/article.liquid` | 読みもの詳細(記事本文・関連記事)。同じく準備中 |
 | 中 | `templates/404.json` | `sections/404.liquid` | 404 ページ |
 | 低 | `templates/list-collections.json` | `sections/collections.liquid` | コレクション一覧 |
 | 低 | `templates/password.json` | `sections/password.liquid` | パスワードページ |
 | 低 | `templates/gift_card.liquid` | — | ギフトカード |
+
+### 読みもの(ブログ)を作るときの前提 — 現在は準備中
+
+ユーザーの判断で読みものは当面「準備中」。作れる状態は維持してあるので、着手指示が出たら以下から始める:
+
+- `sections/moru-journal.liquid` の3カラム横型カードをそのまま一覧・関連記事に流用できる(`blog` / `article` オブジェクトで動く作り)
+- 記事のカテゴリ表示は `article.tags | first`、日付は `article.published_at`。ブログ未選択時のプレースホルダ実装も済み
+- 必要になるのは `templates/blog.json` + `sections/moru-blog.liquid`(一覧・ページネーション)と
+  `templates/article.json` + `sections/moru-article.liquid`(本文・関連記事)の2セット
+- 管理画面側では「ブログ」と記事の作成が必要(現在ブログ記事なし)
+
+**注意:** トップページの `journal` セクションはブログ未選択のためサンプルカードを表示している。
+読みものを公開しないままストアを公開する場合は、テーマエディタでこのセクションを非表示にすること。
 
 ### ページ以外で未実装
 
@@ -147,9 +160,9 @@ Skeleton の未使用ファイルが残っている。`moru-*` に置き換え�
 | エクスプレスチェックアウト | 「設定 → 決済 → スピードアップチェックアウト」を有効にすると Shop Pay / Apple Pay / Google Pay が出る |
 | セット割引 | カート/商品ページの割引表示は見た目のみ。実際に効かせるには管理画面「割引」で自動割引を作成する |
 | クーポン | カートのクーポン欄は Shopify の `/discount/CODE` を使うので、割引コードを作れば実際に効く |
-| 固定ページの作成 | 管理画面「オンラインストア → ページ」で About / 特定商取引法に基づく表記 / プライバシーポリシー / 利用規約 / よくあるご質問 の5ページを作成し、それぞれのテンプレート(page.about / page.tokushoho / page.privacy / page.terms / page.faq)を割り当てる |
+| 固定ページの作成 | **作成済み(すべて非公開/下書き)**。about / tokushoho / privacy / terms / faq の5ページを Admin API で作成し、テンプレートも割り当て済み。内容確認後にユーザーが公開する |
 | 事業者情報 | 特商法ページの「販売業者・責任者・所在地・電話番号・メールアドレス・支払方法/時期・商品代金以外の必要料金」は**未入力**。テーマエディタで実際の情報を入力するまで、店頭に「未記入です」と表示される(架空の事業者情報は入れていない) |
-| ポリシー本文 | プライバシーポリシー・利用規約の本文は管理画面「ページ」の本文に入力する(見出し2を使うと目次が自動生成される)。Shopifyの「設定 → ポリシー」の自動生成文をコピーして使える |
+| ポリシー本文 | プライバシーポリシー・利用規約の本文は管理画面「ページ」の本文に入力する(見出し2を使うと目次が自動生成される)。**注意: Shopifyの「設定 → ポリシー」の既定文は英語かつ `{{ shop_name }}` などのLiquidタグ入りで、ページ本文に貼るとタグがそのまま表示される。** 日本語で書き直すか、タグを実値に置換してから貼ること |
 
 ---
 
@@ -158,6 +171,10 @@ Skeleton の未使用ファイルが残っている。`moru-*` に置き換え�
 - **チェックアウト画面(連絡先・配送先住所・支払い)はテーマで作れない。** Shopify がホストしており、カスタマイズは Shopify Plus の checkout extensibility 限定
 - **カート画面では税額・送料は確定しない。** 現在は税込価格からの逆算表示。実額はチェックアウトで計算される
 - `shopify theme dev` はこのクラウド環境では使えない(localhost プレビューがユーザーのブラウザから開けないため)。**確認は必ず未公開テーマへ push → テーマエディタ**で行う
+- **セッションのコンテナは毎回作り直されるため、Shopify CLI の認証は毎回消える。** `shopify theme push` を実行するとデバイス認証コードが出るので、ユーザーがリンクを開いて承認する必要がある(有効期限15分)。
+  この環境には `xdg-open` が無く、無いと CLI が即エラー終了するので `~/bin/xdg-open`(exit 0 のダミー)を PATH に置いてから実行する。
+  恒久対応は管理画面の **Theme Access** アプリでパスワードを発行し、`SHOPIFY_CLI_THEME_TOKEN` に設定する運用
+- 非公開(下書き)のページはストアフロントのURL直打ちでは表示されない。確認はテーマエディタのテンプレート選択から行う
 
 ---
 
