@@ -8,18 +8,30 @@
 
 {% stylesheet %}
   .moru-announcement {
-    background-color: var(--color-text);
-    padding-block: var(--space-xs);
+    padding: 9px 16px;
+    background-color: var(--color-bg-alt);
+    border-block-end: 1px solid rgb(0 0 0 / 0.03);
     text-align: center;
   }
 
   .moru-announcement__text {
     display: block;
     margin: 0;
-    color: var(--color-bg-alt);
-    font-size: var(--font-size-xs);
-    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-muted);
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
     text-decoration: none;
+  }
+
+  @media (max-width: 860px) {
+    .moru-announcement {
+      padding: 7px 12px;
+    }
+
+    .moru-announcement__text {
+      font-size: 10.5px;
+    }
   }
 {% endstylesheet %}
 

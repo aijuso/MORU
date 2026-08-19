@@ -57,7 +57,10 @@
       "search": "検索",
       "account": "アカウント",
       "cart": "カート",
-      "menu": "メニュー"
+      "menu": "メニュー",
+      "login": "ログイン",
+      "close": "閉じる",
+      "search_placeholder": "商品を検索する（例: ウッドチェア、ペンダントライト...）"
     },
     "instagram": {
       "view_link": "INSTAGRAMで見る"

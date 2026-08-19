@@ -17,7 +17,7 @@
       {
         "type": "font_picker",
         "id": "type_display_font",
-        "default": "cormorant_n5",
+        "default": "cormorant_n4",
         "label": "t:labels.display_font",
         "info": "t:info.display_font"
       },
@@ -31,7 +31,7 @@
       {
         "type": "font_picker",
         "id": "type_body_font",
-        "default": "noto_sans_japanese_n4",
+        "default": "zen_kaku_gothic_new_n4",
         "label": "t:labels.body_font",
         "info": "t:info.body_font"
       }
@@ -78,14 +78,14 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#FAF8F5",
         "label": "t:labels.background",
         "info": "t:info.background"
       },
       {
         "type": "color",
         "id": "background_alt_color",
-        "default": "#F7F5F0",
+        "default": "#ECE6DE",
         "label": "t:labels.background_alt",
         "info": "t:info.background_alt"
       },
@@ -99,9 +99,30 @@
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#191919",
+        "default": "#242220",
         "label": "t:labels.foreground",
         "info": "t:info.foreground"
+      },
+      {
+        "type": "color",
+        "id": "muted_text_color",
+        "default": "#5C5854",
+        "label": "t:labels.muted_text",
+        "info": "t:info.muted_text"
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "default": "#E6E0D8",
+        "label": "t:labels.border",
+        "info": "t:info.border"
+      },
+      {
+        "type": "color",
+        "id": "sale_color",
+        "default": "#B85850",
+        "label": "t:labels.sale",
+        "info": "t:info.sale"
       },
       {
         "type": "header",

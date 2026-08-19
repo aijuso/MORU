@@ -61,7 +61,10 @@
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
     "text": "Text",
-    "wood": "Wood accent (Natural Wood)"
+    "wood": "Wood accent (Natural Wood)",
+    "muted_text": "Secondary text",
+    "border": "Border",
+    "sale": "Sale text"
   },
   "info": {
     "accent_colors": "Use at most 1–2 accent colors per screen (docs/01).",
@@ -71,7 +74,10 @@
     "display_font": "Serif for the MORU wordmark and Latin display type. Recommended: Cormorant / Cormorant Garamond.",
     "foreground": "Text, footer, and buttons",
     "heading_font": "Editorial serif for headings. Recommended: DM Serif Display / Playfair Display / Cormorant.",
-    "wood": "Active rings and thin rule accents"
+    "wood": "Active rings and thin rule accents",
+    "muted_text": "Used for captions and supporting copy",
+    "border": "Used for rules and outlines",
+    "sale": "Used for sale links and similar highlights"
   },
   "options": {
     "alignment": {
@@ -111,14 +117,22 @@
     "announcement": {
       "name": "MORU announcement bar",
       "text_label": "Text",
-      "text_default": "Order by 15:00 today for same-day dispatch | Free shipping over ¥15,000",
+      "text_default": "Free shipping over ¥15,000 / ¥500 in points when you sign up",
       "link_label": "Link (optional)"
     },
     "header": {
       "name": "MORU header",
       "logo_label": "Logo image",
       "logo_info": "The logo stays replaceable from settings until trademark clearance. Shows the store name when unset.",
-      "logo_width_label": "Logo width"
+      "logo_width_label": "Logo width",
+      "sale_link_title_label": "Sale link title",
+      "sale_link_title_info": "A menu link with this exact title is shown in the sale color. Leave empty to disable",
+      "sale_link_title_default": "Sale",
+      "show_login_label": "Show log in",
+      "show_login_info": "Shows the log in link in the header (requires customer accounts)",
+      "wordmark_label": "Wordmark text (no logo image)",
+      "wordmark_info": "Shown when no logo image is set. Leave empty to use the store name",
+      "wordmark_default": "MORU"
     },
     "hero": {
       "name": "MORU hero slideshow",

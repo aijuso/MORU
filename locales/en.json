@@ -57,7 +57,10 @@
       "search": "Search",
       "account": "Account",
       "cart": "Cart",
-      "menu": "Menu"
+      "menu": "Menu",
+      "login": "Log in",
+      "close": "Close",
+      "search_placeholder": "Search products"
     },
     "instagram": {
       "view_link": "VIEW ON INSTAGRAM"

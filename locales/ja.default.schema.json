@@ -61,7 +61,10 @@
     "show_payment_icons": "決済アイコンを表示",
     "text_style": "テキストスタイル",
     "text": "テキスト",
-    "wood": "木目アクセント(Natural Wood)"
+    "wood": "木目アクセント(Natural Wood)",
+    "muted_text": "補助テキスト色",
+    "border": "罫線の色",
+    "sale": "セール文字色"
   },
   "info": {
     "accent_colors": "アクセント色は1画面につき1〜2色まで(docs/01)。",
@@ -71,7 +74,10 @@
     "display_font": "ロゴ(MORU)や英字見出し用のセリフ体。推奨: Cormorant / Cormorant Garamond",
     "foreground": "テキスト・フッター・ボタン",
     "heading_font": "見出し用のセリフ体。推奨: DM Serif Display / Playfair Display / Cormorant",
-    "wood": "アクティブリング・罫線アクセント用"
+    "wood": "アクティブリング・罫線アクセント用",
+    "muted_text": "説明文・キャプションなど、本文より一段弱いテキストの色",
+    "border": "区切り線・枠線の色",
+    "sale": "セールリンクなど、注意を引く文字に使う色"
   },
   "options": {
     "alignment": {
@@ -111,14 +117,22 @@
     "announcement": {
       "name": "MORU アナウンスバー",
       "text_label": "表示テキスト",
-      "text_default": "本日15:00までのご注文で当日発送 ｜ ¥15,000以上で送料無料",
+      "text_default": "¥15,000以上のご購入で送料無料 / 新規会員登録で¥500ptプレゼント",
       "link_label": "リンク(任意)"
     },
     "header": {
       "name": "MORU ヘッダー",
       "logo_label": "ロゴ画像",
       "logo_info": "商標クリアランス完了までロゴは設定から差し替え可能にしています。未設定時はストア名を表示します。",
-      "logo_width_label": "ロゴの幅"
+      "logo_width_label": "ロゴの幅",
+      "sale_link_title_label": "セール表示にするリンク名",
+      "sale_link_title_info": "メニュー内で完全に一致するリンクをセール色(赤)で表示します。空にすると全て通常色",
+      "sale_link_title_default": "セール",
+      "show_login_label": "ログインを表示",
+      "show_login_info": "オンにすると右上にログインリンクを表示します(お客様アカウントの有効化が必要)",
+      "wordmark_label": "ロゴ文字(画像未設定時)",
+      "wordmark_info": "ロゴ画像を設定していないときに表示する文字。空にするとストア名を表示します",
+      "wordmark_default": "MORU"
     },
     "hero": {
       "name": "MORU ヒーロースライドショー",
