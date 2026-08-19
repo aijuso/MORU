@@ -11,6 +11,25 @@
   "sections": {
     "hero": {
       "type": "moru-hero",
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {}
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {}
+        },
+        "slide_3": {
+          "type": "slide",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2",
+        "slide_3"
+      ],
       "settings": {}
     },
     "new_arrivals": {

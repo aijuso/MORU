@@ -119,12 +119,14 @@
       "logo_width_label": "Logo width"
     },
     "hero": {
-      "name": "MORU hero",
+      "name": "MORU hero slideshow",
       "image_label": "Background image",
-      "title_default": "When the cat lies down, the room is complete.",
+      "title_default": "When the cat lies down,\nthe room is complete.",
       "subtitle_label": "Subheading",
-      "subtitle_default": "A soft hour drifting through my room.",
-      "button_label_default": "View the Flower Lounge"
+      "subtitle_default": "A soft hour drifting\nthrough my room.",
+      "button_label_default": "View the Flower Lounge",
+      "autoplay_interval_label": "Autoplay interval",
+      "block_slide_name": "Slide"
     },
     "product_grid": {
       "name": "MORU product grid",

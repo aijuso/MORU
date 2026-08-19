@@ -119,12 +119,14 @@
       "logo_width_label": "ロゴの幅"
     },
     "hero": {
-      "name": "MORU ヒーロー",
+      "name": "MORU ヒーロースライドショー",
       "image_label": "背景画像",
-      "title_default": "猫が寝転ぶと、部屋が完成する。",
+      "title_default": "猫が寝転ぶと、\n部屋が完成する。",
       "subtitle_label": "サブコピー",
-      "subtitle_default": "やわらかい時間が流れる、私の部屋。",
-      "button_label_default": "フラワーラウンジを見る"
+      "subtitle_default": "やわらかい時間が流れる、\n私の部屋。",
+      "button_label_default": "フラワーラウンジを見る",
+      "autoplay_interval_label": "自動切り替えの間隔",
+      "block_slide_name": "スライド"
     },
     "product_grid": {
       "name": "MORU 商品グリッド",

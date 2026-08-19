@@ -50,6 +50,9 @@
     "results_for_html": "{{ count }} results found for {{ terms }}"
   },
   "moru": {
+    "hero": {
+      "go_to_slide": "Go to slide {{ index }}"
+    },
     "header": {
       "search": "Search",
       "account": "Account",

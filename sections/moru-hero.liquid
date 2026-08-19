@@ -1,39 +1,95 @@
-<div class="moru-hero full-width">
-  <div class="moru-hero__media">
-    {% if section.settings.image %}
-      {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750, 1200, 1800, 2400', sizes: '100vw' }}
-    {% else %}
-      {{ 'lifestyle-1' | placeholder_svg_tag: 'moru-hero__placeholder' }}
-    {% endif %}
+<moru-hero-slideshow
+  class="moru-hero full-width"
+  data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
+  aria-roledescription="carousel"
+>
+  <div class="moru-hero__slides">
+    {% for block in section.blocks %}
+      <div
+        class="moru-hero__slide{% if forloop.first %} is-active{% endif %}"
+        data-slide-index="{{ forloop.index0 }}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="moru-hero__media">
+          {% liquid
+            assign loading_mode = 'lazy'
+            if forloop.first
+              assign loading_mode = 'eager'
+            endif
+            assign ph_variant = forloop.index | modulo: 2
+          %}
+          {% if block.settings.image %}
+            {{ block.settings.image | image_url: width: 2400 | image_tag: loading: loading_mode, widths: '750, 1200, 1800, 2400', sizes: '100vw' }}
+          {% elsif ph_variant == 1 %}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'moru-hero__placeholder' }}
+          {% else %}
+            {{ 'lifestyle-2' | placeholder_svg_tag: 'moru-hero__placeholder' }}
+          {% endif %}
+        </div>
+
+        <div class="moru-hero__overlay"></div>
+
+        <div class="moru-hero__content">
+          {% if block.settings.title != blank %}
+            <h2 class="moru-hero__title">{{ block.settings.title | newline_to_br }}</h2>
+          {% endif %}
+          {% if block.settings.subtitle != blank %}
+            <p class="moru-hero__subtitle">{{ block.settings.subtitle | newline_to_br }}</p>
+          {% endif %}
+          {% if block.settings.button_label != blank %}
+            <div class="moru-hero__button-wrap">
+              <a class="moru-hero__button" href="{{ block.settings.button_link | default: routes.all_products_collection_url }}">
+                {{ block.settings.button_label }}
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
   </div>
 
-  <div class="moru-hero__overlay">
-    <div class="moru-hero__content">
-      <h1 class="moru-hero__title">{{ section.settings.title }}</h1>
-      {% if section.settings.subtitle != blank %}
-        <p class="moru-hero__subtitle">{{ section.settings.subtitle }}</p>
-      {% endif %}
-      {% if section.settings.button_label != blank %}
-        <a class="moru-hero__button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
-          {{ section.settings.button_label }}
-        </a>
-      {% endif %}
+  {% if section.blocks.size > 1 %}
+    <div class="moru-hero__dots">
+      {% for block in section.blocks %}
+        <button
+          type="button"
+          class="moru-hero__dot{% if forloop.first %} is-active{% endif %}"
+          data-dot-index="{{ forloop.index0 }}"
+          aria-label="{{ 'moru.hero.go_to_slide' | t: index: forloop.index }}"
+        ></button>
+      {% endfor %}
     </div>
-  </div>
-</div>
+  {% endif %}
+</moru-hero-slideshow>
 
 {% stylesheet %}
   .moru-hero {
     position: relative;
-    height: 520px;
+    display: block;
+    height: 580px;
     overflow: hidden;
     background-color: var(--color-bg-alt);
   }
 
-  @media (max-width: 749px) {
-    .moru-hero {
-      height: 420px;
-    }
+  .moru-hero__slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .moru-hero__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 800ms cubic-bezier(0.4, 0, 0.2, 1), visibility 800ms;
+    z-index: 1;
+  }
+
+  .moru-hero__slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
   }
 
   .moru-hero__media,
@@ -44,99 +100,310 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 40%;
+    object-position: center 35%;
+  }
+
+  .moru-hero__media img {
+    transform: scale(1.03);
+    transition: transform 7s cubic-bezier(0.1, 1, 0.1, 1);
+  }
+
+  .moru-hero__slide.is-active .moru-hero__media img {
+    transform: scale(1);
   }
 
   .moru-hero__overlay {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    background: linear-gradient(to right, rgb(0 0 0 / 0.4) 0%, rgb(0 0 0 / 0.15) 50%, rgb(0 0 0 / 0) 100%);
+    background: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0.88) 0%,
+      rgb(255 255 255 / 0.65) 32%,
+      rgb(255 255 255 / 0.25) 55%,
+      transparent 80%
+    );
+    pointer-events: none;
   }
 
   .moru-hero__content {
-    max-width: 34rem;
-    padding-inline: clamp(var(--page-margin), 6vw, 5rem);
-    color: #fff;
-    text-shadow: 0 2px 10px rgb(0 0 0 / 0.15);
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-2xl) var(--space-xl) var(--space-2xl) clamp(var(--page-margin), 6vw, 4.5rem);
+    z-index: 3;
   }
 
   .moru-hero__title {
     margin: 0;
-    color: #fff;
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-3xl);
     line-height: 1.45;
-    letter-spacing: var(--letter-spacing-wide);
+    letter-spacing: 0.18em;
+    color: var(--color-text);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 600ms cubic-bezier(0.25, 1, 0.5, 1) 150ms;
   }
 
   .moru-hero__subtitle {
-    margin-block: var(--space-md) 0;
-    font-size: var(--font-size-sm);
+    margin: var(--space-md) 0 0;
+    font-size: var(--font-size-md);
+    line-height: 1.85;
     letter-spacing: var(--letter-spacing-wide);
-    color: rgb(255 255 255 / 0.9);
+    color: var(--color-muted);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 600ms cubic-bezier(0.25, 1, 0.5, 1) 250ms;
+  }
+
+  .moru-hero__button-wrap {
+    margin-block-start: var(--space-xl);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 600ms cubic-bezier(0.25, 1, 0.5, 1) 350ms;
+  }
+
+  .moru-hero__slide.is-active .moru-hero__title,
+  .moru-hero__slide.is-active .moru-hero__subtitle,
+  .moru-hero__slide.is-active .moru-hero__button-wrap {
+    transform: translateY(0);
+    opacity: 1;
   }
 
   .moru-hero__button {
     display: inline-block;
-    margin-block-start: var(--space-lg);
     padding: var(--space-sm) var(--space-lg);
-    border: 1px solid rgb(255 255 255 / 0.85);
+    border: 1px solid var(--color-text);
     border-radius: var(--style-border-radius-inputs);
-    background: rgb(255 255 255 / 0.12);
-    backdrop-filter: blur(6px);
-    color: #fff;
+    background-color: rgb(255 255 255 / 0.45);
+    backdrop-filter: blur(4px);
+    color: var(--color-text);
     font-size: var(--font-size-sm);
     letter-spacing: var(--letter-spacing-wide);
     text-decoration: none;
-    transition: background-color 300ms ease, color 300ms ease;
+    transition: background-color 300ms ease, color 300ms ease, box-shadow 300ms ease;
   }
 
   .moru-hero__button:hover {
-    background-color: #fff;
-    color: var(--color-text);
+    background-color: var(--color-text);
+    color: var(--color-bg);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.2);
+  }
+
+  .moru-hero__dots {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 9px;
+    z-index: 10;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgb(0 0 0 / 0.08);
+    backdrop-filter: blur(2px);
+  }
+
+  .moru-hero__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.55);
+    cursor: pointer;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .moru-hero__dot.is-active {
+    width: 22px;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+  }
+
+  @media (max-width: 899px) {
+    .moru-hero {
+      height: 520px;
+    }
+
+    .moru-hero__content {
+      width: 65%;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .moru-hero {
+      height: 480px;
+    }
+
+    .moru-hero__content {
+      width: 100%;
+      justify-content: flex-start;
+      padding: var(--space-2xl) var(--page-margin) var(--space-xl);
+    }
+
+    .moru-hero__overlay {
+      background: linear-gradient(
+        to bottom,
+        rgb(255 255 255 / 0.85) 0%,
+        rgb(255 255 255 / 0.6) 50%,
+        rgb(255 255 255 / 0.2) 100%
+      );
+    }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  class MoruHeroSlideshow extends HTMLElement {
+    connectedCallback() {
+      this.slides = Array.from(this.querySelectorAll('.moru-hero__slide'));
+      this.dots = Array.from(this.querySelectorAll('.moru-hero__dot'));
+      this.current = 0;
+      this.timer = null;
+      this.interval = parseInt(this.dataset.interval, 10) || 6000;
+      this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (this.slides.length < 2) return;
+
+      this.dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          this.goTo(parseInt(dot.dataset.dotIndex, 10));
+          this.restart();
+        });
+      });
+
+      this.addEventListener('mouseenter', () => this.stop());
+      this.addEventListener('mouseleave', () => this.start());
+
+      this.touchStartX = 0;
+      this.addEventListener('touchstart', (e) => {
+        this.touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      this.addEventListener('touchend', (e) => {
+        const delta = e.changedTouches[0].screenX - this.touchStartX;
+        if (Math.abs(delta) > 45) {
+          this.goTo(this.current + (delta < 0 ? 1 : -1));
+          this.restart();
+        }
+      }, { passive: true });
+
+      this.start();
+    }
+
+    disconnectedCallback() {
+      this.stop();
+    }
+
+    goTo(index) {
+      const total = this.slides.length;
+      const next = (index + total) % total;
+      if (next === this.current) return;
+
+      this.slides[this.current].classList.remove('is-active');
+      this.dots[this.current].classList.remove('is-active');
+      this.current = next;
+      this.slides[this.current].classList.add('is-active');
+      this.dots[this.current].classList.add('is-active');
+    }
+
+    start() {
+      if (this.reducedMotion) return;
+      this.stop();
+      this.timer = setInterval(() => this.goTo(this.current + 1), this.interval);
+    }
+
+    stop() {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+    }
+
+    restart() {
+      this.stop();
+      this.start();
+    }
+  }
+
+  if (!customElements.get('moru-hero-slideshow')) {
+    customElements.define('moru-hero-slideshow', MoruHeroSlideshow);
+  }
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:moru.hero.name",
   "settings": [
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "t:moru.hero.image_label"
-    },
-    {
-      "type": "text",
-      "id": "title",
-      "label": "t:moru.common.title",
-      "default": "t:moru.hero.title_default"
-    },
-    {
-      "type": "text",
-      "id": "subtitle",
-      "label": "t:moru.hero.subtitle_label",
-      "default": "t:moru.hero.subtitle_default"
-    },
-    {
-      "type": "text",
-      "id": "button_label",
-      "label": "t:moru.common.button_label",
-      "default": "t:moru.hero.button_label_default"
-    },
-    {
-      "type": "url",
-      "id": "button_link",
-      "label": "t:moru.common.button_link"
+      "type": "range",
+      "id": "autoplay_interval",
+      "min": 4,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "t:moru.hero.autoplay_interval_label",
+      "default": 6
     }
   ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "t:moru.hero.block_slide_name",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:moru.hero.image_label"
+        },
+        {
+          "type": "textarea",
+          "id": "title",
+          "label": "t:moru.common.title",
+          "default": "t:moru.hero.title_default"
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle",
+          "label": "t:moru.hero.subtitle_label",
+          "default": "t:moru.hero.subtitle_default"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:moru.common.button_label",
+          "default": "t:moru.hero.button_label_default"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:moru.common.button_link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
   "disabled_on": {
     "groups": ["header", "footer"]
   },
   "presets": [
     {
-      "name": "t:moru.hero.name"
+      "name": "t:moru.hero.name",
+      "blocks": [
+        {
+          "type": "slide"
+        },
+        {
+          "type": "slide"
+        },
+        {
+          "type": "slide"
+        }
+      ]
     }
   ]
 }

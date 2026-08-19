@@ -50,6 +50,9 @@
     "results_for_html": "{{ terms }} の検索結果 {{ count }}件"
   },
   "moru": {
+    "hero": {
+      "go_to_slide": "スライド {{ index }} へ移動"
+    },
     "header": {
       "search": "検索",
       "account": "アカウント",
