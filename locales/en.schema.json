@@ -64,7 +64,8 @@
     "wood": "Wood accent (Natural Wood)",
     "muted_text": "Secondary text",
     "border": "Border",
-    "sale": "Sale text"
+    "sale": "Sale text",
+    "logo_color": "Logo / wordmark color"
   },
   "info": {
     "accent_colors": "Use at most 1–2 accent colors per screen (docs/01).",
@@ -73,11 +74,12 @@
     "body_font": "Japanese body and UI font. Recommended: Noto Sans Japanese / Zen Kaku Gothic New.",
     "display_font": "Serif for the MORU wordmark and Latin display type. Recommended: Cormorant / Cormorant Garamond.",
     "foreground": "Text, footer, and buttons",
-    "heading_font": "Editorial serif for headings. Recommended: DM Serif Display / Playfair Display / Cormorant.",
+    "heading_font": "Japanese gothic for headings. Recommended: Zen Kaku Gothic New / Noto Sans Japanese.",
     "wood": "Active rings and thin rule accents",
     "muted_text": "Used for captions and supporting copy",
     "border": "Used for rules and outlines",
-    "sale": "Used for sale links and similar highlights"
+    "sale": "Used for sale links and similar highlights",
+    "logo_color": "Color of the MORU wordmark in the header and footer. Not used when a logo image is set"
   },
   "options": {
     "alignment": {

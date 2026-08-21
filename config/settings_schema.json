@@ -24,7 +24,7 @@
       {
         "type": "font_picker",
         "id": "type_heading_font",
-        "default": "noto_serif_japanese_n5",
+        "default": "zen_kaku_gothic_new_n4",
         "label": "t:labels.heading_font",
         "info": "t:info.heading_font"
       },
@@ -88,6 +88,13 @@
         "default": "#ECE6DE",
         "label": "t:labels.background_alt",
         "info": "t:info.background_alt"
+      },
+      {
+        "type": "color",
+        "id": "logo_color",
+        "default": "#A8452F",
+        "label": "t:labels.logo_color",
+        "info": "t:info.logo_color"
       },
       {
         "type": "color",
@@ -165,7 +172,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:labels.input_corner_radius",
-        "default": 6
+        "default": 0
       },
       {
         "type": "range",
@@ -175,7 +182,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:labels.card_corner_radius",
-        "default": 8
+        "default": 2
       }
     ]
   }

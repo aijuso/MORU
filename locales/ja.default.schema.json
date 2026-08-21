@@ -64,7 +64,8 @@
     "wood": "木目アクセント(Natural Wood)",
     "muted_text": "補助テキスト色",
     "border": "罫線の色",
-    "sale": "セール文字色"
+    "sale": "セール文字色",
+    "logo_color": "ロゴ / ワードマークの色"
   },
   "info": {
     "accent_colors": "アクセント色は1画面につき1〜2色まで(docs/01)。",
@@ -73,11 +74,12 @@
     "body_font": "日本語本文・UI用。推奨: Noto Sans Japanese / Zen Kaku Gothic New",
     "display_font": "ロゴ(MORU)や英字見出し用のセリフ体。推奨: Cormorant / Cormorant Garamond",
     "foreground": "テキスト・フッター・ボタン",
-    "heading_font": "見出し用のセリフ体。推奨: DM Serif Display / Playfair Display / Cormorant",
+    "heading_font": "見出し用の日本語ゴシック。推奨: Zen Kaku Gothic New / Noto Sans Japanese",
     "wood": "アクティブリング・罫線アクセント用",
     "muted_text": "説明文・キャプションなど、本文より一段弱いテキストの色",
     "border": "区切り線・枠線の色",
-    "sale": "セールリンクなど、注意を引く文字に使う色"
+    "sale": "セールリンクなど、注意を引く文字に使う色",
+    "logo_color": "ヘッダーとフッターの「MORU」ワードマークの色。ロゴ画像を設定している場合は使われません"
   },
   "options": {
     "alignment": {

@@ -3,6 +3,7 @@
   {{ settings.type_display_font | font_face: font_display: 'swap' }}
   {{ settings.type_heading_font | font_face: font_display: 'swap' }}
   {{ settings.type_body_font | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
   {{ settings.type_body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
   {{ settings.type_body_font | font_modify: 'weight', 'lighter' | font_face: font_display: 'swap' }}
 
@@ -23,6 +24,7 @@
     {% # MORU design tokens (docs/01) — always reference these, never raw HEX %}
     --color-bg: {{ settings.background_color }};
     --color-bg-alt: {{ settings.background_alt_color }};
+    --color-logo: {{ settings.logo_color }};
     --color-wood: {{ settings.wood_color }};
     --color-text: {{ settings.foreground_color }};
     --color-accent-olive: {{ settings.accent_olive_color }};
