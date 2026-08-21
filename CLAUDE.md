@@ -6,6 +6,10 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 
 **作業前に必ず `docs/` 配下をすべて読むこと。特に `docs/00_brand_master.md` が最上位のブランド文書。**
 
+**そして1行でもコードを書く前に `docs/07_session_protocol.md` §1 を実行すること。**
+`git fetch origin --prune` を省くと、他セッションの作業が見えないまま作業を始めることになる。
+実際にそれで事故が起きている(経緯は docs/07 冒頭)。
+
 ## ドキュメント構成
 
 | ファイル | 内容 | 位置づけ |
@@ -17,7 +21,8 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 | `docs/04_implementation_notes.md` | Skeletonベースのゼロ構築方針・MCP設定・開発フロー | 技術方針 |
 | `docs/05_build_workflow.md` | モックからセクションを構築する手順 | 毎セクション共通の作業手順 |
 | `docs/06_handoff.md` | 現状・完成済みセクション・未着手ページ・制約 | **セッション引き継ぎ時に最初に読む** |
-| `docs/mockups/` | 確定デザイン(home_v2_final.png) | 見た目の正 |
+| `docs/07_session_protocol.md` | セッション運用プロトコル(ブランチ・ストア反映・参考デザインの管理) | **作業開始前に必ず実行する手順** |
+| `docs/mockups/` | 確定デザイン(受領日つき。最新1件が正 — docs/07 §3 の表を参照) | 見た目の正 |
 | `docs/brand/` | ロゴ(logo_terracotta.png)・商品参考写真 | ブランド素材 |
 
 ## Shopify Dev MCP 使用ルール(必須)
@@ -47,8 +52,14 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 
 - ベース: Shopify **Skeleton Theme**(公式最小テーマ)を初期コミットとして取り込み、デザインは100%自作
 - ローカルプレビュー: `shopify theme dev --store=rgy5ee-fv.myshopify.com`
-- コミット前: `shopify theme check` 必須
-- ブランチ: `main` 保護、作業は `feature/*` → PR
+- コミット前: `shopify theme check` と Dev MCP `validate_theme` 必須
+- **ブランチは trunk 1本のみ。** 現行 trunk は `docs/06_handoff.md` 冒頭に記載。新しい作業ブランチは
+  必ず trunk から派生させる(詳細は docs/07 §2)
+- **ストアは GitHub 連携していない。** git への push ではストアは変わらない。
+  反映は `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166203621616` のみ。
+  順序は必ず commit → git push → theme push
+- **参考デザインを受け取ったら、実装前に `docs/mockups/` へコミットする**(docs/07 §3)。
+  チャットの画像は次のセッションから見えない
 - セクション命名: `sections/moru-*.liquid`
 - 納品形態: テーマZIP(管理画面アップロード可能な構造)
 
