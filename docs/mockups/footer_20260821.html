@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MORU - Modern Mid-Century Footer</title>
+  <!-- Google Fonts: Cormorant Garamond & Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+JP:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* CSS Reset & Design Tokens */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Dark Modern Mid-Century Palette */
+      --bg-primary: #121110;
+      --bg-surface: #181715;
+      --bg-input: #1e1c19;
+      --bg-button: #24221f;
+      --bg-button-hover: #c89557;
+      
+      --text-primary: #f2ece1;
+      --text-secondary: #9f9689;
+      --text-muted: #6b645b;
+      --text-inverse: #121110;
+
+      --accent-warm: #c89557;
+      --accent-brass: #d6a76c;
+      --accent-rust: #ab5138;
+      
+      --border-subtle: rgba(242, 236, 225, 0.08);
+      --border-medium: rgba(242, 236, 225, 0.16);
+      --border-focus: #c89557;
+
+      --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
+      --font-sans: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
+      --font-jp: 'Noto Sans JP', sans-serif;
+
+      --transition-base: 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    body {
+      background-color: #0d0c0b;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Demonstration Canvas Content */
+    .dummy-content {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ========================================================
+       FOOTER CONTAINER & GEOMETRIC STRUCTURE
+       ======================================================== */
+    .moru-footer {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      border-top: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle Mid-Century Geometric Grid Accent Background */
+    .moru-footer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(200, 149, 87, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(200, 149, 87, 0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+    }
+
+    .footer-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 4.5rem 2.5rem 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Main Grid Layout */
+    .footer-main-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr 1.2fr 1.1fr 2.1fr;
+      gap: 3.5rem 2rem;
+      align-items: start;
+    }
+
+    /* ========================================================
+       COLUMN 1: BRAND STATEMENT & LOGO
+       ======================================================== */
+    .brand-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      padding-right: 1.5rem;
+    }
+
+    .brand-logo {
+      font-family: var(--font-serif);
+      font-size: 2.35rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      text-decoration: none;
+      line-height: 1;
+      display: inline-block;
+      transition: color var(--transition-base);
+    }
+
+    .brand-logo:hover {
+      color: var(--accent-brass);
+    }
+
+    .brand-description {
+      font-family: var(--font-jp);
+      font-size: 0.815rem;
+      line-height: 1.95;
+      color: var(--text-secondary);
+      font-weight: 300;
+      letter-spacing: 0.03em;
+    }
+
+    .brand-description p {
+      margin: 0;
+    }
+
+    /* ========================================================
+       NAV COLUMNS: SHOP, CUSTOMER CARE, ABOUT
+       ======================================================== */
+    .nav-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .nav-title {
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin: 0;
+      position: relative;
+      display: inline-block;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+    }
+
+    .nav-link {
+      font-family: var(--font-jp);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      transition: color var(--transition-base), transform var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background-color: var(--accent-warm);
+      transition: width var(--transition-base);
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      transform: translateX(2px);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* ========================================================
+       COLUMN 5: NEWSLETTER & SOCIALS
+       ======================================================== */
+    .newsletter-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .newsletter-description {
+      font-family: var(--font-jp);
+      font-size: 0.815rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+
+    .newsletter-form {
+      display: flex;
+      width: 100%;
+      position: relative;
+    }
+
+    .form-group {
+      display: flex;
+      width: 100%;
+      position: relative;
+    }
+
+    .newsletter-input {
+      flex: 1;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-medium);
+      border-right: none;
+      padding: 0.8rem 1rem;
+      font-size: 0.815rem;
+      color: var(--text-primary);
+      font-family: var(--font-jp);
+      border-radius: 0;
+      outline: none;
+      transition: border-color var(--transition-base), background-color var(--transition-base);
+    }
+
+    .newsletter-input::placeholder {
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    .newsletter-input:focus {
+      border-color: var(--border-focus);
+      background-color: #24211d;
+    }
+
+    .newsletter-button {
+      background-color: var(--bg-button);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-left: 1px solid var(--border-subtle);
+      padding: 0 1.35rem;
+      font-family: var(--font-jp);
+      font-size: 0.815rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      border-radius: 0;
+      white-space: nowrap;
+      transition: all var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .newsletter-button:hover {
+      background-color: var(--accent-warm);
+      border-color: var(--accent-warm);
+      color: var(--text-inverse);
+      font-weight: 500;
+    }
+
+    .newsletter-button:active {
+      transform: scale(0.98);
+    }
+
+    /* Social Icons Area */
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-top: 0.6rem;
+    }
+
+    .social-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      transition: all var(--transition-base);
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .social-icon-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+      transition: transform var(--transition-base);
+    }
+
+    .social-icon-btn:hover {
+      color: var(--accent-brass);
+      border-color: rgba(200, 149, 87, 0.35);
+      background-color: rgba(200, 149, 87, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .social-icon-btn:hover svg {
+      transform: scale(1.1);
+    }
+
+    /* Form Feedback Message */
+    .form-message {
+      font-size: 0.75rem;
+      font-family: var(--font-jp);
+      margin-top: 0.4rem;
+      min-height: 1.1rem;
+      display: none;
+    }
+
+    .form-message.success {
+      display: block;
+      color: var(--accent-brass);
+    }
+
+    .form-message.error {
+      display: block;
+      color: #e57373;
+    }
+
+    /* ========================================================
+       BOTTOM BAR: COPYRIGHT & LEGAL
+       ======================================================== */
+    .footer-bottom {
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 4.5rem;
+      padding-top: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .copyright {
+      font-family: var(--font-sans);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .legal-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .legal-item {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .legal-item:not(:last-child)::after {
+      content: '|';
+      color: rgba(242, 236, 225, 0.15);
+      font-size: 0.72rem;
+      font-weight: 300;
+    }
+
+    .legal-link {
+      font-family: var(--font-jp);
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      transition: color var(--transition-base);
+    }
+
+    .legal-link:hover {
+      color: var(--text-primary);
+    }
+
+    /* ========================================================
+       RESPONSIVE ADAPTATIONS
+       ======================================================== */
+    @media (max-width: 1080px) {
+      .footer-main-grid {
+        grid-template-columns: 1.8fr 1fr 1.2fr 1fr;
+      }
+      .newsletter-col {
+        grid-column: span 4;
+        max-width: 480px;
+        margin-top: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .footer-inner {
+        padding: 3.5rem 1.5rem 2.5rem;
+      }
+
+      .footer-main-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem 1.5rem;
+      }
+
+      .brand-col {
+        grid-column: span 2;
+        padding-right: 0;
+      }
+
+      .newsletter-col {
+        grid-column: span 2;
+        max-width: 100%;
+      }
+
+      .footer-bottom {
+        margin-top: 3.5rem;
+        flex-direction: column-reverse;
+        align-items: flex-start;
+        gap: 1.2rem;
+      }
+
+      .legal-links {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .legal-item {
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .footer-main-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .brand-col,
+      .newsletter-col {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Example Page Body Context -->
+  <div class="dummy-content">
+    Mid-Century Modern Interior & Furniture
+  </div>
+
+  <!-- ========================================================
+       MORU FOOTER COMPONENT
+       ======================================================== -->
+  <footer class="moru-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-main-grid">
+        
+        <!-- Brand Profile Column -->
+        <div class="brand-col">
+          <a href="#" class="brand-logo" aria-label="MORU Home">MORU</a>
+          <div class="brand-description">
+            <p>やわらかな光と木のぬくもりが調和する、</p>
+            <p>韓国ミッドセンチュリーの家具・インテリアショップです。</p>
+            <p>日常に寄り添う心地よいアイテムをお届けします。</p>
+          </div>
+        </div>
+
+        <!-- Navigation 1: SHOP -->
+        <div class="nav-col">
+          <h3 class="nav-title">SHOP</h3>
+          <ul class="nav-list">
+            <li><a href="#" class="nav-link">すべての商品</a></li>
+            <li><a href="#" class="nav-link">新着アイテム</a></li>
+            <li><a href="#" class="nav-link">ランキング</a></li>
+            <li><a href="#" class="nav-link">セール</a></li>
+          </ul>
+        </div>
+
+        <!-- Navigation 2: CUSTOMER CARE -->
+        <div class="nav-col">
+          <h3 class="nav-title">CUSTOMER CARE</h3>
+          <ul class="nav-list">
+            <li><a href="#" class="nav-link">ご利用ガイド</a></li>
+            <li><a href="#" class="nav-link">配送・送料について</a></li>
+            <li><a href="#" class="nav-link">返品・交換について</a></li>
+            <li><a href="#" class="nav-link">よくある質問</a></li>
+          </ul>
+        </div>
+
+        <!-- Navigation 3: ABOUT -->
+        <div class="nav-col">
+          <h3 class="nav-title">ABOUT</h3>
+          <ul class="nav-list">
+            <li><a href="#" class="nav-link">MORUについて</a></li>
+            <li><a href="#" class="nav-link">店舗情報</a></li>
+            <li><a href="#" class="nav-link">お問い合わせ</a></li>
+            <li><a href="#" class="nav-link">法人のお客様へ</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: NEWSLETTER & SOCIALS -->
+        <div class="newsletter-col">
+          <h3 class="nav-title">NEWSLETTER</h3>
+          <p class="newsletter-description">最新情報や新着アイテムをお届けします。</p>
+          
+          <form class="newsletter-form" id="newsletterForm" onsubmit="handleNewsletterSubmit(event)">
+            <div class="form-group">
+              <input 
+                type="email" 
+                class="newsletter-input" 
+                placeholder="メールアドレスを入力" 
+                required 
+                aria-label="メールアドレス"
+                id="newsletterEmail"
+              >
+              <button type="submit" class="newsletter-button">
+                <span>登録する</span>
+              </button>
+            </div>
+          </form>
+          <div class="form-message" id="formMessage"></div>
+
+          <!-- Social Icons -->
+          <div class="social-links">
+            <!-- Instagram -->
+            <a href="https://instagram.com" class="social-icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+
+            <!-- Pinterest -->
+            <a href="https://pinterest.com" class="social-icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.334 1.372-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
+              </svg>
+            </a>
+
+            <!-- LINE -->
+            <a href="https://line.me" class="social-icon-btn" target="_blank" rel="noopener noreferrer" aria-label="LINE">
+              <svg viewBox="0 0 24 24">
+                <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.035 9.608.391.084.922.258 1.057.592.122.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.573-3.844 2.573-5.992zm-14.739 2.59h-2.143c-.328 0-.594-.265-.594-.594v-3.992c0-.329.266-.594.594-.594.329 0 .594.265.594.594v3.398h1.549c.328 0 .594.266.594.594 0 .329-.266.594-.594.594zm3.018-.594c0 .329-.266.594-.594.594s-.594-.265-.594-.594v-3.992c0-.329.266-.594.594-.594s.594.265.594.594v3.992zm4.331 0c0 .245-.149.464-.378.552-.07.027-.145.042-.217.042-.164 0-.325-.07-.438-.198l-2.073-2.732v2.336c0 .329-.266.594-.594.594s-.594-.265-.594-.594v-3.992c0-.244.15-.465.378-.553.07-.027.145-.041.217-.041.164 0 .325.07.438.198l2.073 2.733v-2.338c0-.329.266-.594.594-.594.329 0 .594.265.594.594v3.992zm3.83-2.196c.329 0 .594.266.594.594 0 .329-.265.594-.594.594h-2.143c-.329 0-.594-.265-.594-.594v-3.992c0-.329.265-.594.594-.594h2.143c.329 0 .594.265.594.594 0 .328-.265.594-.594.594h-1.549v.804h1.549c.329 0 .594.266.594.594 0 .329-.265.594-.594.594h-1.549v.81h1.549z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Bar: Legal & Copyright -->
+      <div class="footer-bottom">
+        <p class="copyright">© MORU All rights reserved.</p>
+        
+        <ul class="legal-links">
+          <li class="legal-item">
+            <a href="#" class="legal-link">特定商取引法に基づく表記</a>
+          </li>
+          <li class="legal-item">
+            <a href="#" class="legal-link">プライバシーポリシー</a>
+          </li>
+          <li class="legal-item">
+            <a href="#" class="legal-link">利用規約</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================
+       INTERACTIONS SCRIPT
+       ======================================================== -->
+  <script>
+    function handleNewsletterSubmit(event) {
+      event.preventDefault();
+      
+      const emailInput = document.getElementById('newsletterEmail');
+      const messageElement = document.getElementById('formMessage');
+      const button = event.target.querySelector('button');
+      const email = emailInput.value.trim();
+
+      if (!email) return;
+
+      // Temporary button state
+      const originalText = button.innerHTML;
+      button.innerHTML = '<span>送信中...</span>';
+      button.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        messageElement.textContent = 'ニュースレターの登録が完了しました。';
+        messageElement.className = 'form-message success';
+        emailInput.value = '';
+        
+        button.innerHTML = originalText;
+        button.style.pointerEvents = 'auto';
+
+        setTimeout(() => {
+          messageElement.style.opacity = '0';
+          messageElement.style.transition = 'opacity 0.6s ease';
+          setTimeout(() => {
+            messageElement.className = 'form-message';
+            messageElement.textContent = '';
+            messageElement.style.opacity = '1';
+          }, 600);
+        }, 4000);
+      }, 700);
+    }
+  </script>
+</body>
+</html>

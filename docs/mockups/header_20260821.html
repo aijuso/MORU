@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MORU - Minimal & Natural Interior</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-announcement: #ECE6DE;
+      --bg-header: #FAF8F5;
+      --text-main: #242220;
+      --text-sub: #5C5854;
+      --accent-sale: #B85850;
+      --badge-bg: #1F1D1B;
+      --badge-text: #FFFFFF;
+      --border-color: #E6E0D8;
+      --transition-smooth: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    body {
+      font-family: 'Zen Kaku Gothic New', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F4F1EA;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* 告知トップバー */
+    .announcement-bar {
+      background-color: var(--bg-announcement);
+      color: var(--text-sub);
+      text-align: center;
+      padding: 9px 16px;
+      font-size: 11.5px;
+      letter-spacing: 0.06em;
+      font-weight: 400;
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    /* メインヘッダーコンテナ */
+    .site-header {
+      background-color: var(--bg-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+      transition: var(--transition-smooth);
+    }
+
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 40px;
+      height: 84px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+
+    /* 左側：ナビゲーション */
+    .header-nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-list {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 13.5px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      position: relative;
+      padding: 6px 0;
+      transition: opacity 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 1px;
+      background-color: currentColor;
+      transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), left 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      opacity: 0.7;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+      left: 0;
+    }
+
+    .nav-link.sale {
+      color: var(--accent-sale);
+      font-weight: 500;
+    }
+
+    /* 中央：ブランドロゴ */
+    .header-logo {
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-link {
+      text-decoration: none;
+      color: #171513;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      line-height: 1;
+      margin-left: 0.22em; /* 字間補正 */
+      transition: opacity 0.3s ease;
+      display: inline-block;
+    }
+
+    .logo-link:hover {
+      opacity: 0.8;
+    }
+
+    /* 右側：ユーティリティアクション */
+    .header-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 13.5px;
+      letter-spacing: 0.05em;
+      padding: 6px 4px;
+      transition: opacity 0.25s ease;
+    }
+
+    .action-btn:hover {
+      opacity: 0.65;
+    }
+
+    .action-icon {
+      width: 19px;
+      height: 19px;
+      stroke-width: 1.35;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* カートアイコン＆バッジ */
+    .cart-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -7px;
+      right: -10px;
+      background-color: var(--badge-bg);
+      color: var(--badge-text);
+      font-size: 10px;
+      font-weight: 500;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2px;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      transform: scale(0.9);
+      transition: transform 0.2s ease;
+    }
+
+    /* 検索ドロワー（アコーディオン式バー） */
+    .search-drawer {
+      max-height: 0;
+      overflow: hidden;
+      background-color: var(--bg-header);
+      border-top: 1px solid var(--border-color);
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s ease;
+      padding: 0 40px;
+    }
+
+    .search-drawer.is-open {
+      max-height: 90px;
+      padding: 20px 40px;
+    }
+
+    .search-form {
+      max-width: 580px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-bottom: 1px solid var(--text-main);
+    }
+
+    .search-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 8px 36px 8px 4px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-main);
+      letter-spacing: 0.05em;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: #9C9690;
+      font-size: 13px;
+    }
+
+    .search-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-sub);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .search-close:hover {
+      color: var(--text-main);
+    }
+
+    /* モバイル用ハンバーガーメニューボタン */
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      color: var(--text-main);
+    }
+
+    /* モバイルドロワー */
+    .mobile-nav-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(2px);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    .mobile-nav-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-nav-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 82%;
+      max-width: 320px;
+      height: 100vh;
+      background-color: var(--bg-header);
+      z-index: 999;
+      transform: translateX(-100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 30px 24px;
+      box-shadow: 10px 0 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-nav-drawer.is-open {
+      transform: translateX(0);
+    }
+
+    .mobile-nav-close {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-sub);
+      margin-bottom: 24px;
+    }
+
+    .mobile-nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .mobile-nav-list a {
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      display: block;
+      padding: 4px 0;
+    }
+
+    .mobile-nav-list a.sale {
+      color: var(--accent-sale);
+      font-weight: 500;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 1024px) {
+      .header-inner {
+        padding: 0 24px;
+        height: 76px;
+      }
+      .nav-list {
+        gap: 18px;
+      }
+      .header-actions {
+        gap: 18px;
+      }
+      .logo-link {
+        font-size: 32px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .header-inner {
+        grid-template-columns: auto 1fr auto;
+      }
+      .header-nav {
+        display: none;
+      }
+      .mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .action-text {
+        display: none;
+      }
+      .header-logo {
+        justify-content: center;
+      }
+      .logo-link {
+        font-size: 28px;
+      }
+      .announcement-bar {
+        font-size: 10.5px;
+        padding: 7px 12px;
+      }
+    }
+
+    /* デモ用プレビューコンテンツ */
+    .hero-mock {
+      max-width: 1360px;
+      margin: 32px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+    .hero-image-placeholder {
+      width: 100%;
+      height: 480px;
+      background: linear-gradient(135deg, #E6DEC9 0%, #D8CFC4 100%);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #5C5549;
+    }
+    .hero-image-placeholder h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      margin-bottom: 8px;
+    }
+    .hero-image-placeholder p {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- トップ告知バー -->
+  <div class="announcement-bar">
+    ¥15,000以上のご購入で送料無料 / 新規会員登録で¥500ptプレゼント
+  </div>
+
+  <!-- メインヘッダー -->
+  <header class="site-header">
+    <div class="header-inner">
+      
+      <!-- モバイルメニュー開閉ボタン -->
+      <button class="mobile-menu-toggle" id="mobileMenuOpen" aria-label="メニューを開く">
+        <svg class="action-icon" viewBox="0 0 24 24">
+          <line x1="3" y1="7" x2="21" y2="7"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="17" x2="21" y2="17"></line>
+        </svg>
+      </button>
+
+      <!-- 左側ナビゲーション (デスクトップ) -->
+      <nav class="header-nav" aria-label="メインナビゲーション">
+        <ul class="nav-list">
+          <li><a href="#new" class="nav-link">新着</a></li>
+          <li><a href="#furniture" class="nav-link">家具</a></li>
+          <li><a href="#lighting" class="nav-link">照明</a></li>
+          <li><a href="#interior" class="nav-link">インテリア</a></li>
+          <li><a href="#textile" class="nav-link">テキスタイル</a></li>
+          <li><a href="#sale" class="nav-link sale">セール</a></li>
+        </ul>
+      </nav>
+
+      <!-- 中央ロゴ -->
+      <div class="header-logo">
+        <a href="#" class="logo-link">MORU</a>
+      </div>
+
+      <!-- 右側ユーティリティリンク -->
+      <div class="header-actions">
+        <!-- 検索 -->
+        <button class="action-btn" id="searchToggle" aria-label="検索">
+          <span class="action-text">検索</span>
+          <svg class="action-icon" viewBox="0 0 24 24">
+            <circle cx="10.5" cy="10.5" r="7.5"></circle>
+            <line x1="16" y1="16" x2="22" y2="22"></line>
+          </svg>
+        </button>
+
+        <!-- ログイン -->
+        <a href="#login" class="action-btn" aria-label="ログイン">
+          <span class="action-text">ログイン</span>
+          <svg class="action-icon" viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+
+        <!-- カート -->
+        <a href="#cart" class="action-btn cart-wrapper" id="cartBtn" aria-label="ショッピングカート">
+          <svg class="action-icon" viewBox="0 0 24 24">
+            <circle cx="9" cy="20" r="1.2"></circle>
+            <circle cx="18" cy="20" r="1.2"></circle>
+            <path d="M1 2.5h3.5l2.2 11.5a1.8 1.8 0 0 0 1.8 1.5h10.2a1.8 1.8 0 0 0 1.8-1.4l1.6-8.1H5.2"></path>
+          </svg>
+          <span class="cart-badge" id="cartCount">0</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- 検索バー（展開用ドロワー） -->
+    <div class="search-drawer" id="searchDrawer">
+      <form class="search-form" onsubmit="event.preventDefault();">
+        <input type="search" class="search-input" id="searchInput" placeholder="商品を検索する（例: ウッドチェア、ペンダントライト...）">
+        <button type="button" class="search-close" id="searchClose" aria-label="閉じる">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </header>
+
+  <!-- モバイルナビゲーション -->
+  <div class="mobile-nav-backdrop" id="mobileNavBackdrop"></div>
+  <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+    <button class="mobile-nav-close" id="mobileMenuClose" aria-label="閉じる">✕</button>
+    <ul class="mobile-nav-list">
+      <li><a href="#new">新着</a></li>
+      <li><a href="#furniture">家具</a></li>
+      <li><a href="#lighting">照明</a></li>
+      <li><a href="#interior">インテリア</a></li>
+      <li><a href="#textile">テキスタイル</a></li>
+      <li><a href="#sale" class="sale">セール</a></li>
+    </ul>
+  </aside>
+
+  <!-- サンプルプレビュー領域 -->
+  <main class="hero-mock">
+    <div class="hero-image-placeholder">
+      <h2>Living with Nature</h2>
+      <p>心地よさと調和する、北欧の暮らしの道具たち</p>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 検索トグル機能
+      const searchToggle = document.getElementById('searchToggle');
+      const searchDrawer = document.getElementById('searchDrawer');
+      const searchClose = document.getElementById('searchClose');
+      const searchInput = document.getElementById('searchInput');
+
+      function toggleSearch() {
+        const isOpen = searchDrawer.classList.toggle('is-open');
+        if (isOpen) {
+          setTimeout(() => searchInput.focus(), 150);
+        }
+      }
+
+      searchToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleSearch();
+      });
+
+      searchClose.addEventListener('click', () => {
+        searchDrawer.classList.remove('is-open');
+      });
+
+      // モバイルドロワー機能
+      const mobileMenuOpen = document.getElementById('mobileMenuOpen');
+      const mobileMenuClose = document.getElementById('mobileMenuClose');
+      const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+      const mobileNavBackdrop = document.getElementById('mobileNavBackdrop');
+
+      function openMobileMenu() {
+        mobileNavDrawer.classList.add('is-open');
+        mobileNavBackdrop.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMobileMenu() {
+        mobileNavDrawer.classList.remove('is-open');
+        mobileNavBackdrop.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      mobileMenuOpen.addEventListener('click', openMobileMenu);
+      mobileMenuClose.addEventListener('click', closeMobileMenu);
+      mobileNavBackdrop.addEventListener('click', closeMobileMenu);
+
+      // カートバッジのインタラクション（デモ用）
+      const cartBtn = document.getElementById('cartBtn');
+      const cartBadge = document.getElementById('cartCount');
+      let count = 0;
+
+      cartBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        count++;
+        cartBadge.textContent = count;
+        cartBadge.style.transform = 'scale(1.25)';
+        setTimeout(() => {
+          cartBadge.style.transform = 'scale(0.9)';
+        }, 150);
+      });
+    });
+  </script>
+</body>
+</html>
