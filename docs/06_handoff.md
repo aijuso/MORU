@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: 2026-08-19
+> 最終更新: 2026-08-22
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
 > 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`(未公開)
@@ -33,13 +33,15 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 | `templates/product.json` | main-product / bundle / details / styling / product-grid×2 / recently-viewed |
 | `templates/collection.json` | collection-banner / collection-grid / recently-viewed |
 | `templates/cart.json` | main-cart / recently-viewed |
+| `templates/search.json` | moru-search / recently-viewed |
+| `templates/404.json` | moru-404 / recently-viewed |
 | `templates/page.json` | page-header / page-content(汎用の固定ページ) |
 | `templates/page.about.json` | page-header / page-story×3 / page-cta |
 | `templates/page.tokushoho.json` | page-header / page-legal(法定13項目) |
 | `templates/page.privacy.json` | page-header / page-content(目次あり) |
 | `templates/page.terms.json` | page-header / page-content(目次あり) |
 | `templates/page.faq.json` | page-header / page-faq / page-cta |
-| `sections/header-group.json` | moru-announcement / moru-header |
+| `sections/header-group.json` | moru-announcement / moru-header / moru-search-modal / moru-cart-drawer |
 | `sections/footer-group.json` | moru-footer |
 
 ### セクション(すべて schema 付き・日本語ラベル・presets 付き)
@@ -67,6 +69,11 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 - `moru-page-faq` — よくある質問(カテゴリ見出し+質問ブロックのアコーディオン)
 - `moru-page-story` — 画像+テキストの交互ブロック。Aboutページ用
 - `moru-page-cta` — ページ下部の案内(見出し/説明/ボタン2つ)
+- `moru-search` — 検索結果(検索フォーム/種類タブ/並び替え/さらに表示する/0件時の導線+おすすめキーワードのブロック)
+- `moru-404` — 404(見出し/説明/検索フォーム/導線リンクのブロック)
+- `moru-search-modal` — ヘッダーの検索モーダル(予測検索・最近の検索・おすすめキーワード)。**header グループ専用**
+- `moru-cart-drawer` — 右から出るカートドロワー(数量変更/削除/小計/購入手続き)。**header グループ専用**
+- `moru-predictive-search` — 予測検索の描画専用。テンプレートには置かない・schema なし(下記「検索・カートドロワーの仕組み」参照)
 
 ### スニペット
 
@@ -101,6 +108,31 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 - Shopify の仕様は記憶で答えず `search_docs_chunks` で確認する。
 - コミット前に `shopify theme check` を通す(現在オフェンス0)。
 
+### 検索・カートドロワーの仕組み(2026-08-22 追加)
+
+**予測検索**
+`sections/moru-predictive-search.liquid` は Predictive Search API の描画専用ファイル。
+`/search/suggest?q=...&section_id=moru-predictive-search` で取得した HTML の
+`[data-predictive-root]` の中身を検索モーダルに差し込む。
+テンプレートには置かないので **schema を付けていない**(付けるとテーマエディタから
+単体で配置できてしまい、常に空表示になる)。CLAUDE.md 絶対ルール9 の例外はこの1ファイルだけ。
+
+**共有CSSの置き場**
+`theme check` の `ValidScopedCSSClass` は、あるセクションの `{% stylesheet %}` に
+そのファイルで使っていないクラスを書くと警告する。
+そのため複数セクションから使うクラスは `assets/base.css` に置く。
+今回 `.moru-pill`(商品一覧・検索ページ・検索モーダルで共有)と
+`.moru-predictive__*`(描画元と表示先が別ファイル)を base.css に移した。
+
+**JavaScript が無効なときの動作**
+ヘッダーの検索アイコンは `/search` への `<a>`、カートアイコンは `/cart` への `<a>`。
+モーダル/ドロワーの JS が `preventDefault()` して初めて上書きされるので、
+セクションを外しても JS が落ちてもリンクとして機能する。
+
+**カートドロワーが動かない場所**
+`/cart` ページでは `request.page_type == 'cart'` を見てドロワーを開かない
+(同じ内容が二重になるため)。カートアイコンは通常のリンクとして働く。
+
 ### 空状態フォールバック
 
 商品・コレクション・ブログ・画像が未設定でも崩れないこと。プレースホルダー表示は必ず「これはサンプルです」と分かる文言にする。
@@ -113,10 +145,8 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 
 | 優先 | テンプレート | 現状のセクション | 内容 |
 |---|---|---|---|
-| 高 | `templates/search.json` | `sections/search.liquid` | 検索結果。`moru-collection-grid` の作りを流用できる |
 | 保留 | `templates/blog.json` | `sections/blog.liquid` | 読みもの一覧。**ユーザー判断で「準備中」**。着手指示が出るまで作らない |
 | 保留 | `templates/article.json` | `sections/article.liquid` | 読みもの詳細(記事本文・関連記事)。同じく準備中 |
-| 中 | `templates/404.json` | `sections/404.liquid` | 404 ページ |
 | 低 | `templates/list-collections.json` | `sections/collections.liquid` | コレクション一覧 |
 | 低 | `templates/password.json` | `sections/password.liquid` | パスワードページ |
 | 低 | `templates/gift_card.liquid` | — | ギフトカード |
@@ -136,17 +166,17 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 
 ### ページ以外で未実装
 
-- **カートドロワー** — ヘッダーのカートアイコンは現在 `/cart` へのリンク。ドロワー化は未実装
-- **検索モーダル** — ヘッダーの検索アイコンは `/search` へのリンク
 - **`moru-category-browser` のタブ切替** — 現状は円形カテゴリのリンクのみ(クリックでコレクションへ遷移)。同一ページ内でのフェード切替は未実装
 - **お気に入り(ウィッシュリスト)** — 商品ページ・カードのボタンは見た目のみ。保存にはアプリが必要
 
-### 掃除したいもの
+### 掃除したもの(2026-08-22 実施済み)
 
-Skeleton の未使用ファイルが残っている。`moru-*` に置き換え済みなので削除してよい:
-`sections/header.liquid` `sections/footer.liquid` `sections/product.liquid` `sections/collection.liquid` `sections/hello-world.liquid` `sections/custom-section.liquid`
-(`sections/page.liquid` は固定ページ実装にあわせて削除済み)
-(削除前に `templates/*.json` と `*-group.json` から参照が無いことを確認する)
+Skeleton の未使用セクションを削除した。削除前に `templates/*.json` と `*-group.json` から参照が無いことを確認済み:
+`header.liquid` `footer.liquid` `product.liquid` `collection.liquid` `hello-world.liquid` `custom-section.liquid` `search.liquid` `404.liquid`
+(`page.liquid` は固定ページ実装時に削除済み)
+
+**まだ残しているもの**(参照するテンプレートが素のまま残っているため):
+`article.liquid` `blog.liquid` `collections.liquid` `password.liquid`
 
 ---
 
@@ -160,6 +190,8 @@ Skeleton の未使用ファイルが残っている。`moru-*` に置き換え�
 | エクスプレスチェックアウト | 「設定 → 決済 → スピードアップチェックアウト」を有効にすると Shop Pay / Apple Pay / Google Pay が出る |
 | セット割引 | カート/商品ページの割引表示は見た目のみ。実際に効かせるには管理画面「割引」で自動割引を作成する |
 | クーポン | カートのクーポン欄は Shopify の `/discount/CODE` を使うので、割引コードを作れば実際に効く |
+| 検索の精度 | 予測検索・検索結果の並びは Shopify の **Search & Discovery** アプリ(無料)で調整できる。同義語・除外・並び順など。未インストール |
+| 検索の種類タブ | 検索ページの「読みもの」タブはブログ記事が無いと常に0件。読みもの公開までは `moru-search` の「種類タブを表示」をオフにしてよい |
 | 固定ページの作成 | **作成済み(すべて非公開/下書き)**。about / tokushoho / privacy / terms / faq の5ページを Admin API で作成し、テンプレートも割り当て済み。内容確認後にユーザーが公開する |
 | 事業者情報 | 特商法ページの「販売業者・責任者・所在地・電話番号・メールアドレス・支払方法/時期・商品代金以外の必要料金」は**未入力**。テーマエディタで実際の情報を入力するまで、店頭に「未記入です」と表示される(架空の事業者情報は入れていない) |
 | ポリシー本文 | プライバシーポリシー・利用規約の本文は管理画面「ページ」の本文に入力する(見出し2を使うと目次が自動生成される)。**注意: Shopifyの「設定 → ポリシー」の既定文は英語かつ `{{ shop_name }}` などのLiquidタグ入りで、ページ本文に貼るとタグがそのまま表示される。** 日本語で書き直すか、タグを実値に置換してから貼ること |

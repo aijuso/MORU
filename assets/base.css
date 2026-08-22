@@ -276,6 +276,118 @@ a:hover {
   margin-block-end: 0;
 }
 
+/* Filter / keyword pill — shared by the collection grid, search page and search modal */
+.moru-pill {
+  padding: 6px var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 200ms ease, background-color 200ms ease, color 200ms ease;
+}
+
+.moru-pill:hover {
+  border-color: var(--color-muted);
+  color: var(--color-text);
+}
+
+.moru-pill.is-active {
+  border-color: var(--color-text);
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+/* Predictive search results — markup comes from sections/moru-predictive-search.liquid
+   and is injected into the search modal, so the rules live here rather than in either section. */
+.moru-predictive__group {
+  margin-block-start: var(--space-lg);
+}
+
+.moru-predictive__group-title {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-muted);
+}
+
+.moru-predictive__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moru-predictive__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xs) var(--space-2xs);
+  border-radius: var(--radius-card);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.moru-predictive__item:hover,
+.moru-predictive__item:focus-visible,
+.moru-predictive__item.is-highlighted {
+  background-color: var(--color-bg-alt);
+  color: var(--color-text);
+}
+
+.moru-predictive__item--text {
+  padding-block: var(--space-sm);
+}
+
+.moru-predictive__thumb {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-alt);
+}
+
+.moru-predictive__thumb img,
+.moru-predictive__thumb svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moru-predictive__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.moru-predictive__title {
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.moru-predictive__price {
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+}
+
+.moru-predictive__all {
+  display: inline-block;
+  margin-block-start: var(--space-lg);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-text);
+}
+
+.moru-predictive__empty {
+  margin: var(--space-lg) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

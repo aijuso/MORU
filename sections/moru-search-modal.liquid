@@ -1,0 +1,485 @@
+{% liquid
+  assign keyword_blocks = section.blocks | where: 'type', 'keyword'
+%}
+
+<moru-search-modal
+  class="moru-search-modal full-width"
+  data-search-modal
+  data-limit="{{ section.settings.suggestion_limit }}"
+  data-recent="{{ section.settings.show_recent }}"
+  aria-hidden="true"
+>
+  <div class="moru-search-modal__backdrop" data-modal-backdrop></div>
+
+  <div class="moru-search-modal__panel" role="dialog" aria-modal="true" aria-label="{{ 'moru.search.heading' | t }}">
+    <div class="moru-search-modal__inner">
+      <form class="moru-search-modal__form" action="{{ routes.search_url }}" method="get" role="search">
+        <input type="hidden" name="options[prefix]" value="last">
+        <svg class="moru-search-modal__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" aria-hidden="true" focusable="false">
+          <circle cx="10.5" cy="10.5" r="7.5"></circle>
+          <line x1="16" y1="16" x2="22" y2="22"></line>
+        </svg>
+        <label class="moru-search-modal__label" for="{{ section.id }}-modal-q">{{ 'moru.search.heading' | t }}</label>
+        <input
+          class="moru-search-modal__input"
+          id="{{ section.id }}-modal-q"
+          type="search"
+          name="q"
+          autocomplete="off"
+          placeholder="{{ 'moru.header.search_placeholder' | t }}"
+          data-modal-input
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="{{ section.id }}-modal-results"
+          aria-autocomplete="list"
+        >
+        <button class="moru-search-modal__close" type="button" data-modal-close aria-label="{{ 'moru.header.close' | t }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </form>
+
+      <div class="moru-search-modal__results" id="{{ section.id }}-modal-results" role="listbox" data-modal-results></div>
+
+      <div class="moru-search-modal__hints" data-modal-hints>
+        {% if section.settings.show_recent %}
+          <div class="moru-search-modal__hint-group" data-modal-recent hidden>
+            <div class="moru-search-modal__hint-head">
+              <p class="moru-search-modal__hint-title">{{ 'moru.search_modal.recent' | t }}</p>
+              <button type="button" class="moru-search-modal__clear" data-modal-recent-clear>
+                {{ 'moru.recent.clear' | t }}
+              </button>
+            </div>
+            <div class="moru-search-modal__pills" data-modal-recent-list></div>
+          </div>
+        {% endif %}
+
+        {% if keyword_blocks.size > 0 %}
+          <div class="moru-search-modal__hint-group">
+            <p class="moru-search-modal__hint-title">{{ 'moru.search.suggestions' | t }}</p>
+            <div class="moru-search-modal__pills">
+              {% for block in keyword_blocks %}
+                {% if block.settings.keyword != blank %}
+                  <a
+                    class="moru-pill"
+                    href="{{ routes.search_url }}?q={{ block.settings.keyword | url_encode }}&options%5Bprefix%5D=last"
+                    {{ block.shopify_attributes }}
+                  >{{ block.settings.keyword }}</a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</moru-search-modal>
+
+{% stylesheet %}
+  .moru-search-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .moru-search-modal__backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 300ms ease, visibility 300ms ease;
+  }
+
+  .moru-search-modal__panel {
+    position: relative;
+    max-height: 84vh;
+    overflow-y: auto;
+    background-color: var(--color-bg);
+    border-block-end: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lift);
+    transform: translateY(-100%);
+    transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .moru-search-modal.is-open {
+    pointer-events: auto;
+  }
+
+  .moru-search-modal.is-open .moru-search-modal__backdrop {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .moru-search-modal.is-open .moru-search-modal__panel {
+    transform: translateY(0);
+  }
+
+  .moru-search-modal__inner {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: var(--space-lg) var(--space-lg) var(--space-xl);
+  }
+
+  .moru-search-modal__form {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding-block-end: var(--space-xs);
+    border-block-end: 1px solid var(--color-text);
+  }
+
+  .moru-search-modal__icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: var(--color-muted);
+  }
+
+  .moru-search-modal__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .moru-search-modal__input {
+    flex: 1;
+    padding: var(--space-2xs);
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-md);
+    letter-spacing: 0.04em;
+  }
+
+  .moru-search-modal__input::placeholder {
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+    opacity: 0.75;
+  }
+
+  .moru-search-modal__close {
+    display: flex;
+    padding: var(--space-2xs);
+    border: none;
+    background: none;
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: color 200ms ease;
+  }
+
+  .moru-search-modal__close:hover {
+    color: var(--color-text);
+  }
+
+  .moru-search-modal__results:empty {
+    display: none;
+  }
+
+  .moru-search-modal__hints[hidden] {
+    display: none;
+  }
+
+  .moru-search-modal__hint-group {
+    margin-block-start: var(--space-lg);
+  }
+
+  .moru-search-modal__hint-group[hidden] {
+    display: none;
+  }
+
+  .moru-search-modal__hint-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  .moru-search-modal__hint-title {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-muted);
+  }
+
+  .moru-search-modal__clear {
+    border: none;
+    background: none;
+    color: var(--color-muted);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .moru-search-modal__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  @media (max-width: 768px) {
+    .moru-search-modal__inner {
+      padding: var(--space-md) var(--space-md) var(--space-lg);
+    }
+
+    .moru-search-modal__panel {
+      max-height: 100vh;
+      min-height: 100vh;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  const MORU_RECENT_SEARCH_KEY = 'moru:recent-searches';
+
+  class MoruSearchModal extends HTMLElement {
+    connectedCallback() {
+      this.input = this.querySelector('[data-modal-input]');
+      this.results = this.querySelector('[data-modal-results]');
+      this.hints = this.querySelector('[data-modal-hints]');
+      this.recentGroup = this.querySelector('[data-modal-recent]');
+      this.recentList = this.querySelector('[data-modal-recent-list]');
+      this.form = this.querySelector('form');
+      this.limit = this.dataset.limit || '6';
+      this.controller = null;
+      this.timer = null;
+      this.opener = null;
+
+      this.querySelector('[data-modal-close]')?.addEventListener('click', () => this.close());
+      this.querySelector('[data-modal-backdrop]')?.addEventListener('click', () => this.close());
+      this.querySelector('[data-modal-recent-clear]')?.addEventListener('click', () => this.clearRecent());
+
+      this.input?.addEventListener('input', () => this.onInput());
+      this.input?.addEventListener('keydown', (event) => this.onKeydown(event));
+      this.form?.addEventListener('submit', () => this.remember(this.input.value));
+
+      document.addEventListener('click', (event) => {
+        const toggle = event.target.closest('[data-search-toggle]');
+        if (!toggle) return;
+        event.preventDefault();
+        this.open(toggle);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && this.classList.contains('is-open')) this.close();
+      });
+
+      this.renderRecent();
+    }
+
+    get rootUrl() {
+      return (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+    }
+
+    open(opener) {
+      this.opener = opener || null;
+      this.classList.add('is-open');
+      this.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      this.renderRecent();
+      window.setTimeout(() => this.input?.focus(), 120);
+    }
+
+    close() {
+      this.classList.remove('is-open');
+      this.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      this.input?.setAttribute('aria-expanded', 'false');
+      if (this.opener && typeof this.opener.focus === 'function') this.opener.focus();
+    }
+
+    get options() {
+      return Array.from(this.results.querySelectorAll('.moru-predictive__item'));
+    }
+
+    onKeydown(event) {
+      const options = this.options;
+      if (options.length === 0) return;
+
+      const current = options.findIndex((option) => option.classList.contains('is-highlighted'));
+
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const step = event.key === 'ArrowDown' ? 1 : -1;
+        const next = (current + step + options.length + 1) % (options.length + 1);
+        options.forEach((option) => option.classList.remove('is-highlighted'));
+        if (next < options.length) {
+          options[next].classList.add('is-highlighted');
+          options[next].scrollIntoView({ block: 'nearest' });
+        }
+      } else if (event.key === 'Enter' && current > -1) {
+        event.preventDefault();
+        this.remember(this.input.value);
+        window.location.href = options[current].getAttribute('href');
+      }
+    }
+
+    onInput() {
+      window.clearTimeout(this.timer);
+      const query = this.input.value.trim();
+
+      if (query.length < 2) {
+        this.results.innerHTML = '';
+        this.input.setAttribute('aria-expanded', 'false');
+        if (this.hints) this.hints.hidden = false;
+        return;
+      }
+
+      this.timer = window.setTimeout(() => this.suggest(query), 250);
+    }
+
+    async suggest(query) {
+      if (this.controller) this.controller.abort();
+      this.controller = new AbortController();
+
+      const params = new URLSearchParams({
+        q: query,
+        'resources[type]': 'product,article,page',
+        'resources[limit]': this.limit,
+        'resources[options][unavailable_products]': 'last',
+        section_id: 'moru-predictive-search',
+      });
+
+      try {
+        const response = await fetch(this.rootUrl + 'search/suggest?' + params.toString(), {
+          signal: this.controller.signal,
+        });
+        if (!response.ok) throw new Error(String(response.status));
+
+        const parsed = new DOMParser().parseFromString(await response.text(), 'text/html');
+        const markup = parsed.querySelector('[data-predictive-root]');
+        if (!markup) return;
+
+        this.results.innerHTML = markup.innerHTML;
+        this.input.setAttribute('aria-expanded', 'true');
+        if (this.hints) this.hints.hidden = true;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        this.results.innerHTML = '';
+        this.input.setAttribute('aria-expanded', 'false');
+        if (this.hints) this.hints.hidden = false;
+      }
+    }
+
+    readRecent() {
+      if (this.dataset.recent !== 'true') return [];
+      try {
+        const raw = window.localStorage.getItem(MORU_RECENT_SEARCH_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    remember(value) {
+      if (this.dataset.recent !== 'true') return;
+      const term = (value || '').trim();
+      if (!term) return;
+      try {
+        const next = [term].concat(this.readRecent().filter((item) => item !== term)).slice(0, 6);
+        window.localStorage.setItem(MORU_RECENT_SEARCH_KEY, JSON.stringify(next));
+      } catch (error) {
+        /* storage unavailable — recent searches are a convenience only */
+      }
+    }
+
+    clearRecent() {
+      try {
+        window.localStorage.removeItem(MORU_RECENT_SEARCH_KEY);
+      } catch (error) {
+        /* nothing to clear */
+      }
+      this.renderRecent();
+    }
+
+    renderRecent() {
+      if (!this.recentGroup || !this.recentList) return;
+      const terms = this.readRecent();
+
+      if (terms.length === 0) {
+        this.recentGroup.hidden = true;
+        this.recentList.textContent = '';
+        return;
+      }
+
+      this.recentList.textContent = '';
+      terms.forEach((term) => {
+        const link = document.createElement('a');
+        link.className = 'moru-pill';
+        link.href = this.rootUrl + 'search?q=' + encodeURIComponent(term) + '&options%5Bprefix%5D=last';
+        link.textContent = term;
+        this.recentList.appendChild(link);
+      });
+      this.recentGroup.hidden = false;
+    }
+  }
+
+  if (!customElements.get('moru-search-modal')) {
+    customElements.define('moru-search-modal', MoruSearchModal);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:moru.search_modal.name",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:moru.search_modal.intro"
+    },
+    {
+      "type": "range",
+      "id": "suggestion_limit",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "label": "t:moru.search_modal.suggestion_limit_label",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recent",
+      "label": "t:moru.search_modal.show_recent_label",
+      "info": "t:moru.search_modal.show_recent_info",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "keyword",
+      "name": "t:moru.search.keyword_block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "keyword",
+          "label": "t:moru.search.keyword_label",
+          "info": "t:moru.search.keyword_info"
+        }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.search_modal.name"
+    }
+  ]
+}
+{% endschema %}

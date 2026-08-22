@@ -438,6 +438,34 @@
       "text_default": "<p>Get in touch and we'll reply in order of receipt.</p>",
       "button_2_label": "Second button label",
       "button_2_link": "Second button link"
+    },
+    "search": {
+      "name": "MORU search results",
+      "show_type_filter_label": "Show type tabs (All / Products / Journal / Pages)",
+      "show_type_filter_info": "Narrows the search to one resource type. Hide it while the journal is unpublished",
+      "keyword_block": "Suggested keyword",
+      "keyword_label": "Keyword",
+      "keyword_info": "Shown as a suggestion before a search and when a search returns nothing"
+    },
+    "search_modal": {
+      "name": "MORU search modal",
+      "intro": "Opens from the header search icon and suggests products, articles and pages as the shopper types. Without JavaScript the icon links to the search page",
+      "suggestion_limit_label": "Number of suggestions",
+      "show_recent_label": "Show recent searches",
+      "show_recent_info": "Stored in the shopper's own browser only — never sent to the server"
+    },
+    "notfound": {
+      "name": "MORU 404",
+      "heading_info": "Leave empty to use the default heading",
+      "body_label": "Body text",
+      "body_info": "Leave empty to use the default text",
+      "show_search_label": "Show the search form"
+    },
+    "cart_drawer": {
+      "name": "MORU cart drawer",
+      "intro": "Slides in from the right when the header cart icon is used. Without JavaScript the icon links to the cart page",
+      "open_on_add_label": "Open the drawer after adding to cart",
+      "open_on_add_info": "Turn off to keep the default redirect to the cart page"
     }
   }
 }

@@ -182,6 +182,37 @@
       "faq_empty": "No questions yet. Add a “Question” block to this section in the theme editor.",
       "faq_todo": "This answer is empty. Add its content in the theme editor.",
       "story_empty": "No blocks yet. Add a “Story” block to this section in the theme editor."
+    },
+    "search": {
+      "eyebrow": "SEARCH",
+      "heading": "Search",
+      "results_for": "Results for “{{ terms }}”",
+      "placeholder": "Search products, journal and pages",
+      "submit": "Search",
+      "type_all": "All",
+      "type_product": "Products",
+      "type_article": "Journal",
+      "type_page": "Pages",
+      "prompt": "Enter a keyword to start searching.",
+      "empty_heading": "No results found for “{{ terms }}”.",
+      "empty_help": "Try a shorter keyword, a different spelling, or another way of describing what you are looking for.",
+      "suggestions": "Popular searches",
+      "browse_all": "Browse all products"
+    },
+    "search_modal": {
+      "recent": "Recent searches",
+      "view_all": "See all results for “{{ terms }}” →"
+    },
+    "notfound": {
+      "code": "404",
+      "heading": "Page not found",
+      "body": "The page you are looking for may have moved, been removed, or changed address. Try the search below or one of these links.",
+      "home": "Back to home",
+      "links_title": "Popular pages"
+    },
+    "cart_drawer": {
+      "note": "Shipping and tax are calculated at checkout.",
+      "view_cart": "View cart"
     }
   }
 }

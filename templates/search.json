@@ -10,11 +10,48 @@
 {
   "sections": {
     "main": {
-      "type": "search",
+      "type": "moru-search",
+      "settings": {},
+      "blocks": {
+        "k1": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "チェア"
+          }
+        },
+        "k2": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "テーブル"
+          }
+        },
+        "k3": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "照明"
+          }
+        },
+        "k4": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "ラグ"
+          }
+        }
+      },
+      "block_order": [
+        "k1",
+        "k2",
+        "k3",
+        "k4"
+      ]
+    },
+    "recently_viewed": {
+      "type": "moru-recently-viewed",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "recently_viewed"
   ]
 }

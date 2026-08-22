@@ -18,10 +18,45 @@
     "header": {
       "type": "moru-header",
       "settings": {}
+    },
+    "search_modal": {
+      "type": "moru-search-modal",
+      "settings": {},
+      "blocks": {
+        "k1": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "チェア"
+          }
+        },
+        "k2": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "テーブル"
+          }
+        },
+        "k3": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "照明"
+          }
+        }
+      },
+      "block_order": [
+        "k1",
+        "k2",
+        "k3"
+      ]
+    },
+    "cart_drawer": {
+      "type": "moru-cart-drawer",
+      "settings": {}
     }
   },
   "order": [
     "announcement",
-    "header"
+    "header",
+    "search_modal",
+    "cart_drawer"
   ]
 }

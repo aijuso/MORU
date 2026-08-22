@@ -1,0 +1,617 @@
+{% liquid
+  assign tax_amount = 0
+  if section.settings.tax_display == 'included' and cart.total_price > 0
+    assign divisor = section.settings.tax_rate | plus: 100
+    assign tax_amount = cart.total_price | times: section.settings.tax_rate | divided_by: divisor
+  endif
+%}
+
+<moru-cart-drawer
+  class="moru-cart-drawer full-width"
+  data-cart-drawer
+  data-section-id="{{ section.id }}"
+  data-intercept-add="{{ section.settings.open_on_add }}"
+  data-page-type="{{ request.page_type }}"
+  aria-hidden="true"
+>
+  <div class="moru-cart-drawer__backdrop" data-drawer-backdrop></div>
+
+  <aside
+    class="moru-cart-drawer__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'cart.title' | t }}"
+  >
+    <header class="moru-cart-drawer__head">
+      <h2 class="moru-cart-drawer__title">
+        {{ 'cart.title' | t }}
+        <span class="moru-cart-drawer__count">{{ 'moru.cart.item_count' | t: count: cart.item_count }}</span>
+      </h2>
+      <button class="moru-cart-drawer__close" type="button" data-drawer-close aria-label="{{ 'moru.header.close' | t }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </header>
+
+    <div class="moru-cart-drawer__body" data-drawer-body>
+      {% if cart.item_count == 0 %}
+        <div class="moru-cart-drawer__empty">
+          <p>{{ 'moru.cart.empty' | t }}</p>
+          <a class="moru-button moru-button--outline" href="{{ routes.all_products_collection_url }}">
+            {{ 'moru.cart.continue' | t }}
+          </a>
+        </div>
+      {% else %}
+        <ul class="moru-cart-drawer__items" role="list">
+          {% for item in cart.items %}
+            <li class="moru-cart-drawer__item" data-line="{{ forloop.index }}">
+              <a class="moru-cart-drawer__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                {% if item.image %}
+                  {{ item.image | image_url: width: 200, height: 200, crop: 'center' | image_tag: loading: 'lazy', alt: item.image.alt }}
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag }}
+                {% endif %}
+              </a>
+
+              <div class="moru-cart-drawer__item-body">
+                <a class="moru-cart-drawer__item-title" href="{{ item.url }}">{{ item.product.title }}</a>
+                {% unless item.product.has_only_default_variant %}
+                  <p class="moru-cart-drawer__item-variant">{{ item.variant.title }}</p>
+                {% endunless %}
+
+                {% if item.line_level_discount_allocations.size > 0 %}
+                  <ul class="moru-cart-drawer__item-discounts" role="list">
+                    {% for allocation in item.line_level_discount_allocations %}
+                      <li>{{ allocation.discount_application.title }} (&minus;{{ allocation.amount | money }})</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+
+                <div class="moru-cart-drawer__item-controls">
+                  <div class="moru-cart-drawer__stepper">
+                    <button type="button" data-drawer-minus aria-label="{{ 'moru.product.qty_minus' | t }}">&minus;</button>
+                    <span data-drawer-qty>{{ item.quantity }}</span>
+                    <button type="button" data-drawer-plus aria-label="{{ 'moru.product.qty_plus' | t }}">&plus;</button>
+                  </div>
+
+                  <button type="button" class="moru-cart-drawer__remove" data-drawer-remove>
+                    {{ 'cart.remove' | t }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="moru-cart-drawer__item-price">
+                {% if item.original_line_price > item.final_line_price %}
+                  <s>{{ item.original_line_price | money }}</s>
+                {% endif %}
+                <span>{{ item.final_line_price | money }}</span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    {% if cart.item_count > 0 %}
+      <footer class="moru-cart-drawer__foot">
+        {% if cart.cart_level_discount_applications.size > 0 %}
+          <ul class="moru-cart-drawer__discounts" role="list">
+            {% for discount in cart.cart_level_discount_applications %}
+              <li>
+                <span>{{ discount.title }}</span>
+                <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <div class="moru-cart-drawer__subtotal">
+          <span>{{ 'moru.cart.subtotal' | t }}</span>
+          <strong>{{ cart.total_price | money }}</strong>
+        </div>
+
+        {% if tax_amount > 0 %}
+          <p class="moru-cart-drawer__tax">
+            {{ 'moru.cart.tax_included' | t: rate: section.settings.tax_rate }} {{ tax_amount | money }}
+          </p>
+        {% endif %}
+
+        <p class="moru-cart-drawer__note">{{ 'moru.cart_drawer.note' | t }}</p>
+
+        <form class="moru-cart-drawer__actions" action="{{ routes.cart_url }}" method="post">
+          <a class="moru-button moru-button--outline" href="{{ routes.cart_url }}">
+            {{ 'moru.cart_drawer.view_cart' | t }}
+          </a>
+          <button class="moru-button" type="submit" name="checkout">{{ 'cart.checkout' | t }}</button>
+        </form>
+      </footer>
+    {% endif %}
+  </aside>
+</moru-cart-drawer>
+
+{% stylesheet %}
+  .moru-cart-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1001;
+    display: block;
+    width: 100%;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .moru-cart-drawer__backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 300ms ease, visibility 300ms ease;
+  }
+
+  .moru-cart-drawer__panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(420px, 92vw);
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--color-bg);
+    box-shadow: -10px 0 30px rgb(0 0 0 / 0.06);
+    transform: translateX(100%);
+    transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .moru-cart-drawer.is-open {
+    pointer-events: auto;
+  }
+
+  .moru-cart-drawer.is-open .moru-cart-drawer__backdrop {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .moru-cart-drawer.is-open .moru-cart-drawer__panel {
+    transform: translateX(0);
+  }
+
+  .moru-cart-drawer.is-busy .moru-cart-drawer__body {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .moru-cart-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-md) var(--space-sm);
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .moru-cart-drawer__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+    margin: 0;
+    font-size: var(--font-size-lg);
+  }
+
+  .moru-cart-drawer__count {
+    font-family: var(--font-body--family);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+
+  .moru-cart-drawer__close {
+    display: flex;
+    padding: var(--space-2xs);
+    border: none;
+    background: none;
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: color 200ms ease;
+  }
+
+  .moru-cart-drawer__close:hover {
+    color: var(--color-text);
+  }
+
+  .moru-cart-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-md);
+    transition: opacity 200ms ease;
+  }
+
+  .moru-cart-drawer__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  .moru-cart-drawer__items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-cart-drawer__item {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: var(--space-sm);
+    padding-block-end: var(--space-md);
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .moru-cart-drawer__item:last-child {
+    border-block-end: none;
+    padding-block-end: 0;
+  }
+
+  .moru-cart-drawer__media {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-cart-drawer__media img,
+  .moru-cart-drawer__media svg {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .moru-cart-drawer__item-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    min-width: 0;
+  }
+
+  .moru-cart-drawer__item-title {
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .moru-cart-drawer__item-variant,
+  .moru-cart-drawer__item-discounts {
+    margin: 0;
+    padding: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+    list-style: none;
+  }
+
+  .moru-cart-drawer__item-discounts {
+    color: var(--color-sale);
+  }
+
+  .moru-cart-drawer__item-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-block-start: var(--space-2xs);
+  }
+
+  .moru-cart-drawer__stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-inputs);
+  }
+
+  .moru-cart-drawer__stepper button {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .moru-cart-drawer__stepper span {
+    min-width: 24px;
+    font-size: var(--font-size-xs);
+    text-align: center;
+  }
+
+  .moru-cart-drawer__remove {
+    border: none;
+    background: none;
+    color: var(--color-muted);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .moru-cart-drawer__remove:hover {
+    color: var(--color-text);
+  }
+
+  .moru-cart-drawer__item-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+  }
+
+  .moru-cart-drawer__item-price s {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart-drawer__foot {
+    padding: var(--space-md);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .moru-cart-drawer__discounts {
+    margin: 0 0 var(--space-xs);
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-xs);
+    color: var(--color-sale);
+  }
+
+  .moru-cart-drawer__discounts li {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .moru-cart-drawer__subtotal {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-cart-drawer__subtotal strong {
+    font-size: var(--font-size-lg);
+  }
+
+  .moru-cart-drawer__tax,
+  .moru-cart-drawer__note {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--font-size-xs);
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+
+  .moru-cart-drawer__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+    margin-block-start: var(--space-md);
+  }
+
+  @media (max-width: 480px) {
+    .moru-cart-drawer__actions {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class MoruCartDrawer extends HTMLElement {
+    connectedCallback() {
+      this.sectionId = this.dataset.sectionId;
+      this.opener = null;
+
+      this.addEventListener('click', (event) => {
+        if (event.target.closest('[data-drawer-close]') || event.target.closest('[data-drawer-backdrop]')) {
+          this.close();
+          return;
+        }
+
+        const minus = event.target.closest('[data-drawer-minus]');
+        const plus = event.target.closest('[data-drawer-plus]');
+        const remove = event.target.closest('[data-drawer-remove]');
+        if (!minus && !plus && !remove) return;
+
+        const item = (minus || plus || remove).closest('[data-line]');
+        if (!item) return;
+
+        if (remove) {
+          this.change(item.dataset.line, 0);
+          return;
+        }
+
+        const current = parseInt(item.querySelector('[data-drawer-qty]').textContent, 10) || 0;
+        this.change(item.dataset.line, Math.max(0, current + (plus ? 1 : -1)));
+      });
+
+      document.addEventListener('click', (event) => {
+        const toggle = event.target.closest('[data-cart-drawer-toggle]');
+        if (!toggle) return;
+        // On the cart page itself the drawer would duplicate the page it sits on,
+        // so the icon keeps its plain link behaviour there.
+        if (this.dataset.pageType === 'cart') return;
+        event.preventDefault();
+        this.open(toggle);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && this.classList.contains('is-open')) this.close();
+      });
+
+      if (this.dataset.interceptAdd === 'true' && this.dataset.pageType !== 'cart') {
+        document.addEventListener('submit', (event) => this.onProductSubmit(event));
+      }
+    }
+
+    get rootUrl() {
+      return (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+    }
+
+    open(opener) {
+      if (opener) this.opener = opener;
+      this.classList.add('is-open');
+      this.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      window.setTimeout(() => this.querySelector('[data-drawer-close]')?.focus(), 120);
+    }
+
+    close() {
+      this.classList.remove('is-open');
+      this.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (this.opener && typeof this.opener.focus === 'function') this.opener.focus();
+    }
+
+    async onProductSubmit(event) {
+      const form = event.target.closest('form');
+      if (!form) return;
+
+      const action = form.getAttribute('action') || '';
+      if (action.indexOf('/cart/add') === -1) return;
+
+      event.preventDefault();
+      const submitButton = form.querySelector('[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
+
+      try {
+        const response = await fetch(this.rootUrl + 'cart/add.js', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        if (!response.ok) throw new Error('add failed');
+        await this.refresh();
+        this.open();
+      } catch (error) {
+        form.submit();
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
+    }
+
+    async change(line, quantity) {
+      this.classList.add('is-busy');
+      try {
+        const response = await fetch(this.rootUrl + 'cart/change.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ line: Number(line), quantity: quantity }),
+        });
+        if (!response.ok) throw new Error('change failed');
+        await this.refresh();
+      } catch (error) {
+        window.location.reload();
+      } finally {
+        this.classList.remove('is-busy');
+      }
+    }
+
+    async refresh() {
+      const response = await fetch(window.location.pathname + '?section_id=' + this.sectionId);
+      const parsed = new DOMParser().parseFromString(await response.text(), 'text/html');
+      const next = parsed.querySelector('[data-cart-drawer]');
+      if (!next) {
+        window.location.reload();
+        return;
+      }
+
+      const wasOpen = this.classList.contains('is-open');
+      this.innerHTML = next.innerHTML;
+      if (wasOpen) this.classList.add('is-open');
+
+      await this.syncBadge();
+      document.dispatchEvent(new CustomEvent('moru:cart:updated'));
+    }
+
+    async syncBadge() {
+      const badges = document.querySelectorAll('[data-cart-count]');
+      if (badges.length === 0) return;
+      try {
+        const response = await fetch(this.rootUrl + 'cart.js', { headers: { Accept: 'application/json' } });
+        const cart = await response.json();
+        badges.forEach((badge) => {
+          badge.textContent = cart.item_count;
+        });
+      } catch (error) {
+        /* the badge keeps its previous value until the next page load */
+      }
+    }
+  }
+
+  if (!customElements.get('moru-cart-drawer')) {
+    customElements.define('moru-cart-drawer', MoruCartDrawer);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:moru.cart_drawer.name",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:moru.cart_drawer.intro"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_on_add",
+      "label": "t:moru.cart_drawer.open_on_add_label",
+      "info": "t:moru.cart_drawer.open_on_add_info",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "tax_display",
+      "label": "t:moru.cart.tax_display_label",
+      "options": [
+        {
+          "value": "included",
+          "label": "t:moru.cart.tax_included_option"
+        },
+        {
+          "value": "hidden",
+          "label": "t:moru.cart.tax_hidden_option"
+        }
+      ],
+      "default": "included"
+    },
+    {
+      "type": "range",
+      "id": "tax_rate",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "label": "t:moru.cart.tax_rate_label",
+      "default": 10
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.cart_drawer.name"
+    }
+  ]
+}
+{% endschema %}

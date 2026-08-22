@@ -7,14 +7,47 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "main": {
-      "type": "404",
+      "type": "moru-404",
+      "settings": {},
+      "blocks": {
+        "l1": {
+          "type": "link",
+          "settings": {
+            "label": "新着アイテム",
+            "link": "/collections/all"
+          }
+        },
+        "l2": {
+          "type": "link",
+          "settings": {
+            "label": "MORUについて",
+            "link": "/pages/about"
+          }
+        },
+        "l3": {
+          "type": "link",
+          "settings": {
+            "label": "よくある質問",
+            "link": "/pages/faq"
+          }
+        }
+      },
+      "block_order": [
+        "l1",
+        "l2",
+        "l3"
+      ]
+    },
+    "recently_viewed": {
+      "type": "moru-recently-viewed",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "recently_viewed"
   ]
 }

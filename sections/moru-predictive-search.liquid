@@ -1,0 +1,96 @@
+{% comment %}
+  Render target for the Predictive Search API.
+
+  This section is never placed in a template. It is fetched by
+  sections/moru-search-modal.liquid via
+  /search/suggest?q=...&section_id=moru-predictive-search
+  and its markup is injected into the search modal.
+  It intentionally has no schema so it cannot be added from the theme editor.
+
+  https://shopify.dev/docs/api/ajax/reference/predictive-search
+{% endcomment %}
+
+{% liquid
+  assign products = predictive_search.resources.products
+  assign articles = predictive_search.resources.articles
+  assign pages = predictive_search.resources.pages
+  assign total = products.size | plus: articles.size | plus: pages.size
+%}
+
+<div class="moru-predictive" data-predictive-root>
+  {% if predictive_search.performed %}
+    {% if total > 0 %}
+      {% if products.size > 0 %}
+        <div class="moru-predictive__group">
+          <p class="moru-predictive__group-title" id="moru-predictive-products">
+            {{ 'moru.search.type_product' | t }}
+          </p>
+          <ul class="moru-predictive__list" role="list" aria-labelledby="moru-predictive-products">
+            {% for product in products %}
+              <li>
+                <a class="moru-predictive__item" href="{{ product.url }}" role="option" tabindex="-1">
+                  <span class="moru-predictive__thumb">
+                    {% if product.featured_image %}
+                      {{ product.featured_image | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy', alt: product.featured_image.alt }}
+                    {% else %}
+                      {{ 'product-1' | placeholder_svg_tag }}
+                    {% endif %}
+                  </span>
+                  <span class="moru-predictive__body">
+                    <span class="moru-predictive__title">{{ product.title }}</span>
+                    <span class="moru-predictive__price">{{ product.price | money }}</span>
+                  </span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if articles.size > 0 %}
+        <div class="moru-predictive__group">
+          <p class="moru-predictive__group-title" id="moru-predictive-articles">
+            {{ 'moru.search.type_article' | t }}
+          </p>
+          <ul class="moru-predictive__list" role="list" aria-labelledby="moru-predictive-articles">
+            {% for article in articles %}
+              <li>
+                <a class="moru-predictive__item moru-predictive__item--text" href="{{ article.url }}" role="option" tabindex="-1">
+                  <span class="moru-predictive__title">{{ article.title }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if pages.size > 0 %}
+        <div class="moru-predictive__group">
+          <p class="moru-predictive__group-title" id="moru-predictive-pages">
+            {{ 'moru.search.type_page' | t }}
+          </p>
+          <ul class="moru-predictive__list" role="list" aria-labelledby="moru-predictive-pages">
+            {% for result_page in pages %}
+              <li>
+                <a class="moru-predictive__item moru-predictive__item--text" href="{{ result_page.url }}" role="option" tabindex="-1">
+                  <span class="moru-predictive__title">{{ result_page.title }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <a
+        class="moru-predictive__all"
+        href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}&options%5Bprefix%5D=last"
+      >
+        {{ 'moru.search_modal.view_all' | t: terms: predictive_search.terms | escape }}
+      </a>
+    {% else %}
+      <p class="moru-predictive__empty">
+        {{ 'moru.search.empty_heading' | t: terms: predictive_search.terms | escape }}
+      </p>
+    {% endif %}
+  {% endif %}
+</div>

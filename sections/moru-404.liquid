@@ -1,0 +1,240 @@
+{% liquid
+  assign link_blocks = section.blocks | where: 'type', 'link'
+%}
+
+<div class="moru-404">
+  <p class="moru-display moru-404__code">{{ 'moru.notfound.code' | t }}</p>
+
+  <h1 class="moru-404__title">
+    {%- if section.settings.heading != blank -%}
+      {{ section.settings.heading }}
+    {%- else -%}
+      {{ 'moru.notfound.heading' | t }}
+    {%- endif -%}
+  </h1>
+
+  <p class="moru-404__body">
+    {%- if section.settings.body != blank -%}
+      {{ section.settings.body }}
+    {%- else -%}
+      {{ 'moru.notfound.body' | t }}
+    {%- endif -%}
+  </p>
+
+  {% if section.settings.show_search %}
+    <form class="moru-404__form" action="{{ routes.search_url }}" method="get" role="search">
+      <input type="hidden" name="options[prefix]" value="last">
+      <label class="moru-404__form-label" for="{{ section.id }}-q">{{ 'moru.search.heading' | t }}</label>
+      <input
+        class="moru-404__input"
+        id="{{ section.id }}-q"
+        type="search"
+        name="q"
+        placeholder="{{ 'moru.search.placeholder' | t }}"
+      >
+      <button class="moru-404__submit" type="submit">{{ 'moru.search.submit' | t }}</button>
+    </form>
+  {% endif %}
+
+  <div class="moru-404__actions">
+    <a class="moru-button" href="{{ routes.root_url }}">{{ 'moru.notfound.home' | t }}</a>
+    <a class="moru-button moru-button--outline" href="{{ routes.all_products_collection_url }}">
+      {{ 'moru.search.browse_all' | t }}
+    </a>
+  </div>
+
+  {% if link_blocks.size > 0 %}
+    <nav class="moru-404__links" aria-label="{{ 'moru.notfound.links_title' | t }}">
+      <p class="moru-404__links-title">{{ 'moru.notfound.links_title' | t }}</p>
+      <ul role="list">
+        {% for block in link_blocks %}
+          {% if block.settings.label != blank %}
+            <li {{ block.shopify_attributes }}>
+              <a href="{{ block.settings.link | default: routes.root_url }}">{{ block.settings.label }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .moru-404 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding-block: var(--space-3xl);
+    text-align: center;
+  }
+
+  .moru-404__code {
+    margin: 0;
+    font-size: clamp(3.5rem, 12vw, 6rem);
+    line-height: 1;
+    color: var(--color-border);
+  }
+
+  .moru-404__title {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+  }
+
+  .moru-404__body {
+    max-width: 34em;
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.9;
+    color: var(--color-muted);
+  }
+
+  .moru-404__form {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    width: 100%;
+    max-width: 480px;
+    margin-block-start: var(--space-sm);
+    padding-block-end: var(--space-2xs);
+    border-block-end: 1px solid var(--color-text);
+  }
+
+  .moru-404__form-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .moru-404__input {
+    flex: 1;
+    padding: var(--space-xs) var(--space-2xs);
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+  }
+
+  .moru-404__input::placeholder {
+    color: var(--color-muted);
+    opacity: 0.75;
+  }
+
+  .moru-404__submit {
+    padding: var(--space-2xs) var(--space-md);
+    border: none;
+    background: none;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+    cursor: pointer;
+  }
+
+  .moru-404__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-block-start: var(--space-sm);
+  }
+
+  .moru-404__links {
+    margin-block-start: var(--space-lg);
+  }
+
+  .moru-404__links-title {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-muted);
+  }
+
+  .moru-404__links ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-404__links a {
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    text-decoration: none;
+    border-block-end: 1px solid var(--color-border);
+    padding-block-end: 2px;
+    transition: border-color 200ms ease;
+  }
+
+  .moru-404__links a:hover {
+    border-color: var(--color-text);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.notfound.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:moru.common.title",
+      "info": "t:moru.notfound.heading_info"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "t:moru.notfound.body_label",
+      "info": "t:moru.notfound.body_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "t:moru.notfound.show_search_label",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "t:moru.common.link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:moru.common.button_label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:moru.common.button_link"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.notfound.name",
+      "blocks": [
+        {
+          "type": "link"
+        },
+        {
+          "type": "link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
