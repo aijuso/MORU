@@ -16,10 +16,15 @@
 Skeleton の未使用セクション8本を削除。ライブテーマ `166203621616` へ push 済み、
 MD5 照合で作業ツリーと一致を確認(差分は `config/settings_data.json` のみ = 既知の正規化)。
 
-**未検証:** ブラウザでの実描画。ストアがパスワード保護されているため、
-このセッションからは docs/07 §4 の手順を実行できなかった(ストアのパスワード未共有)。
-`shopify theme check` 0件・JS の構文チェック・CSS のパースまでは通っている。
-**テーマエディタで各ページを一度目視すること。**
+**検証済み:** docs/07 §4 の手順で実描画まで確認した(検索結果 / 0件時 / 404 / モバイル幅の
+スクリーンショット、および検索モーダル・カートドロワーの操作テスト18項目)。
+`shopify theme check` 0件、Liquid エラー・翻訳漏れなし。
+
+**このセッションで見つけた仕様上の問題:**
+Shopify の Predictive Search API は**日本語に対応していない**。
+`#shopify-features` が `"predictiveSearch": false` を返し、`/search/suggest` は 417 を返す。
+そのため検索モーダルは通常の検索インデックス(`/search?...&section_id=`)から候補を出している。
+将来 Shopify が日本語に対応したら、コード変更なしで自動的に予測検索へ切り替わる。
 
 ---
 
@@ -126,10 +131,18 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 
 ### 検索・カートドロワーの仕組み(2026-08-22 追加)
 
-**予測検索**
-`sections/moru-predictive-search.liquid` は Predictive Search API の描画専用ファイル。
-`/search/suggest?q=...&section_id=moru-predictive-search` で取得した HTML の
-`[data-predictive-root]` の中身を検索モーダルに差し込む。
+**予測検索 — 日本語では Predictive Search API が使えない**
+`#shopify-features` の `predictiveSearch` が `false`(日本語は対応言語外)なので、
+`/search/suggest` は 417 を返す。`sections/moru-predictive-search.liquid` は
+そのため2種類のリクエストに同じマークアップで答える:
+
+| 経路 | 使うオブジェクト | いつ |
+|---|---|---|
+| `/search/suggest?...&section_id=moru-predictive-search` | `predictive_search` | 対応言語のとき |
+| `/search?q=...&options[prefix]=last&section_id=moru-predictive-search` | `search` | **現在の日本語ストアはこちら** |
+
+モーダル側の JS が `#shopify-features` を読んで URL を選ぶ。取得した HTML の
+`[data-predictive-root]` の中身を差し込む。
 テンプレートには置かないので **schema を付けていない**(付けるとテーマエディタから
 単体で配置できてしまい、常に空表示になる)。CLAUDE.md 絶対ルール9 の例外はこの1ファイルだけ。
 
