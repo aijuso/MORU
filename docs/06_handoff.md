@@ -3,7 +3,10 @@
 > 最終更新: 2026-08-22
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
-> 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`(未公開)
+> 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`
+> ⚠️ **2026-08-22 時点でこのテーマは `role: MAIN`(公開テーマ)。** docs は長らく「未公開」と書いていたが誤り。
+> ストア自体はパスワード保護されているため一般には見えないが、`shopify theme push` はライブテーマへの上書きになる。
+> 実行前に必ず `themes(first: 20) { nodes { id name role } }` で role を確認すること。
 
 ---
 

@@ -101,6 +101,17 @@ git に push してもストアは1バイトも変わらない。これは確認
 shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166203621616
 ```
 
+**⚠️ 2026-08-22 追記: theme 166203621616 は `role: MAIN`(公開テーマ)になっている。**
+それまでの docs は「未公開」と書いていたが誤りだった。push はライブテーマの上書きになるため、
+CLI は `--allow-live` を要求する。**push の前に必ず role を確認する:**
+
+```graphql
+query { themes(first: 20) { nodes { id name role } } }
+```
+
+`MAIN` だった場合、勝手に上書きしない。ユーザーに確認するか、
+`themeDuplicate` で未公開テーマを作ってそちらへ push し、確認後に公開切替する。
+
 **順序は必ず commit → git push → theme push。** 逆にしない。
 「ストアだけ直して git は後で」を一度でもやると、次のセッションが今回と同じ誤認をする。
 
