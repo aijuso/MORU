@@ -77,12 +77,16 @@
               assign swap_image = value.variant.featured_media.preview_image | image_url: width: 600, height: 600, crop: 'center'
             endif
           %}
+          {%- capture swatch_hex -%}
+            {%- render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color -%}
+          {%- endcapture -%}
+          {%- assign swatch_hex = swatch_hex | strip -%}
           <button
             type="button"
             class="moru-product-card__swatch{% if forloop.first %} is-active{% endif %}"
             title="{{ value | escape }}"
             aria-label="{{ value | escape }}"
-            {% if value.swatch.color %}style="--swatch-color: {{ value.swatch.color }}"{% endif %}
+            {% if swatch_hex != blank %}style="--swatch-color: {{ swatch_hex }}"{% endif %}
             {% if swap_image != blank %}data-swatch-image="{{ swap_image }}"{% endif %}
             {% if value.variant.url != blank %}data-swatch-url="{{ value.variant.url }}"{% endif %}
           >

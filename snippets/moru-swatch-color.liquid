@@ -1,0 +1,36 @@
+{% doc %}
+  Resolves the colour for one option value swatch and outputs a bare hex string
+  (or nothing when no colour is known).
+
+  Shopify's own swatch (設定 → 商品のオプション) wins when it is set. Otherwise the
+  theme setting `swatch_color_map` is consulted — one `名前:#HEX` pair per line —
+  so a colour picked off the product photo can be used before the merchant has
+  configured Shopify's option swatches.
+
+  @param {string} value_name - The option value name, e.g. アイボリー
+  @param {string} [swatch_color] - value.swatch.color, when Shopify has one
+
+  @example
+  {% capture swatch_hex %}{% render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color %}{% endcapture %}
+{% enddoc %}
+
+{%- liquid
+  assign resolved = swatch_color
+
+  if resolved == blank
+    assign wanted = value_name | strip | downcase
+    assign lines = settings.swatch_color_map | newline_to_br | split: '<br />'
+    for line in lines
+      assign pair = line | strip | split: ':'
+      if pair.size > 1
+        assign key = pair[0] | strip | downcase
+        if key == wanted
+          assign resolved = pair[1] | strip
+          break
+        endif
+      endif
+    endfor
+  endif
+
+  echo resolved
+-%}

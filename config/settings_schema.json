@@ -185,5 +185,20 @@
         "default": 2
       }
     ]
+  },
+  {
+    "name": "t:labels.swatches",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:info.swatch_color_map"
+      },
+      {
+        "type": "textarea",
+        "id": "swatch_color_map",
+        "label": "t:labels.swatch_color_map",
+        "default": "アイボリー:#E7D6CA\nオリーブグリーン:#7A7455"
+      }
+    ]
   }
 ]

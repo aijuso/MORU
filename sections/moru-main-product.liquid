@@ -222,9 +222,13 @@
                     >
                     <label class="moru-option__item" for="{{ input_id }}">
                       {% if is_swatch %}
+                        {%- capture swatch_hex -%}
+                          {%- render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color -%}
+                        {%- endcapture -%}
+                        {%- assign swatch_hex = swatch_hex | strip -%}
                         <span
                           class="moru-option__swatch"
-                          {% if value.swatch.color %}style="--swatch-color: {{ value.swatch.color }}"{% endif %}
+                          {% if swatch_hex != blank %}style="--swatch-color: {{ swatch_hex }}"{% endif %}
                         >
                           {% if value.swatch.image %}
                             {{ value.swatch.image | image_url: width: 80, height: 80, crop: 'center' | image_tag: loading: 'lazy', alt: '' }}

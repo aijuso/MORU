@@ -51,7 +51,10 @@
         "trust_payment",
         "trust_tracking"
       ],
-      "settings": {}
+      "settings": {
+        "stock_display": "inventory",
+        "low_stock_threshold": 20
+      }
     },
     "bundle": {
       "type": "moru-product-bundle",

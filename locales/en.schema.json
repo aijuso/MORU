@@ -65,7 +65,9 @@
     "muted_text": "Secondary text",
     "border": "Border",
     "sale": "Sale text",
-    "logo_color": "Logo / wordmark color"
+    "logo_color": "Logo / wordmark color",
+    "swatches": "Colour swatches",
+    "swatch_color_map": "Colour name to hex map"
   },
   "info": {
     "accent_colors": "Use at most 1–2 accent colors per screen (docs/01).",
@@ -79,7 +81,8 @@
     "muted_text": "Used for captions and supporting copy",
     "border": "Used for rules and outlines",
     "sale": "Used for sale links and similar highlights",
-    "logo_color": "Color of the MORU wordmark in the header and footer. Not used when a logo image is set"
+    "logo_color": "Color of the MORU wordmark in the header and footer. Not used when a logo image is set",
+    "swatch_color_map": "Fills the colour circles on product options. One 'name:hex' pair per line (e.g. アイボリー:#E7D6CA). A swatch configured in Shopify's Product options settings wins over this. Sampling the hex from the product photo gives the closest match"
   },
   "options": {
     "alignment": {
