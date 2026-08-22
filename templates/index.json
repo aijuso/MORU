@@ -35,7 +35,8 @@
     "new_arrivals": {
       "type": "moru-product-grid",
       "settings": {
-        "show_new_badge": true
+        "show_new_badge": true,
+        "collection": "new-arrivals"
       }
     },
     "shop_the_room": {
@@ -45,28 +46,32 @@
           "type": "product",
           "settings": {
             "top": 30,
-            "left": 25
+            "left": 25,
+            "product": "moru-flower-lounge"
           }
         },
         "spot_2": {
           "type": "product",
           "settings": {
             "top": 55,
-            "left": 55
+            "left": 55,
+            "product": "moru-flower-lounge"
           }
         },
         "spot_3": {
           "type": "product",
           "settings": {
             "top": 70,
-            "left": 80
+            "left": 80,
+            "product": "moru-flower-lounge"
           }
         },
         "spot_4": {
           "type": "product",
           "settings": {
             "top": 40,
-            "left": 70
+            "left": 70,
+            "product": "moru-flower-lounge"
           }
         }
       },
@@ -83,41 +88,33 @@
       "blocks": {
         "cat_1": {
           "type": "category",
-          "settings": {}
+          "settings": {
+            "label": "新着アイテム",
+            "collection": "new-arrivals"
+          }
         },
         "cat_2": {
           "type": "category",
-          "settings": {}
-        },
-        "cat_3": {
-          "type": "category",
-          "settings": {}
-        },
-        "cat_4": {
-          "type": "category",
-          "settings": {}
-        },
-        "cat_5": {
-          "type": "category",
-          "settings": {}
+          "settings": {
+            "label": "猫のくらし",
+            "collection": "cat-life"
+          }
         }
       },
       "block_order": [
         "cat_1",
-        "cat_2",
-        "cat_3",
-        "cat_4",
-        "cat_5"
+        "cat_2"
       ],
       "settings": {}
     },
     "category_products": {
       "type": "moru-product-grid",
       "settings": {
-        "title": "",
+        "title": "猫のくらし",
         "show_view_all": false,
         "show_subtitle": true,
-        "bottom_button_label": "すべてのチェアを見る"
+        "bottom_button_label": "すべて見る",
+        "collection": "cat-life"
       }
     },
     "journal": {

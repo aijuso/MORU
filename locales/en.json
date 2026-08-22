@@ -213,6 +213,10 @@
     "cart_drawer": {
       "note": "Shipping and tax are calculated at checkout.",
       "view_cart": "View cart"
+    },
+    "features": {
+      "default_heading": "Why you'll love it",
+      "empty": "No features yet. Fill in the product's Features metafield or add blocks in the theme editor."
     }
   }
 }

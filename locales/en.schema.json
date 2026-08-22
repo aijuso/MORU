@@ -199,9 +199,9 @@
       "delivery_title_label": "Heading",
       "delivery_title_default": "Estimated delivery",
       "delivery_main_label": "Main line",
-      "delivery_main_default": "Order by 15:00 today for same-day dispatch",
+      "delivery_main_default": "Estimated delivery: 2-3 weeks from order (international shipping)",
       "delivery_sub_label": "Sub line",
-      "delivery_sub_default": "(Delivery date varies by destination)",
+      "delivery_sub_default": "(Customs and busy seasons can extend this to 4 weeks or more)",
       "zip_label_label": "Postcode link label",
       "zip_label_default": "Enter your postcode to check the delivery date",
       "zip_link_label": "Postcode link URL",
@@ -232,13 +232,15 @@
       "block_content_label": "Body",
       "block_use_description_label": "Use the Shopify product description",
       "block_use_description_info": "Shows the product description instead of the body text",
-      "block_open_label": "Open by default"
+      "block_open_label": "Open by default",
+      "block_use_specs_label": "Use the Materials & size metafield",
+      "block_use_specs_info": "Shows the product's custom.specs metafield when filled in, otherwise the text below"
     },
     "cart": {
       "name": "MORU cart",
       "show_steps_label": "Show steps (Cart > Information > Shipping > Payment)",
       "notice_text_label": "Top-right notice",
-      "notice_text_default": "Order by 15:00 today for same-day dispatch",
+      "notice_text_default": "Free shipping on orders over ¥15,000",
       "summary_header": "Order summary",
       "show_coupon_label": "Show discount code field",
       "show_coupon_info": "Applies the code through Shopify's discount URL. Create the code under Discounts in the admin",
@@ -465,6 +467,13 @@
       "intro": "Slides in from the right when the header cart icon is used. Without JavaScript the icon links to the cart page",
       "open_on_add_label": "Open the drawer after adding to cart",
       "open_on_add_info": "Turn off to keep the default redirect to the cart page"
+    },
+    "features": {
+      "name": "MORU product features",
+      "intro": "When the product's Features metafield (custom.features) is filled in it takes priority; the blocks below are the fallback input",
+      "heading_info": "Leave empty to show the default heading",
+      "block_name": "Feature",
+      "body_label": "Body"
     }
   }
 }

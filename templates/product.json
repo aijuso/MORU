@@ -74,7 +74,8 @@
           "type": "accordion",
           "settings": {
             "heading": "素材・サイズ",
-            "content": "<p>素材・サイズ・セット内容・組み立てについて記載します。未確認の仕様は記載しないでください。</p>"
+            "content": "<p>商品編集画面のメタフィールド「素材・サイズ」に入力すると、ここに表示されます。未確認の仕様は記載しないでください。</p>",
+            "use_specs_metafield": true
           }
         },
         "acc_shipping": {
@@ -138,7 +139,8 @@
         "products_to_show": 3,
         "columns": "3",
         "show_view_all": false,
-        "show_subtitle": true
+        "show_subtitle": true,
+        "collection": "cat-life"
       }
     },
     "related": {
@@ -148,18 +150,26 @@
         "products_to_show": 3,
         "columns": "3",
         "show_view_all": false,
-        "show_subtitle": true
+        "show_subtitle": true,
+        "collection": "new-arrivals"
       }
     },
     "recently_viewed": {
       "type": "moru-recently-viewed",
       "settings": {}
+    },
+    "features": {
+      "type": "moru-product-features",
+      "settings": {
+        "heading": "この商品の特徴"
+      }
     }
   },
   "order": [
     "main",
     "bundle",
     "details",
+    "features",
     "styling",
     "bought_together",
     "related",

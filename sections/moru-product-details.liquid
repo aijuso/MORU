@@ -164,6 +164,8 @@
         <div class="moru-accordion__content">
           {% if block.settings.use_description and product.description != blank %}
             {{ product.description }}
+          {% elsif block.settings.use_specs_metafield and product.metafields.custom.specs != blank %}
+            {{ product.metafields.custom.specs | metafield_tag }}
           {% else %}
             {{ block.settings.content }}
           {% endif %}
@@ -441,6 +443,13 @@
           "id": "use_description",
           "label": "t:moru.product_details.block_use_description_label",
           "info": "t:moru.product_details.block_use_description_info",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "use_specs_metafield",
+          "label": "t:moru.product_details.block_use_specs_label",
+          "info": "t:moru.product_details.block_use_specs_info",
           "default": false
         },
         {

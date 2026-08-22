@@ -122,6 +122,8 @@
       <p class="moru-product__subtitle" data-moru-variant-subtitle>
         {%- if has_real_options -%}
           {{ current_variant.title }}
+        {%- elsif product.metafields.custom.subtitle != blank -%}
+          {{ product.metafields.custom.subtitle.value }}
         {%- else -%}
           {{ section.settings.subtitle }}
         {%- endif -%}
@@ -167,8 +169,14 @@
         {% endif %}
       </div>
 
-      {% if section.settings.short_description != blank %}
-        <p class="moru-product__lead">{{ section.settings.short_description }}</p>
+      {%- liquid
+        assign lead_text = product.metafields.custom.catch_copy.value
+        if lead_text == blank
+          assign lead_text = section.settings.short_description
+        endif
+      -%}
+      {% if lead_text != blank %}
+        <p class="moru-product__lead">{{ lead_text | newline_to_br }}</p>
       {% endif %}
 
       {% form 'product', product, class: 'moru-product__form', novalidate: 'novalidate' %}
