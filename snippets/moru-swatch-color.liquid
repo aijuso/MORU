@@ -2,23 +2,38 @@
   Resolves the colour for one option value swatch and outputs a bare hex string
   (or nothing when no colour is known).
 
-  Shopify's own swatch (設定 → 商品のオプション) wins when it is set. Otherwise the
-  theme setting `swatch_color_map` is consulted — one `名前:#HEX` pair per line —
-  so a colour picked off the product photo can be used before the merchant has
-  configured Shopify's option swatches.
+  Three sources, in order:
+  1. Shopify's own option swatch (設定 → 商品のオプション), when configured.
+  2. The product's custom.swatch_colors metafield — a list of moru_color
+     metaobjects (カラー名 + 色). Matched by name, so order does not matter.
+     This is the per-product route: set it from the product admin.
+  3. The theme setting `swatch_color_map` — `名前:#HEX`, one pair per line.
+     A shop-wide fallback for colours reused across many products.
 
   @param {string} value_name - The option value name, e.g. アイボリー
   @param {string} [swatch_color] - value.swatch.color, when Shopify has one
+  @param {product} [product] - The product, for its swatch_colors metafield
 
   @example
-  {% capture swatch_hex %}{% render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color %}{% endcapture %}
+  {% capture swatch_hex %}{% render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color, product: product %}{% endcapture %}
 {% enddoc %}
 
 {%- liquid
   assign resolved = swatch_color
+  assign wanted = value_name | strip | downcase
 
   if resolved == blank
-    assign wanted = value_name | strip | downcase
+    assign entries = product.metafields.custom.swatch_colors.value
+    for entry in entries
+      assign key = entry.label.value | strip | downcase
+      if key == wanted
+        assign resolved = entry.color.value
+        break
+      endif
+    endfor
+  endif
+
+  if resolved == blank
     assign lines = settings.swatch_color_map | newline_to_br | split: '<br />'
     for line in lines
       assign pair = line | strip | split: ':'

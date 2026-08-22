@@ -78,7 +78,7 @@
             endif
           %}
           {%- capture swatch_hex -%}
-            {%- render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color -%}
+            {%- render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color, product: product -%}
           {%- endcapture -%}
           {%- assign swatch_hex = swatch_hex | strip -%}
           <button

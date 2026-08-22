@@ -117,7 +117,8 @@
         "one": "({{ count }} review)",
         "other": "({{ count }} reviews)"
       },
-      "no_reviews": "No reviews yet. Only reviews from verified buyers are published here."
+      "no_reviews": "No reviews yet. Only reviews from verified buyers are published here.",
+      "all_in_cart": "All available units are in your cart"
     },
     "collection": {
       "all": "All",

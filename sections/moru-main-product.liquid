@@ -223,7 +223,7 @@
                     <label class="moru-option__item" for="{{ input_id }}">
                       {% if is_swatch %}
                         {%- capture swatch_hex -%}
-                          {%- render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color -%}
+                          {%- render 'moru-swatch-color', value_name: value.name, swatch_color: value.swatch.color, product: product -%}
                         {%- endcapture -%}
                         {%- assign swatch_hex = swatch_hex | strip -%}
                         <span
@@ -302,6 +302,14 @@
           </div>
         {% endif %}
 
+        {%- capture cart_json -%}
+          {
+          {%- for line_item in cart.items -%}
+            "{{ line_item.variant_id }}": {{ line_item.quantity }}{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+          }
+        {%- endcapture -%}
+
         {%- capture inventory_json -%}
           {
           {%- for variant in product.variants -%}
@@ -321,6 +329,21 @@
           if current_variant.inventory_management != blank
             assign tracked_quantity = current_variant.inventory_quantity
           endif
+
+          # Show what is left for THIS shopper: real stock minus what they
+          # already hold in their own cart. Nobody else's cart is involved and
+          # the inventory itself is untouched — only the number shown changes.
+          assign in_cart = 0
+          for line_item in cart.items
+            if line_item.variant_id == current_variant.id
+              assign in_cart = in_cart | plus: line_item.quantity
+            endif
+          endfor
+          assign tracked_quantity = tracked_quantity | minus: in_cart
+          if tracked_quantity < 0
+            assign tracked_quantity = 0
+          endif
+
           if tracked_quantity > 0
             assign remaining_text = 'moru.product.remaining' | t: count: tracked_quantity
           endif
@@ -331,6 +354,8 @@
             endunless
           elsif current_variant.available == false
             assign stock_label = sold_out_text
+          elsif tracked_quantity == 0 and in_cart > 0
+            assign stock_label = 'moru.product.all_in_cart' | t
           elsif stock_mode == 'always'
             assign stock_label = section.settings.low_stock_text | append: ' ' | append: remaining_text | strip
           elsif stock_mode == 'inventory'
@@ -363,10 +388,12 @@
             data-moru-stock
             data-mode="{{ stock_mode }}"
             data-inventory="{{ inventory_json | strip | escape }}"
+            data-in-cart="{{ cart_json | strip | escape }}"
             data-threshold="{{ low_threshold }}"
             data-label="{{ section.settings.low_stock_text | escape }}"
             data-remaining="{{ 'moru.product.remaining' | t: count: '__COUNT__' | escape }}"
             data-sold-out="{{ 'moru.product.sold_out' | t | escape }}"
+            data-all-in-cart="{{ 'moru.product.all_in_cart' | t | escape }}"
           >{{ stock_label }}</span>
         </div>
 
@@ -387,6 +414,7 @@
               data-moru-add-label
               data-available="{{ 'moru.product.add_to_cart' | t | escape }}"
               data-sold-out="{{ 'moru.product.sold_out' | t | escape }}"
+            data-all-in-cart="{{ 'moru.product.all_in_cart' | t | escape }}"
             >
               {%- if product != blank and current_variant.available == false -%}
                 {{ 'moru.product.sold_out' | t }}
@@ -1187,6 +1215,88 @@
 {% endstylesheet %}
 
 {% javascript %}
+  /**
+   * Stock label = real inventory minus what THIS shopper already holds in
+   * their own cart. Shopify's cart is per browser session, so two people
+   * looking at the same page each see their own number and the inventory
+   * itself never moves. Backend stock only changes when an order is placed.
+   */
+  function moruParseJson(value) {
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function renderStock(stockEl, variantId, available) {
+    const mode = stockEl.dataset.mode;
+    const inventory = moruParseJson(stockEl.dataset.inventory);
+    const inCart = moruParseJson(stockEl.dataset.inCart);
+    const threshold = parseInt(stockEl.dataset.threshold, 10) || 0;
+    const label = stockEl.dataset.label || '';
+
+    const stock = inventory[variantId];
+    let remaining = typeof stock === 'number' ? stock - (inCart[variantId] || 0) : undefined;
+    if (typeof remaining === 'number' && remaining < 0) remaining = 0;
+
+    const remainingText =
+      typeof remaining === 'number' && remaining > 0
+        ? (stockEl.dataset.remaining || '').replace('__COUNT__', remaining)
+        : '';
+
+    const held = inCart[variantId] || 0;
+
+    if (!available && held === 0) {
+      stockEl.textContent = stockEl.dataset.soldOut || '';
+    } else if (mode === 'hidden') {
+      stockEl.textContent = '';
+    } else if (remaining === 0 && held > 0) {
+      // Not sold out — this shopper simply holds every remaining unit.
+      stockEl.textContent = stockEl.dataset.allInCart || '';
+    } else if (remaining === 0) {
+      stockEl.textContent = stockEl.dataset.soldOut || '';
+    } else if (mode === 'always') {
+      stockEl.textContent = (label + ' ' + remainingText).trim();
+    } else if (typeof remaining === 'number' && remaining > 0 && remaining <= threshold) {
+      stockEl.textContent = (label + ' ' + remainingText).trim();
+    } else {
+      stockEl.textContent = '';
+    }
+  }
+
+  // Re-read the cart after any add / quantity change and repaint the label.
+  async function moruRefreshStockFromCart() {
+    const stockEls = document.querySelectorAll('[data-moru-stock]');
+    if (stockEls.length === 0) return;
+
+    const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+    let cart;
+    try {
+      const response = await fetch(root + 'cart.js', { headers: { Accept: 'application/json' } });
+      cart = await response.json();
+    } catch (error) {
+      return;
+    }
+
+    const counts = {};
+    (cart.items || []).forEach((item) => {
+      counts[item.variant_id] = (counts[item.variant_id] || 0) + item.quantity;
+    });
+
+    stockEls.forEach((stockEl) => {
+      stockEl.dataset.inCart = JSON.stringify(counts);
+      const form = stockEl.closest('.moru-product__info') || document;
+      const idInput = form.querySelector('[data-moru-variant-id]');
+      const variantId = idInput ? Number(idInput.value) : NaN;
+      if (!variantId) return;
+      const inventory = moruParseJson(stockEl.dataset.inventory);
+      renderStock(stockEl, variantId, (inventory[variantId] || 0) > 0);
+    });
+  }
+
+  document.addEventListener('moru:cart:updated', moruRefreshStockFromCart);
+
   class MoruProductGallery extends HTMLElement {
     connectedCallback() {
       this.slides = Array.from(this.querySelectorAll('.moru-product__slide'));
@@ -1321,34 +1431,7 @@
         addLabel.textContent = variant.available ? addLabel.dataset.available : addLabel.dataset.soldOut;
       }
 
-      if (stockEl) {
-        const mode = stockEl.dataset.mode;
-        let inventory = {};
-        try {
-          inventory = JSON.parse(stockEl.dataset.inventory);
-        } catch (error) {
-          inventory = {};
-        }
-        const threshold = parseInt(stockEl.dataset.threshold, 10) || 0;
-        const remaining = inventory[variant.id];
-        const label = stockEl.dataset.label || '';
-        const remainingText =
-          typeof remaining === 'number' && remaining > 0
-            ? (stockEl.dataset.remaining || '').replace('__COUNT__', remaining)
-            : '';
-
-        if (!variant.available) {
-          stockEl.textContent = stockEl.dataset.soldOut || '';
-        } else if (mode === 'hidden') {
-          stockEl.textContent = '';
-        } else if (mode === 'always') {
-          stockEl.textContent = (label + ' ' + remainingText).trim();
-        } else if (typeof remaining === 'number' && remaining > 0 && remaining <= threshold) {
-          stockEl.textContent = (label + ' ' + remainingText).trim();
-        } else {
-          stockEl.textContent = '';
-        }
-      }
+      if (stockEl) renderStock(stockEl, variant.id, variant.available);
 
       if (gallery && variant.featured_media) {
         gallery.selectByMediaId(variant.featured_media.id);
