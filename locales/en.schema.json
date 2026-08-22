@@ -449,8 +449,7 @@
     },
     "search_modal": {
       "name": "MORU search modal",
-      "intro": "Opens from the header search icon and suggests products, articles and pages as the shopper types. Without JavaScript the icon links to the search page",
-      "suggestion_limit_label": "Number of suggestions",
+      "intro": "Opens from the header search icon and suggests products, articles and pages as the shopper types. Without JavaScript the icon links to the search page. Note: Shopify's Predictive Search API does not support Japanese, so on a Japanese storefront the suggestions come from the ordinary search index instead",
       "show_recent_label": "Show recent searches",
       "show_recent_info": "Stored in the shopper's own browser only — never sent to the server"
     },

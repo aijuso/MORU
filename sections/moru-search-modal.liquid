@@ -5,7 +5,6 @@
 <moru-search-modal
   class="moru-search-modal full-width"
   data-search-modal
-  data-limit="{{ section.settings.suggestion_limit }}"
   data-recent="{{ section.settings.show_recent }}"
   aria-hidden="true"
 >
@@ -254,7 +253,6 @@
       this.recentGroup = this.querySelector('[data-modal-recent]');
       this.recentList = this.querySelector('[data-modal-recent-list]');
       this.form = this.querySelector('form');
-      this.limit = this.dataset.limit || '6';
       this.controller = null;
       this.timer = null;
       this.opener = null;
@@ -283,6 +281,49 @@
 
     get rootUrl() {
       return (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+    }
+
+    // The Predictive Search API only answers for a fixed set of buyer locales,
+    // and Japanese is not one of them (/search/suggest returns 417). Shopify
+    // reports the capability in #shopify-features, so read it rather than
+    // firing a request per keystroke that can never succeed.
+    get predictiveSupported() {
+      if (this._predictive === undefined) {
+        try {
+          const node = document.getElementById('shopify-features');
+          this._predictive = !!(node && JSON.parse(node.textContent).predictiveSearch);
+        } catch (error) {
+          this._predictive = false;
+        }
+      }
+      return this._predictive;
+    }
+
+    suggestUrl(query) {
+      if (this.predictiveSupported) {
+        return (
+          this.rootUrl +
+          'search/suggest?' +
+          new URLSearchParams({
+            q: query,
+            'resources[type]': 'product,article,page',
+            'resources[limit]': '6',
+            'resources[options][unavailable_products]': 'last',
+            section_id: 'moru-predictive-search',
+          }).toString()
+        );
+      }
+
+      // Fallback: the ordinary search index, rendered through the same section.
+      return (
+        this.rootUrl +
+        'search?' +
+        new URLSearchParams({
+          q: query,
+          'options[prefix]': 'last',
+          section_id: 'moru-predictive-search',
+        }).toString()
+      );
     }
 
     open(opener) {
@@ -346,16 +387,8 @@
       if (this.controller) this.controller.abort();
       this.controller = new AbortController();
 
-      const params = new URLSearchParams({
-        q: query,
-        'resources[type]': 'product,article,page',
-        'resources[limit]': this.limit,
-        'resources[options][unavailable_products]': 'last',
-        section_id: 'moru-predictive-search',
-      });
-
       try {
-        const response = await fetch(this.rootUrl + 'search/suggest?' + params.toString(), {
+        const response = await fetch(this.suggestUrl(query), {
           signal: this.controller.signal,
         });
         if (!response.ok) throw new Error(String(response.status));
@@ -441,15 +474,6 @@
     {
       "type": "paragraph",
       "content": "t:moru.search_modal.intro"
-    },
-    {
-      "type": "range",
-      "id": "suggestion_limit",
-      "min": 3,
-      "max": 10,
-      "step": 1,
-      "label": "t:moru.search_modal.suggestion_limit_label",
-      "default": 6
     },
     {
       "type": "checkbox",

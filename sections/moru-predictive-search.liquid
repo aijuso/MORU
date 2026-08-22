@@ -1,24 +1,53 @@
 {% comment %}
-  Render target for the Predictive Search API.
+  Render target for the search modal's suggestion list.
 
-  This section is never placed in a template. It is fetched by
-  sections/moru-search-modal.liquid via
-  /search/suggest?q=...&section_id=moru-predictive-search
-  and its markup is injected into the search modal.
-  It intentionally has no schema so it cannot be added from the theme editor.
+  Never placed in a template — sections/moru-search-modal.liquid fetches it and
+  injects [data-predictive-root] into the modal. It has no schema on purpose so
+  it cannot be added from the theme editor (it would always render empty there).
+
+  It answers two different requests, because the Predictive Search API does not
+  support Japanese (#shopify-features reports "predictiveSearch": false and
+  /search/suggest returns 417):
+
+  1. /search/suggest?...&section_id=moru-predictive-search
+     -> predictive_search is populated. Used where the buyer locale is supported.
+  2. /search?q=...&options[prefix]=last&section_id=moru-predictive-search
+     -> the ordinary search object is populated. Used everywhere else, including
+        this store's Japanese storefront.
 
   https://shopify.dev/docs/api/ajax/reference/predictive-search
 {% endcomment %}
 
 {% liquid
-  assign products = predictive_search.resources.products
-  assign articles = predictive_search.resources.articles
-  assign pages = predictive_search.resources.pages
-  assign total = products.size | plus: articles.size | plus: pages.size
+  # Fixed rather than a setting: the fallback path cannot limit server side.
+  assign limit = 6
+
+  assign performed = false
+  assign products = empty
+  assign articles = empty
+  assign result_pages = empty
+  assign terms = ''
+
+  if predictive_search.performed
+    assign performed = true
+    assign products = predictive_search.resources.products
+    assign articles = predictive_search.resources.articles
+    assign result_pages = predictive_search.resources.pages
+    assign terms = predictive_search.terms
+  elsif search.performed
+    assign performed = true
+    assign products = search.results | where: 'object_type', 'product'
+    assign articles = search.results | where: 'object_type', 'article'
+    assign result_pages = search.results | where: 'object_type', 'page'
+    assign terms = search.terms
+  endif
+
+  assign terms_display = terms | escape
+  assign total = products.size | plus: articles.size | plus: result_pages.size
 %}
 
 <div class="moru-predictive" data-predictive-root>
-  {% if predictive_search.performed %}
+  {% if performed %}
     {% if total > 0 %}
       {% if products.size > 0 %}
         <div class="moru-predictive__group">
@@ -26,7 +55,7 @@
             {{ 'moru.search.type_product' | t }}
           </p>
           <ul class="moru-predictive__list" role="list" aria-labelledby="moru-predictive-products">
-            {% for product in products %}
+            {% for product in products limit: limit %}
               <li>
                 <a class="moru-predictive__item" href="{{ product.url }}" role="option" tabindex="-1">
                   <span class="moru-predictive__thumb">
@@ -53,7 +82,7 @@
             {{ 'moru.search.type_article' | t }}
           </p>
           <ul class="moru-predictive__list" role="list" aria-labelledby="moru-predictive-articles">
-            {% for article in articles %}
+            {% for article in articles limit: limit %}
               <li>
                 <a class="moru-predictive__item moru-predictive__item--text" href="{{ article.url }}" role="option" tabindex="-1">
                   <span class="moru-predictive__title">{{ article.title }}</span>
@@ -64,13 +93,13 @@
         </div>
       {% endif %}
 
-      {% if pages.size > 0 %}
+      {% if result_pages.size > 0 %}
         <div class="moru-predictive__group">
           <p class="moru-predictive__group-title" id="moru-predictive-pages">
             {{ 'moru.search.type_page' | t }}
           </p>
           <ul class="moru-predictive__list" role="list" aria-labelledby="moru-predictive-pages">
-            {% for result_page in pages %}
+            {% for result_page in result_pages limit: limit %}
               <li>
                 <a class="moru-predictive__item moru-predictive__item--text" href="{{ result_page.url }}" role="option" tabindex="-1">
                   <span class="moru-predictive__title">{{ result_page.title }}</span>
@@ -83,13 +112,13 @@
 
       <a
         class="moru-predictive__all"
-        href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}&options%5Bprefix%5D=last"
+        href="{{ routes.search_url }}?q={{ terms | url_encode }}&options%5Bprefix%5D=last"
       >
-        {{ 'moru.search_modal.view_all' | t: terms: predictive_search.terms | escape }}
+        {{ 'moru.search_modal.view_all' | t: terms: terms_display }}
       </a>
     {% else %}
       <p class="moru-predictive__empty">
-        {{ 'moru.search.empty_heading' | t: terms: predictive_search.terms | escape }}
+        {{ 'moru.search.empty_heading' | t: terms: terms_display }}
       </p>
     {% endif %}
   {% endif %}
