@@ -6,7 +6,8 @@
     endif
   endfor
 
-  assign columns = section.settings.columns
+  # select の値は文字列で返るため、比較・割り算の前に数値へ変換する
+  assign columns = section.settings.columns | plus: 0
   if visible_count < columns
     assign columns = visible_count
   endif
@@ -212,14 +213,15 @@
       "content": "t:moru.cta_banners.section_info"
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "columns",
-      "min": 1,
-      "max": 2,
-      "step": 1,
       "label": "t:moru.cta_banners.columns_label",
       "info": "t:moru.cta_banners.columns_info",
-      "default": 2
+      "options": [
+        { "value": "1", "label": "t:moru.cta_banners.columns_1" },
+        { "value": "2", "label": "t:moru.cta_banners.columns_2" }
+      ],
+      "default": "2"
     },
     {
       "type": "select",

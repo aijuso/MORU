@@ -365,7 +365,9 @@
       "link_label": "Link",
       "link_info": "Pick a collection, product or page from your store, or paste any address.",
       "alt_label": "Image description (alt text)",
-      "alt_info": "Read out by screen readers and shown if the image fails to load. The banner's wording lives inside the artwork, so leaving this blank tells those visitors nothing at all."
+      "alt_info": "Read out by screen readers and shown if the image fails to load. The banner's wording lives inside the artwork, so leaving this blank tells those visitors nothing at all.",
+      "columns_1": "1 per row",
+      "columns_2": "2 per row"
     },
     "journal": {
       "name": "MORU journal",
