@@ -692,7 +692,12 @@
       if (left <= 0) {
         node.textContent = node.dataset.holdExpired || '';
         const line = Number(node.dataset.holdLine);
-        if (line) expiredLines.push(line);
+        // Submit each expired line once. Without this a failed removal — or a
+        // refresh that returns the line again — would POST every second.
+        if (line && node.dataset.holdCleared !== 'true') {
+          node.dataset.holdCleared = 'true';
+          expiredLines.push(line);
+        }
         return;
       }
 
