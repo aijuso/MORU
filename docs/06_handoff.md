@@ -88,7 +88,7 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 
 | テンプレート | セクション構成 |
 |---|---|
-| `templates/index.json` | hero / product-grid(新着) / shop-the-room / **cta-banners** / category-browser / product-grid(猫のくらし) / **cta-banners** / instagram / journal |
+| `templates/index.json` | hero / **usp-bar** / **bestsellers** / product-grid(新着) / shop-the-room / cta-banners / category-browser / product-grid(猫のくらし) / cta-banners / **community-journal** / **weekly-picks** |
 | `templates/product.json` | main-product / bundle / details / styling / product-grid×2 / recently-viewed |
 | `templates/collection.json` | collection-banner / collection-grid / recently-viewed |
 | `templates/cart.json` | main-cart / recently-viewed |
@@ -136,6 +136,10 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 - `moru-product-features` — 「この商品の特徴」(メタフィールド `custom.features` 優先・ブロックにフォールバック)
 - `moru-cta-banners` — CTA広告バナー(ブロック=バナー1枚。画像1枚+リンク先だけを持つ。
   何枚でも追加でき、1枚ごとに表示/非表示。ページのどこにでも何個でも置ける)
+- `moru-usp-bar` — 安心バー(送料・お届け目安・返品・選定方針の4項目。ブロックで増減可)
+- `moru-bestsellers` — ベストセラー(**手動で並べた順が順位**。1〜5の丸バッジが自動で付く)
+- `moru-community-journal` — #MORUのある暮らし + 読みものの**横並び**(PC2カラム / スマホ縦積み)
+- `moru-weekly-picks` — 今週のおすすめ(部屋写真 → 商品ページへリンク)
 
 ### スニペット
 
@@ -171,6 +175,65 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 - `learn_shopify_api` を先に呼んで conversationId を取得する(Dev MCP が無いセッションでは呼べないので省略可)。
 - Shopify の仕様は記憶で答えず `search_docs_chunks` で確認する。
 - コミット前に `shopify theme check` を通す(現在オフェンス0)。
+
+### トップページを参考HTMLに寄せた(2026-08-23)
+
+参考: `docs/mockups/home_20260823_full.html`。ユーザー承認済みの決定事項:
+
+| 項目 | 決定 |
+|---|---|
+| ヘッダーの日本語化 | **テーマではなくストアのメニュー設定**。コレクションを4つ作ってから組んだ |
+| 安心バーの文言 | 「当日発送」「翌日お届け」は**使わない**(事実に反する)。下記参照 |
+| ベストセラーの順位 | **手動で並べた順**。売上実績順ではない(実売がまだ無いため) |
+| Instagram と読みもの | **左=Instagram / 右=読みもの** |
+| カテゴリーのサムネ | **四角**(設定で丸にも戻せる) |
+| フッターのタグライン | 「猫との暮らしを、もっと心地よく、**もっと楽しく**。」 |
+
+#### 安心バーの文言は事実に紐づいている。勝手に変えないこと
+
+参考HTMLは「最短翌日お届け」「ペットのための品質基準」だったが、どちらも使えない:
+
+| 参考HTML | 実装 | 理由 |
+|---|---|---|
+| 最短翌日お届け | **お届けの目安は2〜3週間** / 商品により4週間以上いただく場合があります | 配送は2〜3週間。CLAUDE.md 絶対ルール4(配送目安を隠さず明示)そのもの |
+| ペットのための品質基準 | **猫と暮らす目線でセレクト** / 置く場所と手ざわりを見て選んでいます | 「品質基準」と言うと定義された基準の存在を意味するが実在しない(docs/00 第5章) |
+
+#### ⚠️ 未解決: 送料無料の金額がストア設定と食い違っている
+
+トップに「**税込15,000円以上で送料無料**」と出しているが、
+**ストアの配送設定は ¥7,700 のまま。** 変更を試みたが Admin API が拒否した:
+
+```
+このメソッド定義は、Shopifyの更新されたAPIでのみ利用可能な新しい設定を
+使用しているため、更新できません。
+```
+
+このストアの配送オプションは新しいAPI形状(`rateGroups` / `freeConditions`)で
+作られており、MCP が話せるAPIバージョンの `deliveryProfileUpdate` では書き換えられない。
+**管理画面から手で直す必要がある**(設定 → 配送と配達 → 一般プロフィール → 国内配送)。
+直すまで、表示と実際の請求が食い違う。
+
+#### ストア側で作ったもの(テーマではない)
+
+| 種類 | 内容 |
+|---|---|
+| コレクション | `pet` / `interior` / `goods` / `sale`(すべてタグ条件の自動コレクション) |
+| 商品タグ | フラワーラウンジに `ペット` を追加(これが無いと全コレクションが空になる) |
+| メインメニュー | 新着 / ペット / インテリア / 雑貨 / セール。**読みものは記事0件のため外してある** |
+| フッターメニュー | `footer-shopping` / `footer-guide` / `footer-about` |
+| ブログ | 「News」→「読みもの」にリネーム(handle は `news` のまま) |
+
+**参考HTMLのご利用ガイドは「送料・配送について」「返品・交換について」「お支払いについて」を
+含むが、これらのページは存在しない。** 実在するページだけでメニューを組んである。
+
+#### 実装で踏んだ落とし穴
+
+- **`range` 設定は最低3ステップ必要**(前述)。`theme check` は検出せず push で落ちる
+- **モバイルで記事カードを `flex-direction: row` にすると、画像・タグ・タイトル・日付が
+  横一列に並ぶ。** タイトルが 12px 幅になり1文字ずつ縦に折り返した。
+  文字要素は必ず入れ物(`__article-body`)でまとめること
+- **`placeholder_svg_tag` は縦横比を持たない。** 枠側で `aspect-ratio` を指定しないと、
+  推奨比 3:1 のバナー枠に正方形に近い巨大なプレースホルダーが出る
 
 ### CTA広告バナーの設計(2026-08-23 追加)
 
