@@ -102,17 +102,19 @@
                   {{ 'image' | placeholder_svg_tag }}
                 {%- endif -%}
               </span>
-              <span class="moru-cj__article-tag">
-                {%- if article.tags.size > 0 -%}
-                  {{- article.tags | first -}}
-                {%- else -%}
-                  {{- 'moru.placeholder.article_tag' | t -}}
-                {%- endif -%}
+              <span class="moru-cj__article-body">
+                <span class="moru-cj__article-tag">
+                  {%- if article.tags.size > 0 -%}
+                    {{- article.tags | first -}}
+                  {%- else -%}
+                    {{- 'moru.placeholder.article_tag' | t -}}
+                  {%- endif -%}
+                </span>
+                <span class="moru-cj__article-title">{{ article.title }}</span>
+                <time class="moru-cj__article-date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                  {{- article.published_at | date: '%Y.%m.%d' -}}
+                </time>
               </span>
-              <span class="moru-cj__article-title">{{ article.title }}</span>
-              <time class="moru-cj__article-date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-                {{- article.published_at | date: '%Y.%m.%d' -}}
-              </time>
             </a>
           </li>
         {%- endfor -%}
@@ -121,9 +123,11 @@
           <li>
             <div class="moru-cj__article">
               <span class="moru-cj__article-media">{{ 'image' | placeholder_svg_tag }}</span>
-              <span class="moru-cj__article-tag">{{ 'moru.placeholder.article_tag' | t }}</span>
-              <span class="moru-cj__article-title">{{ 'moru.placeholder.article_title' | t }}</span>
-              <span class="moru-cj__article-date">{{ 'moru.placeholder.article_date' | t }}</span>
+              <span class="moru-cj__article-body">
+                <span class="moru-cj__article-tag">{{ 'moru.placeholder.article_tag' | t }}</span>
+                <span class="moru-cj__article-title">{{ 'moru.placeholder.article_title' | t }}</span>
+                <span class="moru-cj__article-date">{{ 'moru.placeholder.article_date' | t }}</span>
+              </span>
             </div>
           </li>
         {%- endfor -%}
@@ -255,6 +259,14 @@
     transform: scale(1.05);
   }
 
+  .moru-cj__article-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
   .moru-cj__article-tag {
     display: inline-block;
     margin-block-end: var(--space-2xs);
@@ -301,6 +313,7 @@
       gap: var(--space-md);
     }
 
+    /* 画像を左、文字を右に。文字は body にまとめてあるので横一列に散らばらない */
     .moru-cj__article {
       flex-direction: row;
       gap: var(--space-md);
@@ -308,10 +321,14 @@
     }
 
     .moru-cj__article-media {
-      flex: 0 0 7.5rem;
-      width: 7.5rem;
+      flex: 0 0 6.5rem;
+      width: 6.5rem;
       aspect-ratio: 1;
       margin-block-end: 0;
+    }
+
+    .moru-cj__article-title {
+      font-size: var(--font-size-sm);
     }
   }
 
