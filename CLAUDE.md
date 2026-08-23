@@ -28,7 +28,7 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 | `docs/10_pricing_rules.md` | 値付けルール(着地原価×3.0 / 丸め / 送料区分 / CPA上限) | 価格判断の正 |
 | `docs/11_product_registration_workflow.md` | **CKB → Shopify → フロントの商品登録ワークフロー**(画像読み取り・メタフィールド・落とし穴) | **商品を登録するときの手順書** |
 | `docs/mockups/` | 確定デザイン(受領日つき。最新1件が正 — docs/07 §3 の表を参照) | 見た目の正 |
-| `docs/brand/reference-sheets/` | **ブランドビジュアル リファレンスシート01〜05**(v0.2) | **ビジュアルの正** |
+| `docs/brand/reference-sheets/` | **ブランドビジュアル リファレンスシート01〜05**(v0.2・**PNG収録済み**) | **ビジュアルの正。画像生成では参照画像として実際に渡す(docs/11 §6)** |
 | `docs/brand/` | ロゴ(logo_terracotta.png)・商品参考写真 | ブランド素材 |
 
 ## Shopify Dev MCP 使用ルール(必須)
@@ -69,6 +69,10 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
     MORUの商品・ブランドに関する事項は **moru-notes と docs/00〜01 が勝つ**。
     同名スキルがアカウント側(synced)にも存在するが、このリポジトリでは
     **`.claude/skills/` 配下(moru-notes付き)が正**。
+    **画像を生成するときは、`docs/brand/reference-sheets/0X_*.png` と
+    その商品の Shopify 登録済み商品画像を、両方とも参照画像として渡す。**
+    プロンプトに「これは MORU のブランドデザイン基準である」と明示する(docs/11 §6)。
+    **生成画像のアクセントカラーは特定色に固定しない**(カラフル・ポップ可。差し色は1〜2色まで)
 11. 右サイドバー禁止。Full-widthセクションの縦積み
 12. UIの基本言語は日本語。文言は `locales/ja.default.json` の翻訳キーで管理(Liquid直書き禁止)
 13. すべてのセクションはテーマエディタから編集可能に(schema必須、ラベル日本語、presets必須)
@@ -102,7 +106,8 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 - [x] **商品登録スキル v2 化**(`.claude/skills/product-registration/`。リファレンスシート生成方式は廃止)
 - [x] **決定ログ新設**(docs/06_decisions_log.md / D-001〜D-032)
 - [ ] **テーマ実装への反映は未着手**(design token 色替え・ヘッダー改修・ホーム v3 化 → オーナー承認待ち)
-- [ ] **リファレンスシート画像7枚のコミット**(テキスト版のみ在り。docs/brand/reference-sheets/README.md)
+- [x] **リファレンスシート画像5枚を収録**(01〜05。**見た目の正は PNG**)
+- [ ] ホームモック `home_v3_upper/lower.png` の受領(まだ2枚未着)
 - [ ] **ホームモック `home_v3_upper/lower.png` の受領**
 - [ ] サンプル実測 / フォント最終決定 / 信頼バッジ文言への配送実態の反映
 
