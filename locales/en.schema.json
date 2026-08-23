@@ -67,7 +67,11 @@
     "sale": "Sale text",
     "logo_color": "Logo / wordmark color",
     "swatches": "Colour swatches",
-    "swatch_color_map": "Colour name to hex map"
+    "swatch_color_map": "Colour name to hex map",
+    "cart_hold": "Cart hold",
+    "cart_hold_hours": "Hold for",
+    "hours": "hours",
+    "cart_hold_enabled": "Enable the cart hold"
   },
   "info": {
     "accent_colors": "Use at most 1–2 accent colors per screen (docs/01).",
@@ -82,7 +86,9 @@
     "border": "Used for rules and outlines",
     "sale": "Used for sale links and similar highlights",
     "logo_color": "Color of the MORU wordmark in the header and footer. Not used when a logo image is set",
-    "swatch_color_map": "Fills the colour circles on product options. One 'name:hex' pair per line (e.g. アイボリー:#E7D6CA). A swatch configured in Shopify's Product options settings wins over this. Sampling the hex from the product photo gives the closest match"
+    "swatch_color_map": "Fills the colour circles on product options. One 'name:hex' pair per line (e.g. アイボリー:#E7D6CA). A swatch configured in Shopify's Product options settings wins over this. Sampling the hex from the product photo gives the closest match",
+    "cart_hold": "Removes cart items automatically after a set time, with the remaining time shown in the cart, the cart drawer and on the product page. Note: Shopify does not reserve inventory for carts — this empties that shopper's own cart and holds nothing back from anyone else",
+    "cart_hold_enabled": "Turn off to stop both the removal and the countdown (Shopify's default behaviour)"
   },
   "options": {
     "alignment": {

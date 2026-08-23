@@ -118,7 +118,8 @@
         "other": "({{ count }}件のレビュー)"
       },
       "no_reviews": "レビューはまだありません。ご購入いただいたお客様のレビューのみを掲載します。",
-      "all_in_cart": "カートに全数入っています"
+      "all_in_cart": "カートに全数入っています",
+      "hold_remaining": "あと {{ time }} でカートから戻ります"
     },
     "collection": {
       "all": "すべて",
@@ -151,7 +152,10 @@
       "coupon_placeholder": "クーポンコード",
       "coupon_apply": "適用",
       "upsell_add": "追加する",
-      "upsell_added": "追加済み"
+      "upsell_added": "追加済み",
+      "hold_remaining": "あと {{ time }} でカートから削除されます",
+      "hold_note": "カートの商品は{{ hours }}時間で自動的に削除されます。",
+      "hold_expired": "保持期限が切れました"
     },
     "bundle": {
       "total": "2点の合計",

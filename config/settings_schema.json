@@ -200,5 +200,31 @@
         "default": "アイボリー:#E7D6CA\nオリーブグリーン:#7A7455"
       }
     ]
+  },
+  {
+    "name": "t:labels.cart_hold",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:info.cart_hold"
+      },
+      {
+        "type": "range",
+        "id": "cart_hold_hours",
+        "min": 1,
+        "max": 72,
+        "step": 1,
+        "unit": "t:labels.hours",
+        "label": "t:labels.cart_hold_hours",
+        "default": 24
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_hold_enabled",
+        "label": "t:labels.cart_hold_enabled",
+        "info": "t:info.cart_hold_enabled",
+        "default": true
+      }
+    ]
   }
 ]

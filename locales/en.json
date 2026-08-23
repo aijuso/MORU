@@ -118,7 +118,8 @@
         "other": "({{ count }} reviews)"
       },
       "no_reviews": "No reviews yet. Only reviews from verified buyers are published here.",
-      "all_in_cart": "All available units are in your cart"
+      "all_in_cart": "All available units are in your cart",
+      "hold_remaining": "Returns to stock in {{ time }}"
     },
     "collection": {
       "all": "All",
@@ -151,7 +152,10 @@
       "coupon_placeholder": "Discount code",
       "coupon_apply": "Apply",
       "upsell_add": "Add",
-      "upsell_added": "Added"
+      "upsell_added": "Added",
+      "hold_remaining": "Removed from your cart in {{ time }}",
+      "hold_note": "Items are removed from the cart automatically after {{ hours }} hours.",
+      "hold_expired": "Hold expired"
     },
     "bundle": {
       "total": "Total for 2 items",

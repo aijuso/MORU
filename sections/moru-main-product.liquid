@@ -334,9 +334,17 @@
           # already hold in their own cart. Nobody else's cart is involved and
           # the inventory itself is untouched — only the number shown changes.
           assign in_cart = 0
+          assign hold_until = 0
+          assign hold_ms = settings.cart_hold_hours | times: 3600000
           for line_item in cart.items
             if line_item.variant_id == current_variant.id
               assign in_cart = in_cart | plus: line_item.quantity
+              if line_item.properties._added_at != blank
+                assign candidate = line_item.properties._added_at | plus: hold_ms
+                if hold_until == 0 or candidate < hold_until
+                  assign hold_until = candidate
+                endif
+              endif
             endif
           endfor
           assign tracked_quantity = tracked_quantity | minus: in_cart
@@ -396,6 +404,15 @@
             data-all-in-cart="{{ 'moru.product.all_in_cart' | t | escape }}"
           >{{ stock_label }}</span>
         </div>
+
+        {% if settings.cart_hold_enabled and hold_until > 0 %}
+          <p
+            class="moru-product__hold"
+            data-hold-until="{{ hold_until }}"
+            data-hold-template="{{ 'moru.product.hold_remaining' | t: time: '__TIME__' | escape }}"
+            data-hold-expired="{{ 'moru.cart.hold_expired' | t | escape }}"
+          ></p>
+        {% endif %}
 
         <div class="moru-product__actions">
           <button
@@ -925,6 +942,18 @@
   }
 
   /* Quantity + stock */
+  .moru-product__hold {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-product__hold:empty {
+    display: none;
+  }
+
   .moru-product__qty-row {
     display: flex;
     align-items: center;

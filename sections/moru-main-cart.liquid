@@ -1,4 +1,5 @@
 {% liquid
+  assign hold_ms = settings.cart_hold_hours | times: 3600000
   assign tax_amount = 0
   if section.settings.tax_display == 'included' and cart.total_price > 0
     assign divisor = section.settings.tax_rate | plus: 100
@@ -93,6 +94,16 @@
                     {{ 'cart.remove' | t }}
                   </a>
                 </div>
+
+                {% if settings.cart_hold_enabled and item.properties._added_at != blank %}
+                  <p
+                    class="moru-cart__hold"
+                    data-hold-until="{{ item.properties._added_at | plus: hold_ms }}"
+                    data-hold-line="{{ forloop.index }}"
+                    data-hold-template="{{ 'moru.cart.hold_remaining' | t: time: '__TIME__' | escape }}"
+                    data-hold-expired="{{ 'moru.cart.hold_expired' | t | escape }}"
+                  ></p>
+                {% endif %}
               </div>
 
               <div class="moru-cart__item-price">
@@ -561,6 +572,17 @@
 
   .moru-cart__remove:hover {
     color: var(--color-text);
+  }
+
+  .moru-cart__hold {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-cart__hold:empty {
+    display: none;
   }
 
   .moru-cart__item-price {

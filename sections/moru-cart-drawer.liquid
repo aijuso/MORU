@@ -1,4 +1,5 @@
 {% liquid
+  assign hold_ms = settings.cart_hold_hours | times: 3600000
   assign tax_amount = 0
   if section.settings.tax_display == 'included' and cart.total_price > 0
     assign divisor = section.settings.tax_rate | plus: 100
@@ -12,6 +13,8 @@
   data-section-id="{{ section.id }}"
   data-intercept-add="{{ section.settings.open_on_add }}"
   data-page-type="{{ request.page_type }}"
+  data-hold-enabled="{{ settings.cart_hold_enabled }}"
+  data-hold-hours="{{ settings.cart_hold_hours }}"
   aria-hidden="true"
 >
   <div class="moru-cart-drawer__backdrop" data-drawer-backdrop></div>
@@ -80,6 +83,16 @@
                     {{ 'cart.remove' | t }}
                   </button>
                 </div>
+
+                {% if settings.cart_hold_enabled and item.properties._added_at != blank %}
+                  <p
+                    class="moru-cart-drawer__hold"
+                    data-hold-until="{{ item.properties._added_at | plus: hold_ms }}"
+                    data-hold-line="{{ forloop.index }}"
+                    data-hold-template="{{ 'moru.cart.hold_remaining' | t: time: '__TIME__' | escape }}"
+                    data-hold-expired="{{ 'moru.cart.hold_expired' | t | escape }}"
+                  ></p>
+                {% endif %}
               </div>
 
               <div class="moru-cart-drawer__item-price">
@@ -119,6 +132,11 @@
         {% endif %}
 
         <p class="moru-cart-drawer__note">{{ 'moru.cart_drawer.note' | t }}</p>
+        {% if settings.cart_hold_enabled %}
+          <p class="moru-cart-drawer__note">
+            {{ 'moru.cart.hold_note' | t: hours: settings.cart_hold_hours }}
+          </p>
+        {% endif %}
 
         <form class="moru-cart-drawer__actions" action="{{ routes.cart_url }}" method="post">
           <a class="moru-button moru-button--outline" href="{{ routes.cart_url }}">
@@ -350,6 +368,18 @@
     color: var(--color-text);
   }
 
+  .moru-cart-drawer__hold {
+    grid-column: 2 / -1;
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-cart-drawer__hold:empty {
+    display: none;
+  }
+
   .moru-cart-drawer__item-price {
     display: flex;
     flex-direction: column;
@@ -494,12 +524,28 @@
       if (submitButton) submitButton.disabled = true;
 
       try {
-        const response = await fetch(this.rootUrl + 'cart/add.js', {
-          method: 'POST',
-          headers: { Accept: 'application/json' },
-          body: new FormData(form),
-        });
-        if (!response.ok) throw new Error('add failed');
+        const data = new FormData(form);
+        const variantId = Number(data.get('id'));
+        const wanted = Number(data.get('quantity') || 1);
+        const existing = await this.findLine(variantId);
+
+        if (existing) {
+          // Already held: raise the quantity on that line so its _added_at —
+          // and therefore its countdown — carries on from the first add.
+          await this.postJson('cart/change.js', {
+            line: existing.line,
+            quantity: existing.quantity + wanted,
+          });
+        } else {
+          if (this.holdEnabled) data.append('properties[_added_at]', String(Date.now()));
+          const response = await fetch(this.rootUrl + 'cart/add.js', {
+            method: 'POST',
+            headers: { Accept: 'application/json' },
+            body: data,
+          });
+          if (!response.ok) throw new Error('add failed');
+        }
+
         await this.refresh();
         this.open();
       } catch (error) {
@@ -507,6 +553,28 @@
       } finally {
         if (submitButton) submitButton.disabled = false;
       }
+    }
+
+    get holdEnabled() {
+      return this.dataset.holdEnabled === 'true';
+    }
+
+    async postJson(path, body) {
+      const response = await fetch(this.rootUrl + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!response.ok) throw new Error(path + ' failed');
+      return response.json();
+    }
+
+    async findLine(variantId) {
+      const response = await fetch(this.rootUrl + 'cart.js', { headers: { Accept: 'application/json' } });
+      const cart = await response.json();
+      const index = (cart.items || []).findIndex((item) => item.variant_id === variantId);
+      if (index === -1) return null;
+      return { line: index + 1, quantity: cart.items[index].quantity };
     }
 
     async change(line, quantity) {
@@ -561,6 +629,83 @@
   if (!customElements.get('moru-cart-drawer')) {
     customElements.define('moru-cart-drawer', MoruCartDrawer);
   }
+
+  /**
+   * Cart hold.
+   *
+   * Every line stamped with a private _added_at property carries a deadline.
+   * Until it passes, each [data-hold-until] element counts down; once it does,
+   * the line is really removed with cart/change.js — the countdown is not
+   * decoration over a cart that quietly stays put.
+   *
+   * Shopify does not reserve inventory for carts, so this frees nothing for
+   * anyone else. What it does is empty this shopper's own cart, which is also
+   * what the per-viewer stock number on the product page is counting.
+   */
+  function moruFormatHold(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const pad = (n) => String(n).padStart(2, '0');
+    return pad(Math.floor(total / 3600)) + ':' + pad(Math.floor((total % 3600) / 60)) + ':' + pad(total % 60);
+  }
+
+  let moruHoldClearing = false;
+
+  async function moruClearExpired(lines) {
+    if (moruHoldClearing || lines.length === 0) return;
+    moruHoldClearing = true;
+    const drawer = document.querySelector('[data-cart-drawer]');
+    const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+
+    try {
+      // Highest line first: removing a line renumbers the ones after it.
+      for (const line of lines.sort((a, b) => b - a)) {
+        await fetch(root + 'cart/change.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ line: line, quantity: 0 }),
+        });
+      }
+      if (drawer && typeof drawer.refresh === 'function') {
+        await drawer.refresh();
+      } else {
+        window.location.reload();
+      }
+    } catch (error) {
+      /* leave the cart alone; the next tick tries again */
+    } finally {
+      moruHoldClearing = false;
+    }
+  }
+
+  function moruTickHolds() {
+    const nodes = document.querySelectorAll('[data-hold-until]');
+    if (nodes.length === 0) return;
+
+    const now = Date.now();
+    const expiredLines = [];
+
+    nodes.forEach((node) => {
+      const until = Number(node.dataset.holdUntil);
+      if (!until) return;
+      const left = until - now;
+
+      if (left <= 0) {
+        node.textContent = node.dataset.holdExpired || '';
+        const line = Number(node.dataset.holdLine);
+        if (line) expiredLines.push(line);
+        return;
+      }
+
+      const template = node.dataset.holdTemplate || '__TIME__';
+      node.textContent = template.replace('__TIME__', moruFormatHold(left));
+    });
+
+    if (expiredLines.length > 0) moruClearExpired(expiredLines);
+  }
+
+  moruTickHolds();
+  window.setInterval(moruTickHolds, 1000);
+  document.addEventListener('moru:cart:updated', moruTickHolds);
 {% endjavascript %}
 
 {% schema %}
