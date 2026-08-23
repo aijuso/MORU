@@ -705,7 +705,9 @@
       node.textContent = template.replace('__TIME__', moruFormatHold(left));
     });
 
-    if (expiredLines.length > 0) moruClearExpired(expiredLines);
+    // The cart page and the drawer render the same cart, so one line can be
+    // reported twice in a tick.
+    if (expiredLines.length > 0) moruClearExpired(Array.from(new Set(expiredLines)));
   }
 
   moruTickHolds();
