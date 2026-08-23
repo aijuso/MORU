@@ -12,6 +12,11 @@ node_modules/
 # Shopify CLI files
 .shopify/
 
+# `npm i @shopify/cli` は theme check を動かすためのローカル開発ツール。
+# テーマ本体の依存ではないので、納品ZIPに混ざらないよう追跡しない(docs/07 §6)
+package.json
+package-lock.json
+
 ## Release files
 release
 *.zip

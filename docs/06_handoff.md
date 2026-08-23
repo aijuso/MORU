@@ -12,7 +12,9 @@
 
 ## 0. 直近のセッション(2026-08-22〜23)
 
-**ブランチ `claude/moru-living-shopify-dev-yvnmni` / HEAD `385a6d7`。git・ストアとも一致済み。**
+**ブランチ `claude/moru-living-shopify-dev-yvnmni`。**
+※ この節が書かれた時点の HEAD は `385a6d7` だったが、その後 `c4431a3` まで進んでいる
+(カート24時間ホールドの修正2件 + docs)。§0 の記述内容自体はその3コミットを含んでいる。
 
 ### やったこと
 
@@ -86,7 +88,7 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 
 | テンプレート | セクション構成 |
 |---|---|
-| `templates/index.json` | hero / product-grid(新着) / shop-the-room / category-browser / product-grid(チェア) / journal / instagram |
+| `templates/index.json` | hero / product-grid(新着) / shop-the-room / **cta-banners** / category-browser / product-grid(猫のくらし) / **cta-banners** / instagram / journal |
 | `templates/product.json` | main-product / bundle / details / styling / product-grid×2 / recently-viewed |
 | `templates/collection.json` | collection-banner / collection-grid / recently-viewed |
 | `templates/cart.json` | main-cart / recently-viewed |
@@ -132,6 +134,8 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 - `moru-cart-drawer` — 右から出るカートドロワー(数量変更/削除/小計/購入手続き)。**header グループ専用**
 - `moru-predictive-search` — 検索候補の描画専用。テンプレートには置かない・schema なし(下記「検索・カートドロワーの仕組み」参照)
 - `moru-product-features` — 「この商品の特徴」(メタフィールド `custom.features` 優先・ブロックにフォールバック)
+- `moru-cta-banners` — CTA広告バナー(ブロック=バナー1枚。何枚でも追加でき、1枚ごとに表示/非表示を切替。
+  ページのどこにでも何個でも置ける。詳細は下記「CTA広告バナーの設計」)
 
 ### スニペット
 
@@ -167,6 +171,39 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 - `learn_shopify_api` を先に呼んで conversationId を取得する(Dev MCP が無いセッションでは呼べないので省略可)。
 - Shopify の仕様は記憶で答えず `search_docs_chunks` で確認する。
 - コミット前に `shopify theme check` を通す(現在オフェンス0)。
+
+### CTA広告バナーの設計(2026-08-23 追加)
+
+参考デザイン: `docs/mockups/home_20260823_cta_banners.md`(画像は未コミット・再送依頼中)。
+
+ユーザーの要件は「バナーを自由にいくつでも追加でき、表示/非表示も切り替えられる」。
+`sections/moru-cta-banners.liquid` の1本で両方を満たしている:
+
+| 要件 | 実装 |
+|---|---|
+| どのページの好きな位置にも、何個でもセクションを置ける | `presets` あり。`disabled_on` は header / footer のみ |
+| 1セクションに何枚でもバナーを足せる | ブロック `banner`(`max_blocks: 12`) |
+| 1枚ごとに表示/非表示 | ブロック設定 `show_banner`。**外さずに隠せる**ので、季節キャンペーンの出し戻しに使える |
+| 表示中が0枚なら | セクションごと出力しない(空の余白を残さない) |
+
+**2つの使い方に対応している。どちらを使うかは背景色の設定で決まる。**
+
+| 背景色 | 見た目 | 想定 |
+|---|---|---|
+| 「なし(画像のみ)」 | 画像を全面に敷く。見出しを入れた場合だけ画像の上に重ね、読めるようスクリムを敷く | **参考デザインはこちら。** 文字も装飾も焼き込んだバナー画像をそのまま貼る |
+| クリーム/ブルー/テラコッタ/オリーブ/バーガンディ | 左に文字・右に画像の2分割(PC)。モバイルは画像が上、文字が下 | 画像を作り直さずに文言だけ差し替えたいとき |
+
+設計上の注意:
+
+- **色は必ずセレクトでトークンから選ぶ**。カラーピッカーにしていないのは、
+  docs/01 の「アクセント色は1画面1〜2色」が守れなくなるため
+- スクリムは PC では文字側からのグラデーション、**モバイルでは下から**に切り替える。
+  横方向のままだと狭い画面で文字がスクリムからはみ出す(実測で確認)
+- 隣り合うバナーの高さは、`.moru-cta-banners__item` を `display: grid` にして揃えている。
+  文言の長さが違っても崩れない
+- `sizes` 属性に CSS 変数は書けない(ブラウザが解決できない)。列数から Liquid 側で `vw` を計算している
+- **プリセットに割引の数字を入れていない。** docs/00 第11章の偽割引の禁止に触れるため、
+  「最大30%OFF」等はマーチャントが実際の割引を作ったうえで入力するもの
 
 ### 検索・カートドロワーの仕組み(2026-08-22 追加)
 
@@ -216,6 +253,7 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 |---|---|---|
 | **高** | `docs/08_store_checklist.md` §2 の残タスク(スウォッチ色は対応済み、メニュー差し替え・割引作成・特商法の事業者情報・固定ページ公開) | ユーザー |
 | **高** | **2商品目を登録して、メタフィールド設計が実際に回るか検証** — 商品ごとのリード文・特徴・スウォッチが別々に出るか。1商品では確認できていない | 両方 |
+| **高** | **ベストセラー(1〜5位ランキング)セクション** — 2026-08-23 にユーザーが希望した構成に含まれるが未着手。データ源(`best-selling` 並びのコレクション or 手動選択)と、実商品が2点未満のときの見せ方をユーザーに確認してから作る | 判断 |
 | 中 | メインメニューが Home / Catalog / Contact のまま。新着アイテム・猫のくらし・MORUについて等へ | ユーザー |
 | 中 | 商品写真がすべて仕入元由来。ブランド写真への差し替え | ユーザー |
 | 中 | Search &amp; Discovery アプリ導入(検索の同義語・並び順) | ユーザー |
