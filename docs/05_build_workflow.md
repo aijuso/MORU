@@ -1,7 +1,8 @@
 # 05. 構築ワークフロー — モック → セクション実装(ゼロ構築版)
 
 > 旧プロジェクトの「ユーザー提供HTML→Liquid移植」方式は廃止。
-> 本プロジェクトでは **`docs/mockups/home_v2_final.png` と docs/02〜03 の仕様から、Claude Codeが直接 `.liquid` セクションを構築する。**
+> 本プロジェクトでは **docs/02〜03 の仕様と `docs/brand/reference-sheets/` から、Claude Codeが直接 `.liquid` セクションを構築する。**
+> ⚠️ 2026-08-23: 見た目の正は `home_v2_final.png` から **リファレンスシート01〜05 + docs/02 v3** に移った。
 
 ## 1セクションの標準手順
 
@@ -9,7 +10,7 @@
 2. **設計宣言**: 実装前に「schema設定項目一覧(何をエディタで編集可能にするか)」「ブロック構造」「使うShopifyオブジェクト」を短く報告する
 3. **検証してから書く**: Liquidは `validate_theme_codeblocks`、GraphQLは `validate_graphql_codeblocks` を必ず通す(Dev MCP)
 4. **実装**: `sections/moru-*.liquid` + 必要なら `snippets/` `assets/`。CSSは変数参照のみ、クラスは `moru-` プレフィックス
-5. **文言**: 日本語文言は `locales/ja.json` にキー追加。schema初期値にも直書きせず翻訳キー参照(`t:` )を使う
+5. **文言**: 日本語文言は `locales/ja.default.json` にキー追加。schema初期値にも直書きせず翻訳キー参照(`t:` )を使う
 6. **空状態**: コレクション未指定・商品ゼロ・画像未設定でも崩れないフォールバックを必ず入れる
 7. **確認**: `shopify theme dev` でモックと見比べ(レイアウト・余白・書体階層・色)。モバイル表示確認。`shopify theme check`
 8. **PR**: 1セクション=1PR。説明に「モック該当箇所のスクショ/設定項目一覧/確認済み事項」を書く
@@ -35,5 +36,5 @@
 - [ ] テーマエディタで全要素が編集可能(presets含む)
 - [ ] 空状態で崩れない
 - [ ] theme checkエラーゼロ / validate_theme_codeblocks通過
-- [ ] ja.jsonに文言集約済み
+- [ ] ja.default.json に文言集約済み
 - [ ] docs/01のNG(肉球UI・偽カウントダウン・禁止コピー等)を含まない

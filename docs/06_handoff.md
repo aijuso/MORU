@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: 2026-08-23(セッション2回目)
+> 最終更新: 2026-08-23(v0.2 全面改訂セッション)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
 > 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`
@@ -10,7 +10,42 @@
 
 ---
 
-## 0. 直近のセッション(2026-08-23 後半)
+## 0. 直近のセッション(2026-08-23 夜)— **v0.2 全面改訂(ドキュメントのみ)**
+
+**ブランチ `claude/moru-living-shopify-dev-yvnmni`。テーマコードは1行も変えていない。**
+
+オーナーの「MORU v0.2 全面改訂」プロンプトを受け、**ブランド再定義・サイト構造・
+カテゴリ設計・画像ワークフローをドキュメントに反映した。実装はオーナー承認待ち。**
+
+### 変更したファイル
+
+| ファイル | 内容 |
+|---|---|
+| `docs/00_brand_master.md` | 冒頭に **v0.2 追補**(Pet-first, Interior-always. / Concept・Mission・Vision・Values / 3層の問題 / ペルソナ / 商品システム4階層 / エコシステム)。**旧本文に優先する** |
+| `docs/01_brand_guidelines.md` | **全面改訂 v0.2。** 9色パレット / 写真4原則 / Playful の出し方 / **SALE系解禁** / 画像ルール |
+| `docs/02_homepage_spec.md` | **v3 に改訂。** 12セクション構成 |
+| `docs/05_build_workflow.md` | 見た目の正をリファレンスシートへ。`locales/ja.json` → `ja.default.json` の誤記修正 |
+| `docs/06_decisions_log.md` | **新設。** D-001〜D-029 |
+| `docs/07_session_protocol.md` | §3「現在の正」表を更新 |
+| `docs/09_navigation_taxonomy.md` | **新設。** ナビ6分類・ヘッダー・スマートコレクション・内部タグ |
+| `docs/brand/reference-sheets/` | **新設。** シート01〜05 のテキスト版 + README |
+| `.claude/skills/product-registration/` | **新設(v2)。** リファレンスシート生成方式は廃止 |
+| `CLAUDE.md` | 絶対ルール13項目に再編・ステータス更新 |
+
+### ⚠️ 次のセッションが最初に確認すべきこと(v0.2 分)
+
+| 状態 | 内容 |
+|---|---|
+| **未受領** | **リファレンスシート画像5枚がリポジトリに無い。** オーナーはチャットに添付したが、この実行環境はチャット添付画像をファイル化できなかった(`/mnt/attach` が空)。テキスト版のみ在り |
+| **未受領** | **`home_v3_upper.png` / `home_v3_lower.png` は添付そのものが無かった。** docs/02 v3 はプロンプト本文だけを根拠にしている。**余白・比率・カード寸法は未確定** |
+| **未着手** | テーマ実装への反映(design token 色替え / ヘッダー改修 / ホーム v3 化)。**オーナー承認待ち** |
+| **不整合** | v0.2 プロンプトは「前回の引き継ぎ(`docs/06_decisions_log.md`)」を参照していたが、**そのファイルはこのリポジトリに存在しなかった。** 別クローンの記憶と思われる。今回新設し、2026-08-23 から記録を開始した |
+| **不整合** | v0.2 プロンプトは `ops/products/` と `.claude/skills/product-registration/` の「全面改訂」を指示したが、**どちらもこのリポジトリに存在しなかった。** スキルは新規作成した。`ops/` は商品登録の実作業時に作る |
+| **不整合** | v0.2 プロンプトは旧 `brand_board.png` に言及したが、**このリポジトリには無い**(あるのは `home_v2_final.png` のみ) |
+
+---
+
+## 0-0. その前のセッション(2026-08-23 後半)
 
 **ブランチ `claude/moru-living-shopify-dev-yvnmni` / HEAD `f5636b0`。git・ストアとも一致済み。**
 
