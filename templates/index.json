@@ -111,14 +111,18 @@
         "rank_5"
       ],
       "settings": {
-        "collection": "new-arrivals"
+        "collection": "interior"
       }
     },
     "new_arrivals": {
       "type": "moru-product-grid",
       "settings": {
         "show_new_badge": true,
-        "collection": "new-arrivals"
+        "collection": "new-arrivals",
+        "new_within_days": 60,
+        "products_to_show": 8,
+        "title": "新着アイテム",
+        "show_view_all": true
       }
     },
     "shop_the_room": {
@@ -189,43 +193,50 @@
         "cat_1": {
           "type": "category",
           "settings": {
-            "label": "新着アイテム",
-            "collection": "new-arrivals"
+            "label": "ペット",
+            "collection": "pet"
           }
         },
         "cat_2": {
           "type": "category",
           "settings": {
-            "label": "猫のくらし",
-            "collection": "cat-life"
+            "label": "チェア・スツール",
+            "collection": "chair-stool"
           }
         },
         "cat_3": {
           "type": "category",
           "settings": {
-            "label": "ペット",
-            "collection": "pet"
+            "label": "テーブル",
+            "collection": "table"
           }
         },
         "cat_4": {
           "type": "category",
           "settings": {
-            "label": "インテリア",
-            "collection": "interior"
+            "label": "収納",
+            "collection": "storage"
           }
         },
         "cat_5": {
           "type": "category",
           "settings": {
-            "label": "雑貨",
-            "collection": "goods"
+            "label": "照明",
+            "collection": "lighting"
           }
         },
         "cat_6": {
           "type": "category",
           "settings": {
-            "label": "セール",
-            "collection": "sale"
+            "label": "ファブリック",
+            "collection": "fabric"
+          }
+        },
+        "cat_7": {
+          "type": "category",
+          "settings": {
+            "label": "雑貨",
+            "collection": "goods"
           }
         }
       },
@@ -235,22 +246,23 @@
         "cat_3",
         "cat_4",
         "cat_5",
-        "cat_6"
+        "cat_6",
+        "cat_7"
       ],
       "settings": {
         "shape": "square",
-        "columns": 6,
+        "columns": 7,
         "background": "alt"
       }
     },
     "category_products": {
       "type": "moru-product-grid",
       "settings": {
-        "title": "猫のくらし",
+        "title": "ペットのくらし",
         "show_view_all": false,
         "show_subtitle": true,
         "bottom_button_label": "すべて見る",
-        "collection": "cat-life"
+        "collection": "pet"
       }
     },
     "cta_banners_2": {

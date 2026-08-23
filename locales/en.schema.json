@@ -168,7 +168,10 @@
       "show_subtitle_label": "Show subtitle (product type)",
       "bottom_button_label_label": "Bottom button label",
       "bottom_button_label_info": "Leave blank to hide. Links to the selected collection",
-      "columns_label": "Products per row"
+      "columns_label": "Products per row",
+      "new_within_days_label": "Treat as new for",
+      "new_within_days_info": "Set to 0 to show the collection as-is. 60 means \"published within two months\".",
+      "new_within_days_unit": "days"
     },
     "main_product": {
       "name": "MORU product main",

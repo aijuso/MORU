@@ -168,7 +168,10 @@
       "show_subtitle_label": "サブタイトル(商品タイプ)を表示",
       "bottom_button_label_label": "下部ボタンのラベル",
       "bottom_button_label_info": "空にすると非表示。リンク先は選択したコレクションです",
-      "columns_label": "1行あたりの表示数"
+      "columns_label": "1行あたりの表示数",
+      "new_within_days_label": "新着とみなす期間",
+      "new_within_days_info": "0 にすると期間で絞らずコレクションの並び順どおりに出します。60 で「公開から2ヶ月」。",
+      "new_within_days_unit": "日"
     },
     "main_product": {
       "name": "MORU 商品メイン",

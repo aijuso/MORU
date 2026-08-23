@@ -231,6 +231,9 @@
     "bestsellers": {
       "rank_label": "No. {{ rank }}",
       "empty_hint": "Pick the products to feature, in order, from the ranked slots in the theme editor."
+    },
+    "product_grid": {
+      "no_new_items": "No new arrivals right now."
     }
   }
 }

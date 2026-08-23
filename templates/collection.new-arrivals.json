@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "banner": {
+      "type": "moru-collection-banner",
+      "settings": {}
+    },
+    "grid": {
+      "type": "moru-product-grid",
+      "settings": {
+        "title": "",
+        "collection": "new-arrivals",
+        "products_to_show": 24,
+        "columns": "4",
+        "show_view_all": false,
+        "new_within_days": 60,
+        "show_new_badge": true,
+        "show_subtitle": true
+      }
+    },
+    "recently_viewed": {
+      "type": "moru-recently-viewed",
+      "settings": {}
+    }
+  },
+  "order": [
+    "banner",
+    "grid",
+    "recently_viewed"
+  ]
+}

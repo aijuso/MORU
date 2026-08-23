@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: 2026-08-23(商品命名の確定セッション)
+> 最終更新: 2026-08-23(フロント反映セッション)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
 > 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`
@@ -10,7 +10,43 @@
 
 ---
 
-## 0. 直近のセッション(2026-08-23 深夜)— **商品命名の確定・リネーム20件・命名規則の恒久化**
+## 0. 直近のセッション(2026-08-23 深夜)— **フロント反映(ナビ7分類・新着の自動化)**
+
+> ⚠️ **テーマの変更はまだストアに出ていない。** このコンテナに Shopify CLI が無いため、
+> `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166203621616 --allow-live`
+> は**オーナーが実行する必要がある**(theme 166203621616 は `role: MAIN`)。
+> **Shopify 側の変更(コレクション公開・メニュー・new-arrivals の条件)は API で適用済みなので、
+> push しなくても既に反映されている。**
+
+### Shopify 側(適用済み)
+
+- **コレクション5本が未公開だった**(`storage` / `chair-stool` / `table` / `lighting` / `fabric`)。
+  **API で作ったコレクションは販売チャネルに自動公開されない**(D-062)。オンラインストア + Shop に公開した
+- `main-menu` を **新着 / ペット / インテリア▾(すべてのインテリア + 6分類) / セール** に更新。
+  `footer-shopping` も7分類に。**「読みもの」は記事0件なので今回は入れていない**
+- `new-arrivals` を **全商品・作成日降順**のスマートコレクションに変更し、`templateSuffix = new-arrivals` を設定。
+  フラワーラウンジの `new-arrival` タグは不要になったので外した
+
+### テーマ側(コミット済み・**push 待ち**)
+
+- `templates/index.json` — 「カテゴリーから探す」を**7分類**に。新着グリッドは60日フィルタ。
+  その下のグリッドは `cat-life`(1件)→ `pet` に
+- `sections/moru-header.liquid` — **ドロップダウン(デスクトップ)とアコーディオン(モバイル)を新規実装。JS 不要**
+- `sections/moru-product-grid.liquid` / `snippets/moru-product-card.liquid` — **`new_within_days`**
+- `templates/collection.new-arrivals.json` — 新着コレクションページ用(60日)
+- 翻訳キー4本を ja / en に追加
+
+### 未着手のまま残っているもの
+
+- **商品説明文 37件**(tier別テンプレート)
+- モバイルドロワー下段の信頼情報3項目・最下部SNS(docs/09 §3)
+- **送料無料しきい値の矛盾**(表示 ¥15,000 / ストア設定 ¥7,700)= **現状は虚偽表示**
+- ベストセラー枠は `interior` を母数にしているだけで、**販売実績に基づいていない**(表記の是非は保留のまま)
+- 4商品が DRAFT(プラッシュ クッション / アブストラクト オブジェ / セル モジュールキャビネット / ルナ ウォールライト)
+
+---
+
+## 0-A. 2026-08-23 深夜 — **商品命名の確定・リネーム20件・命名規則の恒久化**
 
 **ブランチ `claude/moru-living-shopify-dev-yvnmni`。テーマコードは1行も変えていない。**
 

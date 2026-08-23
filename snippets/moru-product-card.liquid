@@ -5,6 +5,7 @@
   @param {product} [product] - The product to render
   @param {number} [ph_index] - Placeholder variation 1-6 when product is empty
   @param {boolean} [show_new_badge] - Show a NEW badge on recently published products
+  @param {number} [new_within_days] - How many days a product counts as new (default 30)
   @param {boolean} [show_subtitle] - Show the product type as a muted subtitle
   @param {boolean} [show_swatches] - Show colour swatches that swap the card image
   @param {string} [swatch_option_names] - Comma separated option names treated as colour
@@ -21,10 +22,12 @@
   assign is_new = false
   if show_new_badge
     if product != blank
+      assign new_days = new_within_days | default: 30
+      assign new_window = new_days | times: 86400
       assign now_s = 'now' | date: '%s' | times: 1
       assign published_s = product.published_at | date: '%s' | times: 1
       assign age = now_s | minus: published_s
-      if age < 2592000
+      if age < new_window
         assign is_new = true
       endif
     elsif ph_index <= 2

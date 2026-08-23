@@ -231,6 +231,9 @@
     "bestsellers": {
       "rank_label": "{{ rank }}位",
       "empty_hint": "テーマエディタの「ランキング枠」から、上位に出したい商品を順番に選んでください。"
+    },
+    "product_grid": {
+      "no_new_items": "現在、新着アイテムはありません。"
     }
   }
 }
