@@ -202,5 +202,58 @@ done
 ## §5 コミット前チェック(既存ルールの再掲)
 
 - Dev MCP `validate_theme` を通す(Liquid・schema・locale・CSS すべて)
+  — 使えない場合は §6 の代替を使う
 - 日本語文言は `locales/ja.default.json`。Liquid 直書き禁止
 - 色は必ず CSS 変数経由。セクションCSSに生の HEX を書かない
+
+---
+
+## §6 Dev MCP が接続失敗しているとき(2026-08-23 追記)
+
+`learn_shopify_api` / `validate_theme` が**ツール一覧に出てこない**セッションがある。
+2026-08-22・23 の2セッション連続で発生した。
+
+### 原因(実測で特定済み)
+
+パッケージは壊れていない。`.mcp.json` の `npx -y @shopify/dev-mcp@latest` が
+**セッション開始時に約50MBをダウンロードし、MCPクライアントの起動タイムアウトに間に合わず中断**する。
+中断すると npx キャッシュに中途半端なディレクトリが残り、以降は毎回 `ENOTEMPTY` で失敗し続ける。
+
+キャッシュを消して手で起動すると正常に立ち上がることを確認済み:
+
+```
+Shopify Dev MCP Server v1.14.5 running on stdio
+```
+
+### 復旧コマンド
+
+```bash
+rm -rf /root/.npm/_npx/*
+```
+
+**ただしセッション途中で MCP を再接続できるとは限らない。** 効くのは次の起動時からの可能性が高い。
+消しても直らない場合は深追いせず、下の代替で進めること(実績あり)。
+
+### 代替手段(これで十分やれる)
+
+| 使えないもの | 代わりに |
+|---|---|
+| `validate_theme` | **`shopify theme check`**。このコンテナに Shopify CLI は無いので `npm i @shopify/cli` で入れる。Liquid構文・schema・翻訳キー・CSSスコープまで検出できる |
+| `learn_shopify_api` | 呼ばずに進めてよい。仕様確認は Admin側 Shopify MCP の `search_docs_chunks` で行う(記憶で答えないルールは維持) |
+| GraphQL の検証 | Admin側 Shopify MCP の `validate_graphql_codeblocks`(こちらは生きている) |
+
+さらに JS / CSS は手元で機械的に検証できる:
+
+```bash
+# 全セクションの {% javascript %} を連結して構文チェック
+node --check bundle.js
+# CSS は css-tree でパースチェック
+```
+
+### テーマ反映の制約
+
+Admin側 Shopify MCP の `graphql_mutation` は**公開(MAIN)テーマへのファイル書き込みをブロックする**。
+現在のテーマ `166203621616` は MAIN なので、反映は CLI の
+`shopify theme push --allow-live` **一択**。これはデバイス認証(有効期限15分)が要るため、
+**push のタイミングでユーザーが席にいる必要がある**。
+実装だけなら承認不要なので、「まとめて実装 → 最後に一度だけ承認」が効率的。

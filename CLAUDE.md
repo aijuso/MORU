@@ -30,6 +30,9 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 このプロジェクトは Shopify Dev MCP を使用する。以下を厳守:
 
 - セッション開始時、Shopify関連の質問に答える前に `learn_shopify_api` を一度呼ぶ
+- **Dev MCP が接続失敗していて上記ツールが無いセッションがある。その場合は `docs/07_session_protocol.md` §6 の
+  復旧コマンドと代替手段(`shopify theme check` / Admin側MCPの `search_docs_chunks`)に従う。
+  「MCPが無いから検証せずに出荷する」は不可**
 - GraphQLを提案する前に必ず `validate_graphql_codeblocks` を通す。検証に失敗したコードは提示しない
 - Liquidコードを提案・生成する前に必ず `validate_theme_codeblocks` を通す。バリデータが認識しないフィルタ・タグを出荷しない
 - 記憶に頼ってShopifyの仕様を答えない。必ずMCPのドキュメント検索で確認する
@@ -52,7 +55,7 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 
 - ベース: Shopify **Skeleton Theme**(公式最小テーマ)を初期コミットとして取り込み、デザインは100%自作
 - ローカルプレビュー: `shopify theme dev --store=rgy5ee-fv.myshopify.com`
-- コミット前: `shopify theme check` と Dev MCP `validate_theme` 必須
+- コミット前: `shopify theme check` と Dev MCP `validate_theme` 必須(後者が使えないときは docs/07 §6)
 - **ブランチは trunk 1本のみ。** 現行 trunk は `docs/06_handoff.md` 冒頭に記載。新しい作業ブランチは
   必ず trunk から派生させる(詳細は docs/07 §2)
 - **ストアは GitHub 連携していない。** git への push ではストアは変わらない。

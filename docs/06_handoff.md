@@ -54,8 +54,9 @@
 (検索/0件/404/モバイル、商品ページ、モーダル・ドロワーの操作テスト、A/B 2セッションでの在庫表示、
 期限切れカートの実削除)。Liquid エラー・翻訳漏れなし。
 
-⚠️ Dev MCP(`validate_theme`)は**このセッションで shopify-dev-mcp サーバーが接続失敗**したため使えず、
-代わりに npm の Shopify CLI で `shopify theme check` を実行した。次セッションでは MCP の接続を先に確認すること。
+⚠️ Dev MCP(`learn_shopify_api` / `validate_theme`)は**2セッション連続で接続失敗**したため使えず、
+代わりに npm の Shopify CLI で `shopify theme check` を実行した。
+**原因は特定済み(npx のキャッシュ破損)。復旧コマンドと代替手段は docs/07 §6 を読むこと。**
 
 ### 補助ツール
 
@@ -162,7 +163,8 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 ### 検証(CLAUDE.md の必須ルール)
 
 - Liquid を書いたら Dev MCP の `validate_theme` を必ず通す(ツール名は `validate_theme_codeblocks` から改称済み)。
-- `learn_shopify_api` を先に呼んで conversationId を取得する。
+  **Dev MCP が接続失敗しているときは docs/07 §6 の代替(`shopify theme check`)で進めてよい。**
+- `learn_shopify_api` を先に呼んで conversationId を取得する(Dev MCP が無いセッションでは呼べないので省略可)。
 - Shopify の仕様は記憶で答えず `search_docs_chunks` で確認する。
 - コミット前に `shopify theme check` を通す(現在オフェンス0)。
 
