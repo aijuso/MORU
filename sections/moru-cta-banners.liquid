@@ -1,0 +1,235 @@
+{%- liquid
+  assign visible_count = 0
+  for block in section.blocks
+    if block.settings.show_banner
+      assign visible_count = visible_count | plus: 1
+    endif
+  endfor
+
+  assign columns = section.settings.columns
+  if visible_count < columns
+    assign columns = visible_count
+  endif
+
+  # sizes 属性に CSS 変数は書けない(ブラウザが解決できない)ので、列数から実際の幅を出しておく
+  assign column_vw = 100 | divided_by: columns
+  assign media_sizes = '(max-width: 749px) 100vw, ' | append: column_vw | append: 'vw'
+-%}
+
+{%- if visible_count > 0 -%}
+  <div
+    class="moru-cta-banners moru-cta-banners--{{ section.settings.width }} moru-cta-banners--space-{{ section.settings.spacing }}{% if section.settings.width == 'full' %} full-width{% endif %}"
+    style="--moru-cta-columns: {{ columns }};"
+  >
+    <ul class="moru-cta-banners__grid" role="list">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.show_banner -%}
+          {%- capture banner_inner -%}
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 1600
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '400, 600, 800, 1000, 1200, 1600',
+                  sizes: media_sizes,
+                  alt: block.settings.image_alt
+              }}
+            {%- else -%}
+              <span class="moru-cta-banner__placeholder">
+                {{- 'lifestyle-1' | placeholder_svg_tag -}}
+              </span>
+            {%- endif -%}
+          {%- endcapture -%}
+
+          <li class="moru-cta-banners__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.link != blank -%}
+              <a class="moru-cta-banner" href="{{ block.settings.link }}">{{ banner_inner }}</a>
+            {%- else -%}
+              <div class="moru-cta-banner">{{ banner_inner }}</div>
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .moru-cta-banners {
+    --moru-cta-columns: 2;
+  }
+
+  .moru-cta-banners--space-normal {
+    padding-block: var(--space-xl);
+  }
+
+  .moru-cta-banners--space-narrow {
+    padding-block: var(--space-md);
+  }
+
+  .moru-cta-banners--space-none {
+    padding-block: 0;
+  }
+
+  .moru-cta-banners__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--moru-cta-columns), minmax(0, 1fr));
+    /* 画像は切らないので、高さが違う2枚を上端で揃える */
+    align-items: start;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-cta-banners--full .moru-cta-banners__grid {
+    gap: 0;
+  }
+
+  .moru-cta-banners__item {
+    min-width: 0;
+  }
+
+  .moru-cta-banner {
+    display: block;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .moru-cta-banners--page .moru-cta-banner {
+    border-radius: var(--radius-card);
+  }
+
+  /*
+   * バナーは文字を焼き込んだ1枚画像。トリミングすると文言が欠けるので、
+   * アップされた画像の縦横比のまま置く(object-fit: cover を使わない)。
+   */
+  .moru-cta-banner img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: opacity 200ms ease;
+  }
+
+  a.moru-cta-banner:hover img {
+    opacity: 0.9;
+  }
+
+  .moru-cta-banner__placeholder {
+    display: block;
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-cta-banner__placeholder svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 749px) {
+    /* モバイルは常に1枚。画像はスマホ表示を基準に書き出されている前提 */
+    .moru-cta-banners__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-sm);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .moru-cta-banner img {
+      transition: none;
+    }
+
+    a.moru-cta-banner:hover img {
+      opacity: 1;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.cta_banners.name",
+  "tag": "section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:moru.cta_banners.section_info"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "label": "t:moru.cta_banners.columns_label",
+      "info": "t:moru.cta_banners.columns_info",
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:moru.cta_banners.width_label",
+      "options": [
+        { "value": "page", "label": "t:moru.cta_banners.width_page" },
+        { "value": "full", "label": "t:moru.cta_banners.width_full" }
+      ],
+      "default": "page"
+    },
+    {
+      "type": "select",
+      "id": "spacing",
+      "label": "t:moru.cta_banners.spacing_label",
+      "options": [
+        { "value": "normal", "label": "t:moru.cta_banners.spacing_normal" },
+        { "value": "narrow", "label": "t:moru.cta_banners.spacing_narrow" },
+        { "value": "none", "label": "t:moru.cta_banners.spacing_none" }
+      ],
+      "default": "normal"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "t:moru.cta_banners.block_name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_banner",
+          "label": "t:moru.cta_banners.show_label",
+          "info": "t:moru.cta_banners.show_info",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:moru.common.image",
+          "info": "t:moru.cta_banners.image_info"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:moru.cta_banners.link_label",
+          "info": "t:moru.cta_banners.link_info"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "t:moru.cta_banners.alt_label",
+          "info": "t:moru.cta_banners.alt_info"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.cta_banners.name",
+      "blocks": [{ "type": "banner" }, { "type": "banner" }]
+    }
+  ]
+}
+{% endschema %}

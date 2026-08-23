@@ -346,6 +346,27 @@
       "block_label_label": "Label",
       "block_image_label": "Thumbnail image"
     },
+    "cta_banners": {
+      "name": "MORU CTA banners",
+      "block_name": "Banner",
+      "section_info": "Upload artwork that already contains its own wording and buttons, then set where it links. Keep the copy inside the image rather than in the theme.",
+      "columns_label": "Banners per row (desktop)",
+      "columns_info": "Phones always show one. Export the artwork at the size it should appear on a phone; desktop places those side by side.",
+      "width_label": "Width",
+      "width_page": "Match page width",
+      "width_full": "Full width",
+      "spacing_label": "Vertical spacing",
+      "spacing_normal": "Normal",
+      "spacing_narrow": "Narrow",
+      "spacing_none": "None",
+      "show_label": "Show this banner",
+      "show_info": "Turn off to hide it. The banner stays in place, so a campaign can be brought back without rebuilding it.",
+      "image_info": "The image is never cropped. When two sit side by side, export both at the same size or their heights will not line up.",
+      "link_label": "Link",
+      "link_info": "Pick a collection, product or page from your store, or paste any address.",
+      "alt_label": "Image description (alt text)",
+      "alt_info": "Read out by screen readers and shown if the image fails to load. The banner's wording lives inside the artwork, so leaving this blank tells those visitors nothing at all."
+    },
     "journal": {
       "name": "MORU journal",
       "title_default": "Journal / Styling guide",

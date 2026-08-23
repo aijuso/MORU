@@ -83,6 +83,24 @@
       ],
       "settings": {}
     },
+    "cta_banners_1": {
+      "type": "moru-cta-banners",
+      "blocks": {
+        "banner_1": {
+          "type": "banner",
+          "settings": {}
+        },
+        "banner_2": {
+          "type": "banner",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "banner_1",
+        "banner_2"
+      ],
+      "settings": {}
+    },
     "category_browser": {
       "type": "moru-category-browser",
       "blocks": {
@@ -116,6 +134,24 @@
         "bottom_button_label": "すべて見る",
         "collection": "cat-life"
       }
+    },
+    "cta_banners_2": {
+      "type": "moru-cta-banners",
+      "blocks": {
+        "banner_1": {
+          "type": "banner",
+          "settings": {}
+        },
+        "banner_2": {
+          "type": "banner",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "banner_1",
+        "banner_2"
+      ],
+      "settings": {}
     },
     "journal": {
       "type": "moru-journal",
@@ -169,9 +205,11 @@
     "hero",
     "new_arrivals",
     "shop_the_room",
+    "cta_banners_1",
     "category_browser",
     "category_products",
-    "journal",
-    "instagram"
+    "cta_banners_2",
+    "instagram",
+    "journal"
   ]
 }
