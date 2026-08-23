@@ -1,0 +1,2118 @@
+<html lang="ja"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MORU | 猫が心地よく眠れる、わたしも好きな部屋へ。</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&amp;family=Noto+Sans+JP:wght@300;400;500;600;700&amp;family=Noto+Serif+JP:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-terracotta: #b84724;
+      --primary-hover: #9e3b1c;
+      --accent-sale: #d9422a;
+      --bg-cream: #faf8f5;
+      --bg-card: #f5f3ee;
+      --bg-card-hover: #ece8df;
+      --border-color: #e5e0d8;
+      --text-main: #2d2a26;
+      --text-muted: #78736d;
+      --text-light: #9e9890;
+      --font-sans: 'Noto Sans JP', 'Plus Jakarta Sans', sans-serif;
+      --font-serif: 'Noto Serif JP', serif;
+      --font-en-serif: 'Cormorant Garamond', 'Noto Serif JP', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      background-color: #ffffff;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      outline: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Top Announcement Bar */
+    .top-announcement {
+      background-color: var(--primary-terracotta);
+      color: #ffffff;
+      text-align: center;
+      padding: 7px 10px;
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Main Navigation Header */
+    .main-header {
+      background-color: #ffffff;
+      border-bottom: 1px solid #f0ede6;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .nav-left a {
+      color: var(--text-main);
+    }
+    .nav-left a:hover {
+      color: var(--primary-terracotta);
+    }
+
+    .nav-left a.sale-link {
+      color: var(--accent-sale);
+      font-weight: 600;
+    }
+
+    .brand-logo {
+      font-family: var(--font-en-serif);
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--primary-terracotta);
+      text-align: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    .nav-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-main);
+    }
+    .nav-action-btn:hover {
+      color: var(--primary-terracotta);
+    }
+
+    .cart-badge-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .cart-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      background-color: var(--primary-terracotta);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 16px 0 24px;
+    }
+
+    .hero-banner {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      height: 480px;
+      background-color: #f7f4ee;
+    }
+
+    .hero-img-wrap {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .hero-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+    }
+
+    .hero-content {
+      position: absolute;
+      top: 60px;
+      left: 65px;
+      max-width: 440px;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 31px;
+      line-height: 1.45;
+      font-weight: 700;
+      color: #242220;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+    }
+
+    .hero-subtitle {
+      font-size: 13.5px;
+      color: #4a453f;
+      margin-bottom: 26px;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(184, 71, 36, 0.6);
+      border-radius: 40px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #2d2a26;
+      transition: all 0.25s ease;
+    }
+    .hero-btn span.arrow {
+      color: var(--primary-terracotta);
+      font-size: 14px;
+    }
+    .hero-btn:hover {
+      background: #ffffff;
+      border-color: var(--primary-terracotta);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Slider Nav Arrows */
+    .slider-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      z-index: 3;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .slider-arrow:hover {
+      background-color: #ffffff;
+      transform: translateY(-50%) scale(1.05);
+    }
+    .slider-arrow.prev { left: 16px; }
+    .slider-arrow.next { right: 16px; }
+
+    /* Slider Dots */
+    .slider-dots {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 3;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .dot.active {
+      background-color: #ffffff;
+      width: 22px;
+      border-radius: 10px;
+    }
+
+    /* Value Proposition / USPs Bar */
+    .usp-bar {
+      background-color: var(--bg-cream);
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-bottom: 48px;
+      border: 1px solid #efeae1;
+    }
+
+    .usp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .usp-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .usp-icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3b3733;
+    }
+
+    .usp-text h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+
+    .usp-text p {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Common Section Header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .view-all-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .view-all-link:hover {
+      color: var(--primary-terracotta);
+    }
+
+    /* Section Spacing */
+    .section-block {
+      margin-bottom: 56px;
+    }
+
+    /* Product Cards Grid (5-column Best Sellers) */
+    .best-seller-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .product-card {
+      position: relative;
+      border-radius: 8px;
+      background-color: transparent;
+      transition: transform 0.2s;
+    }
+    .product-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-thumb {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: var(--bg-card);
+      aspect-ratio: 1 / 1;
+      margin-bottom: 10px;
+    }
+
+    .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+    .product-card:hover .card-thumb img {
+      transform: scale(1.04);
+    }
+
+    /* Ranking Badge */
+    .rank-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      z-index: 2;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+    .rank-1 { background-color: #d8963f; }
+    .rank-2 { background-color: #e2a652; }
+    .rank-3 { background-color: #b07e4d; }
+    .rank-4 { background-color: #6e8494; }
+    .rank-5 { background-color: #c98b4c; }
+
+    /* Red NEW Badge */
+    .new-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background-color: #b33628;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+      z-index: 2;
+    }
+
+    .card-info .product-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-info .product-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+    }
+
+    /* New Arrivals Carousel Grid (6 Items) */
+    .new-arrivals-wrap {
+      position: relative;
+    }
+
+    .new-arrivals-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .carousel-arrow-btn {
+      position: absolute;
+      top: 36%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      background-color: #ffffff;
+      border: 1px solid #e2ded7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      cursor: pointer;
+    }
+    .carousel-arrow-btn.prev { left: -16px; }
+    .carousel-arrow-btn.next { right: -16px; }
+    .carousel-arrow-btn:hover { background-color: #faf9f6; }
+
+    .bottom-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 16px;
+    }
+    .bottom-dots .b-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: #d1cdc7;
+    }
+    .bottom-dots .b-dot.active {
+      background-color: #47433f;
+    }
+
+    /* Room Styling Lookbook Section */
+    .room-tabs-nav {
+      display: flex;
+      gap: 28px;
+      border-bottom: 1px solid #e8e4dc;
+      margin-bottom: 20px;
+    }
+
+    .room-tab-btn {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 0 0 10px;
+      position: relative;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .room-tab-btn.active {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .room-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--text-main);
+    }
+
+    .room-styling-layout {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .room-lookbook-media {
+      position: relative;
+    }
+
+    .main-scene-box {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      aspect-ratio: 1.45 / 1;
+      background-color: #eae7df;
+      margin-bottom: 10px;
+    }
+
+    .main-scene-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Hotspot Pins */
+    .hotspot-pin {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .hotspot-pin:hover {
+      transform: scale(1.18);
+      background-color: #ffffff;
+    }
+
+    .pin-1 { top: 22%; left: 24%; }
+    .pin-2 { top: 58%; left: 28%; }
+    .pin-3 { top: 62%; left: 56%; }
+
+    /* Scene Thumbnails */
+    .scene-thumb-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    .scene-thumb {
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      opacity: 0.75;
+      transition: all 0.2s;
+    }
+    .scene-thumb.active, .scene-thumb:hover {
+      border-color: var(--primary-terracotta);
+      opacity: 1;
+    }
+    .scene-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Room Styling Sidebar Panel */
+    .room-panel {
+      background-color: var(--bg-cream);
+      border: 1px solid #eae5dc;
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    .room-panel-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #2b2825;
+      margin-bottom: 6px;
+    }
+
+    .room-panel-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .bundle-item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .bundle-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bundle-item-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bundle-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      background-color: #fff;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid #ebe6dd;
+    }
+    .bundle-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bundle-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .bundle-price {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .bundle-buy-btn {
+      width: 100%;
+      background-color: #262422;
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 13px;
+      border-radius: 6px;
+      text-align: center;
+      transition: background-color 0.2s;
+      margin-bottom: 8px;
+    }
+    .bundle-buy-btn:hover {
+      background-color: #3f3b37;
+    }
+
+    .bundle-total-price {
+      text-align: center;
+      font-size: 12px;
+      color: #59544e;
+      font-weight: 600;
+    }
+
+    /* Dual Banner Section */
+    .dual-banners {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+
+    .promo-banner {
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      min-height: 175px;
+      display: flex;
+      align-items: center;
+      padding: 24px 30px;
+    }
+
+    .bundle-sale-banner {
+      background: linear-gradient(135deg, #4f80b2 0%, #356799 100%);
+      color: #ffffff;
+    }
+
+    .promo-badge-pill {
+      display: inline-block;
+      background-color: #ffffff;
+      color: #356799;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .promo-title-main {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+
+    .promo-subtext {
+      font-size: 11px;
+      line-height: 1.4;
+      opacity: 0.9;
+      margin-bottom: 14px;
+    }
+
+    .promo-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #ffffff;
+      color: #2b2825;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      transition: opacity 0.2s;
+    }
+    .promo-cta-btn:hover {
+      opacity: 0.92;
+    }
+
+    .banner-right-visual {
+      position: absolute;
+      right: 15px;
+      bottom: 0;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+    }
+    .banner-right-visual img {
+      max-height: 160px;
+      object-fit: contain;
+    }
+
+    /* Summer Sale Banner */
+    .summer-sale-banner {
+      background-color: #e9e0d3;
+      position: relative;
+      background-image: url('https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=600&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+    .summer-sale-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(238, 230, 219, 0.92) 0%, rgba(238, 230, 219, 0.75) 60%, rgba(238, 230, 219, 0.2) 100%);
+    }
+    .summer-sale-content {
+      position: relative;
+      z-index: 2;
+      max-width: 320px;
+    }
+    .summer-sale-title {
+      font-family: var(--font-en-serif);
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #b84724;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .summer-sale-title span {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      margin-left: 6px;
+    }
+    .summer-sale-sub {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #4f4b45;
+      margin-bottom: 14px;
+    }
+    .summer-sale-btn {
+      background-color: #385d7e;
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .summer-sale-btn:hover {
+      background-color: #2b4b68;
+    }
+
+    /* Category List Section */
+    .category-bar-box {
+      background-color: var(--bg-cream);
+      border-radius: 10px;
+      padding: 24px;
+      border: 1px solid #eee9e0;
+      margin-bottom: 56px;
+    }
+
+    .category-icon-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 12px;
+    }
+
+    .category-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .category-thumb-box {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ebe5dc;
+      padding: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .category-card:hover .category-thumb-box {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+
+    .category-thumb-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .category-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    /* Chairs 8-grid Section */
+    .chairs-grid-container {
+      background-color: var(--bg-cream);
+      border-radius: 10px;
+      padding: 32px 28px;
+      border: 1px solid #ece6dc;
+      margin-bottom: 56px;
+    }
+
+    .chairs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px 16px;
+      margin-bottom: 26px;
+    }
+
+    .chair-item {
+      text-align: center;
+    }
+
+    .chair-thumb {
+      background-color: #ffffff;
+      border-radius: 8px;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      border: 1px solid #ebe6dc;
+    }
+
+    .chair-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .chair-item:hover .chair-thumb img {
+      transform: scale(1.05);
+    }
+
+    .chair-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .chair-variant {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .chair-price {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .chairs-center-btn {
+      text-align: center;
+    }
+
+    .view-chairs-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 30px;
+      background-color: #ffffff;
+      border: 1px solid #ccc6bd;
+      border-radius: 30px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #3b3733;
+      transition: all 0.2s;
+    }
+    .view-chairs-btn:hover {
+      background-color: #f7f5f0;
+      border-color: #999;
+    }
+
+    /* 2-Column Section: #MORUのある暮らし & 読みもの */
+    .community-magazine-row {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 32px;
+      margin-bottom: 56px;
+    }
+
+    /* Left: Instagram Community */
+    .insta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .insta-pic {
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #eee;
+    }
+    .insta-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .insta-pic:hover img {
+      transform: scale(1.06);
+    }
+
+    .insta-callout {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .insta-speech-bubble {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .insta-follow-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 24px;
+      background-color: #ffffff;
+      border: 1px solid #d9d4cc;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2b2825;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      transition: all 0.2s;
+    }
+    .insta-follow-btn:hover {
+      background-color: #faf8f5;
+      border-color: #b5afa6;
+    }
+
+    /* Right: Reading / Magazine */
+    .article-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .article-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .article-thumb {
+      aspect-ratio: 1.3 / 1;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #eee;
+      margin-bottom: 8px;
+    }
+    .article-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .article-card:hover .article-thumb img {
+      transform: scale(1.05);
+    }
+
+    .article-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 9.5px;
+      color: #69635b;
+      background-color: #efece5;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-bottom: 6px;
+    }
+
+    .article-title {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.45;
+      margin-bottom: 8px;
+      flex-grow: 1;
+    }
+
+    .article-date {
+      font-size: 10px;
+      color: var(--text-light);
+    }
+
+    /* Recommendations 5-grid */
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .recommend-item {
+      aspect-ratio: 1.15 / 1;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #f0ece5;
+    }
+    .recommend-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .recommend-item:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Footer */
+    .site-footer {
+      background-color: var(--bg-cream);
+      border-top: 1px solid #ebe5db;
+      padding: 48px 0 24px;
+      margin-top: 40px;
+    }
+
+    .footer-top-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1.2fr 1fr 1.8fr;
+      gap: 28px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #eae4d8;
+    }
+
+    .footer-brand .brand-logo-footer {
+      font-family: var(--font-en-serif);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--primary-terracotta);
+      margin-bottom: 8px;
+    }
+
+    .footer-brand .brand-tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer-social-links {
+      display: flex;
+      gap: 12px;
+    }
+    .social-icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #d4cebe;
+      color: #555;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .social-icon-btn:hover {
+      background-color: #ffffff;
+      color: var(--primary-terracotta);
+      border-color: var(--primary-terracotta);
+    }
+
+    .footer-nav-col h5 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 14px;
+    }
+
+    .footer-nav-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .footer-nav-col ul li a {
+      font-size: 11px;
+      color: #635e58;
+    }
+    .footer-nav-col ul li a:hover {
+      color: var(--primary-terracotta);
+    }
+
+    .newsletter-box h5 {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .newsletter-box p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .newsletter-form {
+      display: flex;
+      border: 1px solid #d8d2c6;
+      border-radius: 4px;
+      background-color: #ffffff;
+      overflow: hidden;
+    }
+
+    .newsletter-input {
+      flex: 1;
+      border: none;
+      padding: 9px 12px;
+      font-size: 11px;
+      outline: none;
+    }
+
+    .newsletter-btn {
+      background-color: #262422;
+      color: #ffffff;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .newsletter-btn:hover {
+      background-color: #45403b;
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    .footer-legal-links {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-legal-links a:hover {
+      color: var(--primary-terracotta);
+    }
+
+    /* Modal / Toast Notifications */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #2b2825;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+    .toast-msg.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .usp-grid { grid-template-columns: repeat(2, 1fr); }
+      .best-seller-grid { grid-template-columns: repeat(3, 1fr); }
+      .new-arrivals-grid { grid-template-columns: repeat(3, 1fr); }
+      .room-styling-layout { grid-template-columns: 1fr; }
+      .category-icon-grid { grid-template-columns: repeat(4, 1fr); }
+      .chairs-grid { grid-template-columns: repeat(2, 1fr); }
+      .community-magazine-row { grid-template-columns: 1fr; }
+      .footer-top-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .nav-left, .nav-right span { display: none; }
+      .hero-content { left: 24px; top: 32px; }
+      .hero-title { font-size: 22px; }
+      .best-seller-grid, .new-arrivals-grid, .recommend-grid { grid-template-columns: repeat(2, 1fr); }
+      .dual-banners { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 12px; }
+    }
+  </style>
+<style>
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
+</style></head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-announcement">
+    <span>✦</span> 新規会員登録で500ptプレゼントキャンペーン実施中！ <span>✦</span>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="main-header">
+    <div class="container header-inner">
+      <nav class="nav-left">
+        <a href="#new">新着</a>
+        <a href="#pets">ペット</a>
+        <a href="#interior">インテリア</a>
+        <a href="#goods">雑貨</a>
+        <a href="#stories">読みもの</a>
+        <a href="#sale" class="sale-link">セール</a>
+      </nav>
+
+      <a href="#" class="brand-logo">MORU</a>
+
+      <div class="nav-right">
+        <button class="nav-action-btn" onclick="showToast('検索ウィンドウを開きました')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>検索</span>
+        </button>
+        <button class="nav-action-btn" onclick="showToast('ログイン画面を表示します')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>ログイン</span>
+        </button>
+        <button class="nav-action-btn cart-badge-wrap" onclick="showToast('ショッピングカートを開きました')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          <span>カート</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Banner Carousel -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-banner">
+          <div class="hero-img-wrap">
+            <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&amp;fit=crop&amp;w=1600&amp;q=85" alt="猫が心地よく眠れる、わたしも好きな部屋へ。">
+          </div>
+
+          <div class="hero-content">
+            <h1 class="hero-title">
+              猫が心地よく眠れる、<br>
+              わたしも好きな部屋へ。
+            </h1>
+            <p class="hero-subtitle">やわらかい時間が流れる、私の部屋。</p>
+            <a href="#lookbook" class="hero-btn">
+              フラワーラウンジを見る <span class="arrow">→</span>
+            </a>
+          </div>
+
+          <!-- Slider Controls -->
+          <button class="slider-arrow prev" onclick="showToast('前のスライドへ移動')">‹</button>
+          <button class="slider-arrow next" onclick="showToast('次のスライドへ移動')">›</button>
+
+          <div class="slider-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USPs / Value Proposition Bar -->
+    <div class="container">
+      <div class="usp-bar">
+        <div class="usp-grid">
+          <div class="usp-item">
+            <div class="usp-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            </div>
+            <div class="usp-text">
+              <h4>税込5,500円以上で送料無料</h4>
+              <p>全国一律・最短翌日お届け</p>
+            </div>
+          </div>
+
+          <div class="usp-item">
+            <div class="usp-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="21 8 21 21 3 21 3 8"></polyline><line x1="1" y1="3" x2="23" y2="3"></line><path d="M10 12h4"></path></svg>
+            </div>
+            <div class="usp-text">
+              <h4>最短翌日お届け</h4>
+              <p>一部地域を除く</p>
+            </div>
+          </div>
+
+          <div class="usp-item">
+            <div class="usp-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div class="usp-text">
+              <h4>30日間返品・交換保証</h4>
+              <p>安心してお買い物いただけます</p>
+            </div>
+          </div>
+
+          <div class="usp-item">
+            <div class="usp-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </div>
+            <div class="usp-text">
+              <h4>ペットのための品質基準</h4>
+              <p>安心・安全を第一に</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Best Sellers -->
+    <section class="section-block">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">ベストセラー</h2>
+          <a href="#" class="view-all-link">すべて見る →</a>
+        </div>
+
+        <div class="best-seller-grid">
+          <!-- Item 1 -->
+          <div class="product-card" onclick="addToCart('フラワーペットベッド')">
+            <div class="card-thumb">
+              <span class="rank-badge rank-1">1</span>
+              <img src="https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?auto=format&amp;fit=crop&amp;w=500&amp;q=80" alt="フラワーペットベッド">
+            </div>
+            <div class="card-info">
+              <h3 class="product-name">フラワーペットベッド</h3>
+              <p class="product-price">¥18,800</p>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="product-card" onclick="addToCart('ドームベッド クール')">
+            <div class="card-thumb">
+              <span class="rank-badge rank-2">2</span>
+              <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&amp;fit=crop&amp;w=500&amp;q=80" alt="ドームベッド クール">
+            </div>
+            <div class="card-info">
+              <h3 class="product-name">ドームベッド クール</h3>
+              <p class="product-price">¥16,800</p>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="product-card" onclick="addToCart('キャットタワーS')">
+            <div class="card-thumb">
+              <span class="rank-badge rank-3">3</span>
+              <img src="https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&amp;fit=crop&amp;w=500&amp;q=80" alt="キャットタワーS">
+            </div>
+            <div class="card-info">
+              <h3 class="product-name">キャットタワーS</h3>
+              <p class="product-price">¥24,800</p>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="product-card" onclick="addToCart('ウッドフードスタンド')">
+            <div class="card-thumb">
+              <span class="rank-badge rank-4">4</span>
+              <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&amp;fit=crop&amp;w=500&amp;q=80" alt="ウッドフードスタンド">
+            </div>
+            <div class="card-info">
+              <h3 class="product-name">ウッドフードスタンド</h3>
+              <p class="product-price">¥7,800</p>
+            </div>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="product-card" onclick="addToCart('ラウンドドーナツベッド')">
+            <div class="card-thumb">
+              <span class="rank-badge rank-5">5</span>
+              <img src="https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?auto=format&amp;fit=crop&amp;w=500&amp;q=80" alt="ラウンドドーナツベッド">
+            </div>
+            <div class="card-info">
+              <h3 class="product-name">ラウンドドーナツベッド</h3>
+              <p class="product-price">¥15,800</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: New Arrivals -->
+    <section class="section-block" id="new">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">新着アイテム</h2>
+        </div>
+
+        <div class="new-arrivals-wrap">
+          <button class="carousel-arrow-btn prev" onclick="showToast('前のアイテムを表示')">‹</button>
+          <button class="carousel-arrow-btn next" onclick="showToast('次のアイテムを表示')">›</button>
+
+          <div class="new-arrivals-grid">
+            <!-- New 1 -->
+            <div class="product-card" onclick="addToCart('かえるの手編みコースター')">
+              <div class="card-thumb">
+                <span class="new-badge">NEW</span>
+                <img src="https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="かえるの手編みコースター">
+              </div>
+              <div class="card-info">
+                <h3 class="product-name">かえるの手編みコースター</h3>
+                <p class="product-price">¥1,980</p>
+              </div>
+            </div>
+
+            <!-- New 2 -->
+            <div class="product-card" onclick="addToCart('窓用ねこパーチ')">
+              <div class="card-thumb">
+                <span class="new-badge">NEW</span>
+                <img src="https://images.unsplash.com/photo-1513360309081-38f0762daed1?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="窓用ねこパーチ">
+              </div>
+              <div class="card-info">
+                <h3 class="product-name">窓用ねこパーチ</h3>
+                <p class="product-price">¥8,980</p>
+              </div>
+            </div>
+
+            <!-- New 3 -->
+            <div class="product-card" onclick="addToCart('デスクハンギングベッド')">
+              <div class="card-thumb">
+                <span class="new-badge">NEW</span>
+                <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="デスクハンギングベッド">
+              </div>
+              <div class="card-info">
+                <h3 class="product-name">デスクハンギングベッド</h3>
+                <p class="product-price">¥6,280</p>
+              </div>
+            </div>
+
+            <!-- New 4 -->
+            <div class="product-card" onclick="addToCart('フラワークッション')">
+              <div class="card-thumb">
+                <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="フラワークッション">
+              </div>
+              <div class="card-info">
+                <h3 class="product-name">フラワークッション</h3>
+                <p class="product-price">¥4,980</p>
+              </div>
+            </div>
+
+            <!-- New 5 -->
+            <div class="product-card" onclick="addToCart('トイバスケット')">
+              <div class="card-thumb">
+                <img src="https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="トイバスケット">
+              </div>
+              <div class="card-info">
+                <h3 class="product-name">トイバスケット</h3>
+                <p class="product-price">¥2,950</p>
+              </div>
+            </div>
+
+            <!-- New 6 -->
+            <div class="product-card" onclick="addToCart('マッシュルームランプ')">
+              <div class="card-thumb">
+                <img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="マッシュルームランプ">
+              </div>
+              <div class="card-info">
+                <h3 class="product-name">マッシュルームランプ</h3>
+                <p class="product-price">¥6,980</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-dots">
+            <span class="b-dot active"></span>
+            <span class="b-dot"></span>
+            <span class="b-dot"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Room Styling / Lookbook -->
+    <section class="section-block" id="lookbook">
+      <div class="container">
+        <div class="section-header" style="margin-bottom: 12px;">
+          <h2 class="section-title">部屋で見る</h2>
+        </div>
+
+        <div class="room-tabs-nav">
+          <button class="room-tab-btn active" onclick="switchRoomTab(this, 'mid-century')">ミッドセンチュリー</button>
+          <button class="room-tab-btn" onclick="switchRoomTab(this, 'korean-pop')">カラフルポップ韓国風</button>
+          <button class="room-tab-btn" onclick="switchRoomTab(this, 'nordic')">北欧</button>
+          <button class="room-tab-btn" onclick="switchRoomTab(this, 'japandi')">ジャパンディ</button>
+        </div>
+
+        <div class="room-styling-layout">
+          <!-- Left: Lookbook Scene + Hotspots -->
+          <div class="room-lookbook-media">
+            <div class="main-scene-box">
+              <img id="mainSceneImg" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="コーディネートルーム">
+              
+              <!-- Hotspots -->
+              <div class="hotspot-pin pin-1" title="マッシュルームテーブルランプ" onclick="showToast('マッシュルームテーブルランプ ¥12,800')">+</div>
+              <div class="hotspot-pin pin-2" title="ポップカラープーフ" onclick="showToast('ポップカラープーフ ¥9,800')">+</div>
+              <div class="hotspot-pin pin-3" title="フラワーラウンジ" onclick="showToast('フラワーラウンジ ¥35,800')">+</div>
+            </div>
+
+            <!-- Scene Thumbnails -->
+            <div class="scene-thumb-strip">
+              <div class="scene-thumb active" onclick="changeSceneImage(this, 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Scene 1">
+              </div>
+              <div class="scene-thumb" onclick="changeSceneImage(this, 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Scene 2">
+              </div>
+              <div class="scene-thumb" onclick="changeSceneImage(this, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Scene 3">
+              </div>
+              <div class="scene-thumb" onclick="changeSceneImage(this, 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Scene 4">
+              </div>
+              <div class="scene-thumb" onclick="changeSceneImage(this, 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Scene 5">
+              </div>
+              <div class="scene-thumb" onclick="changeSceneImage(this, 'https://images.unsplash.com/photo-1616137466211-f939a420be84?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                <img src="https://images.unsplash.com/photo-1616137466211-f939a420be84?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Scene 6">
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Bundle Sidebar -->
+          <div class="room-panel">
+            <h3 class="room-panel-title">MORU LIVING ROOM</h3>
+            <p class="room-panel-desc">
+              やさしい色と遊び心をミックスした、<br>
+              明るく心地よいミッドセンチュリーのリビング。
+            </p>
+
+            <div class="bundle-item-list">
+              <div class="bundle-item">
+                <div class="bundle-item-info">
+                  <div class="bundle-thumb"><img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="フラワーラウンジ"></div>
+                  <span class="bundle-name">フラワーラウンジ（アイボリー）</span>
+                </div>
+                <span class="bundle-price">¥35,800</span>
+              </div>
+
+              <div class="bundle-item">
+                <div class="bundle-item-info">
+                  <div class="bundle-thumb"><img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="ランプ"></div>
+                  <span class="bundle-name">マッシュルームテーブルランプ（ブルー）</span>
+                </div>
+                <span class="bundle-price">¥12,800</span>
+              </div>
+
+              <div class="bundle-item">
+                <div class="bundle-item-info">
+                  <div class="bundle-thumb"><img src="https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="シェルフ"></div>
+                  <span class="bundle-name">クロームオープンシェルフ</span>
+                </div>
+                <span class="bundle-price">¥29,800</span>
+              </div>
+
+              <div class="bundle-item">
+                <div class="bundle-item-info">
+                  <div class="bundle-thumb"><img src="https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="ラグ"></div>
+                  <span class="bundle-name">ジオメトリックラグマット</span>
+                </div>
+                <span class="bundle-price">¥18,800</span>
+              </div>
+
+              <div class="bundle-item">
+                <div class="bundle-item-info">
+                  <div class="bundle-thumb"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="プーフ"></div>
+                  <span class="bundle-name">ポップカラープーフ（イエロー）</span>
+                </div>
+                <span class="bundle-price">¥9,800</span>
+              </div>
+            </div>
+
+            <button class="bundle-buy-btn" onclick="addToCart('MORU LIVING ROOM 5点セット', 107000)">このセットをまとめて購入</button>
+            <p class="bundle-total-price">セット合計 ¥107,000 (税込)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dual Promotion Banners -->
+    <div class="container">
+      <div class="dual-banners">
+        <!-- Banner 1: Bundle Sale -->
+        <div class="promo-banner bundle-sale-banner">
+          <div>
+            <span class="promo-badge-pill">セットでお得！</span>
+            <h3 class="promo-title-main">組み合わせ割</h3>
+            <p class="promo-subtext">
+              人気アイテムの組み合わせで<br>
+              <strong>最大12%OFF</strong>
+            </p>
+            <a href="#" class="promo-cta-btn">
+              対象セットを見る →
+            </a>
+          </div>
+          <div class="banner-right-visual">
+            <img src="https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?auto=format&amp;fit=crop&amp;w=350&amp;q=80" alt="セット割アイテム">
+          </div>
+        </div>
+
+        <!-- Banner 2: Summer Sale -->
+        <div class="promo-banner summer-sale-banner" id="sale">
+          <div class="summer-sale-overlay"></div>
+          <div class="summer-sale-content">
+            <h3 class="summer-sale-title">
+              SUMMER SALE <span>開催中！</span>
+            </h3>
+            <p class="summer-sale-sub">人気アイテムが最大30%OFF</p>
+            <a href="#" class="summer-sale-btn">
+              セール会場へ →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Category Navigation -->
+    <div class="container">
+      <div class="category-bar-box">
+        <div class="section-header" style="margin-bottom: 16px;">
+          <h2 class="section-title">
+            <span style="font-size: 18px;">🐾</span> カテゴリーから探す
+          </h2>
+          <a href="#" class="view-all-link">すべて見る →</a>
+        </div>
+
+        <div class="category-icon-grid">
+          <!-- Cat 1 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="ペット家具">
+            </div>
+            <span class="category-label">ペット家具</span>
+          </a>
+
+          <!-- Cat 2 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="ベッド・クッション">
+            </div>
+            <span class="category-label">ベッド・クッション</span>
+          </a>
+
+          <!-- Cat 3 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="収納・キャビネット">
+            </div>
+            <span class="category-label">収納・キャビネット</span>
+          </a>
+
+          <!-- Cat 4 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="ラグ・マット">
+            </div>
+            <span class="category-label">ラグ・マット</span>
+          </a>
+
+          <!-- Cat 5 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1580481077111-97ba72e9a923?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="テーブル・チェア">
+            </div>
+            <span class="category-label">テーブル・チェア</span>
+          </a>
+
+          <!-- Cat 6 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="照明">
+            </div>
+            <span class="category-label">照明</span>
+          </a>
+
+          <!-- Cat 7 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="インテリア雑貨">
+            </div>
+            <span class="category-label">インテリア雑貨</span>
+          </a>
+
+          <!-- Cat 8 -->
+          <a href="#" class="category-card">
+            <div class="category-thumb-box">
+              <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="テキスタイル">
+            </div>
+            <span class="category-label">テキスタイル</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Chairs Feature Grid (8 Items) -->
+    <div class="container">
+      <div class="chairs-grid-container">
+        <div class="chairs-grid">
+          <!-- Chair 1 -->
+          <div class="chair-item" onclick="addToCart('デイト ダイニングチェア')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1580481077111-97ba72e9a923?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="デイト ダイニングチェア">
+            </div>
+            <h4 class="chair-name">デイト ダイニングチェア</h4>
+            <p class="chair-variant">ウォルナット / ナチュラル</p>
+            <p class="chair-price">¥29,800</p>
+          </div>
+
+          <!-- Chair 2 -->
+          <div class="chair-item" onclick="addToCart('クラウド ラウンジチェア')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="クラウド ラウンジチェア">
+            </div>
+            <h4 class="chair-name">クラウド ラウンジチェア</h4>
+            <p class="chair-variant">アイボリー ブークレ</p>
+            <p class="chair-price">¥58,000</p>
+          </div>
+
+          <!-- Chair 3 -->
+          <div class="chair-item" onclick="addToCart('フレーム カンチレバーチェア')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="フレーム カンチレバーチェア">
+            </div>
+            <h4 class="chair-name">フレーム カンチレバーチェア</h4>
+            <p class="chair-variant">コニャック / クローム</p>
+            <p class="chair-price">¥42,800</p>
+          </div>
+
+          <!-- Chair 4 -->
+          <div class="chair-item" onclick="addToCart('ケインバック チェア')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1519947486511-46149fa0a254?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="ケインバック チェア">
+            </div>
+            <h4 class="chair-name">ケインバック チェア</h4>
+            <p class="chair-variant">ウォルナット / ラタン</p>
+            <p class="chair-price">¥31,800</p>
+          </div>
+
+          <!-- Chair 5 -->
+          <div class="chair-item" onclick="addToCart('ソフト アームチェア')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="ソフト アームチェア">
+            </div>
+            <h4 class="chair-name">ソフト アームチェア</h4>
+            <p class="chair-variant">クリームファブリック</p>
+            <p class="chair-price">¥64,000</p>
+          </div>
+
+          <!-- Chair 6 -->
+          <div class="chair-item" onclick="addToCart('ノワール ウッドチェア')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="ノワール ウッドチェア">
+            </div>
+            <h4 class="chair-name">ノワール ウッドチェア</h4>
+            <p class="chair-variant">ブラックステインドオーク</p>
+            <p class="chair-price">¥27,800</p>
+          </div>
+
+          <!-- Chair 7 -->
+          <div class="chair-item" onclick="addToCart('クローム カウンタースツール')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="クローム カウンタースツール">
+            </div>
+            <h4 class="chair-name">クローム カウンタースツール</h4>
+            <p class="chair-variant">ウォルナット / クローム</p>
+            <p class="chair-price">¥24,800</p>
+          </div>
+
+          <!-- Chair 8 -->
+          <div class="chair-item" onclick="addToCart('ミューズ アクセントチェア')">
+            <div class="chair-thumb">
+              <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="ミューズ アクセントチェア">
+            </div>
+            <h4 class="chair-name">ミューズ アクセントチェア</h4>
+            <p class="chair-variant">バーガンディファブリック</p>
+            <p class="chair-price">¥46,800</p>
+          </div>
+        </div>
+
+        <div class="chairs-center-btn">
+          <a href="#" class="view-chairs-btn">すべてのチェアを見る</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-Column: #MORUのある暮らし & 読みもの -->
+    <div class="container">
+      <div class="community-magazine-row">
+        <!-- Left: Instagram UGC -->
+        <div>
+          <div class="section-header">
+            <h2 class="section-title">#MORUのある暮らし</h2>
+            <a href="#" class="view-all-link">すべて見る →</a>
+          </div>
+
+          <div class="insta-grid">
+            <div class="insta-pic"><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Instagram 1"></div>
+            <div class="insta-pic"><img src="https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Instagram 2"></div>
+            <div class="insta-pic"><img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Instagram 3"></div>
+            <div class="insta-pic"><img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="Instagram 4"></div>
+          </div>
+
+          <div class="insta-callout">
+            <p class="insta-speech-bubble">＼ みんなの投稿をもっと見る ／</p>
+            <a href="#" class="insta-follow-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              @moru_petlife をフォロー
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Magazine / Articles -->
+        <div id="stories">
+          <div class="section-header">
+            <h2 class="section-title">読みもの</h2>
+            <a href="#" class="view-all-link">すべて見る →</a>
+          </div>
+
+          <div class="article-cards-grid">
+            <!-- Article 1 -->
+            <article class="article-card">
+              <div class="article-thumb">
+                <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="夏を快適に過ごす お部屋づくりのコツ">
+              </div>
+              <span class="article-tag">インテリア</span>
+              <h3 class="article-title">夏を快適に過ごす<br>お部屋づくりのコツ</h3>
+              <time class="article-date">2024.05.20</time>
+            </article>
+
+            <!-- Article 2 -->
+            <article class="article-card">
+              <div class="article-thumb">
+                <img src="https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="猫がよろこぶ くつろぎスペースの作り方">
+              </div>
+              <span class="article-tag">ペットとの暮らし</span>
+              <h3 class="article-title">猫がよろこぶ<br>くつろぎスペースの作り方</h3>
+              <time class="article-date">2024.05.18</time>
+            </article>
+
+            <!-- Article 3 -->
+            <article class="article-card">
+              <div class="article-thumb">
+                <img src="https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="ラグ・マットのお手入れガイド">
+              </div>
+              <span class="article-tag">お手入れ</span>
+              <h3 class="article-title">ラグ・マットの<br>お手入れガイド</h3>
+              <time class="article-date">2024.05.15</time>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Weekly Recommendations -->
+    <section class="section-block">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">今週のおすすめ</h2>
+          <a href="#" class="view-all-link">すべて見る →</a>
+        </div>
+
+        <div class="recommend-grid">
+          <div class="recommend-item"><img src="https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="おすすめ 1"></div>
+          <div class="recommend-item"><img src="https://images.unsplash.com/photo-1513360309081-38f0762daed1?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="おすすめ 2"></div>
+          <div class="recommend-item"><img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="おすすめ 3"></div>
+          <div class="recommend-item"><img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="おすすめ 4"></div>
+          <div class="recommend-item"><img src="https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="おすすめ 5"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand">
+          <div class="brand-logo-footer">MORU</div>
+          <p class="brand-tagline">
+            猫との暮らしを、<br>
+            もっと心地よく、もっと美しく。
+          </p>
+          <div class="footer-social-links">
+            <a href="#" class="social-icon-btn" title="Instagram">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="#" class="social-icon-btn" title="Twitter / X">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+            </a>
+            <a href="#" class="social-icon-btn" title="Pinterest">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.86 6.39 9.29-.09-.79-.17-2-.04-2.86.12-.79.79-3.37.79-3.37s-.2-.41-.2-1.02c0-.96.56-1.68 1.25-1.68.59 0 .88.44.88.97 0 .59-.38 1.48-.57 2.3-.16.69.34 1.25 1.02 1.25 1.23 0 2.18-1.3 2.18-3.17 0-1.66-1.19-2.82-2.89-2.82-1.97 0-3.13 1.48-3.13 3.01 0 .6.23 1.23.52 1.58.06.07.07.13.05.2-.06.24-.19.77-.21.87-.04.14-.13.17-.3.09-1.11-.52-1.81-2.14-1.81-3.45 0-2.81 2.04-5.39 5.89-5.39 3.09 0 5.49 2.2 5.49 5.14 0 3.07-1.94 5.54-4.63 5.54-.9 0-1.76-.47-2.05-1.02l-.56 2.13c-.2.78-.75 1.76-1.12 2.36 1.06.33 2.19.51 3.36.51 5.52 0 10-4.48 10-10S17.52 2 12 2z"></path></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Shopping -->
+        <div class="footer-nav-col">
+          <h5>ショッピング</h5>
+          <ul>
+            <li><a href="#">新着アイテム</a></li>
+            <li><a href="#">ペット</a></li>
+            <li><a href="#">インテリア</a></li>
+            <li><a href="#">雑貨</a></li>
+            <li><a href="#">セール</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Guide -->
+        <div class="footer-nav-col">
+          <h5>ご利用ガイド</h5>
+          <ul>
+            <li><a href="#">ご利用案内</a></li>
+            <li><a href="#">送料・配送について</a></li>
+            <li><a href="#">返品・交換について</a></li>
+            <li><a href="#">お支払いについて</a></li>
+            <li><a href="#">よくあるご質問</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: About -->
+        <div class="footer-nav-col">
+          <h5>MORUについて</h5>
+          <ul>
+            <li><a href="#">ブランドについて</a></li>
+            <li><a href="#">MORUの想い</a></li>
+            <li><a href="#">お問い合わせ</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 5: Newsletter -->
+        <div class="newsletter-box">
+          <h5>メールマガジン</h5>
+          <p>新着アイテムやお得な情報をお届けします。</p>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('メルマガ登録が完了しました！'); this.reset();">
+            <input type="email" class="newsletter-input" placeholder="メールアドレスを入力" required="">
+            <button type="submit" class="newsletter-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <p>© MORU All Rights Reserved.</p>
+        <div class="footer-legal-links">
+          <a href="#">特定商取引法に基づく表記</a>
+          <a href="#">プライバシーポリシー</a>
+          <a href="#">利用規約</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification element -->
+  <div id="toast" class="toast-msg"></div>
+
+  <!-- Vanilla JavaScript Interactivity -->
+  <script>
+    let cartItemCount = 0;
+    let toastTimeout;
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function addToCart(productName, price) {
+      cartItemCount++;
+      document.getElementById('cartCount').textContent = cartItemCount;
+      const priceText = price ? ` (¥${price.toLocaleString()})` : '';
+      showToast(`「${productName}」${priceText} をカートに追加しました`);
+    }
+
+    function switchRoomTab(element, tabKey) {
+      document.querySelectorAll('.room-tab-btn').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+
+      const sceneImages = {
+        'mid-century': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80',
+        'korean-pop': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80',
+        'nordic': 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
+        'japandi': 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80'
+      };
+
+      if (sceneImages[tabKey]) {
+        document.getElementById('mainSceneImg').src = sceneImages[tabKey];
+      }
+    }
+
+    function changeSceneImage(element, imgSrc) {
+      document.querySelectorAll('.scene-thumb').forEach(t => t.classList.remove('active'));
+      element.classList.add('active');
+      document.getElementById('mainSceneImg').src = imgSrc;
+    }
+  </script>
+
+</body></html>
