@@ -14,6 +14,20 @@
   # sizes 属性に CSS 変数は書けない(ブラウザが解決できない)ので、列数から実際の幅を出しておく
   assign column_vw = 100 | divided_by: columns
   assign media_sizes = '(max-width: 749px) 100vw, ' | append: column_vw | append: 'vw'
+
+  # 推奨解像度 1440x480(3:1)。テーマエディタでのみ、外れた画像に注意書きを出すための基準。
+  # 比率は 100 倍の整数で持つ(Liquid の割り算は整数のため)
+  assign min_width = 1200
+  assign ratio_min = 250
+  assign ratio_max = 360
+
+  # 同じ行に並ぶ画像の比率がそろっているかを見るため、最初の1枚を基準にする
+  assign base_ratio = 0
+  for block in section.blocks
+    if block.settings.show_banner and block.settings.image != blank and base_ratio == 0
+      assign base_ratio = block.settings.image.width | times: 100 | divided_by: block.settings.image.height
+    endif
+  endfor
 -%}
 
 {%- if visible_count > 0 -%}
@@ -42,11 +56,40 @@
             {%- endif -%}
           {%- endcapture -%}
 
+          {%- comment -%}
+            テーマエディタでのみ、推奨解像度から外れた画像に注意書きを出す。
+            ストアフロントには一切出さない(docs/06 §3「CTA広告バナーの設計」)。
+          {%- endcomment -%}
+          {%- capture image_notice -%}
+            {%- if request.design_mode and block.settings.image != blank -%}
+              {%- liquid
+                assign img_ratio = block.settings.image.width | times: 100 | divided_by: block.settings.image.height
+                assign ratio_gap = img_ratio | minus: base_ratio
+                if ratio_gap < 0
+                  assign ratio_gap = 0 | minus: ratio_gap
+                endif
+              -%}
+              {%- if block.settings.image.width < min_width -%}
+                {{ 'moru.cta_banners.notice_too_small' | t: width: block.settings.image.width }}
+              {%- elsif img_ratio < ratio_min or img_ratio > ratio_max -%}
+                {{
+                  'moru.cta_banners.notice_ratio'
+                  | t: width: block.settings.image.width, height: block.settings.image.height
+                }}
+              {%- elsif ratio_gap > 5 -%}
+                {{ 'moru.cta_banners.notice_mismatch' | t }}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endcapture -%}
+
           <li class="moru-cta-banners__item" {{ block.shopify_attributes }}>
             {%- if block.settings.link != blank -%}
               <a class="moru-cta-banner" href="{{ block.settings.link }}">{{ banner_inner }}</a>
             {%- else -%}
               <div class="moru-cta-banner">{{ banner_inner }}</div>
+            {%- endif -%}
+            {%- if image_notice != blank -%}
+              <p class="moru-cta-banner__notice">{{ image_notice | strip }}</p>
             {%- endif -%}
           </li>
         {%- endif -%}
@@ -126,6 +169,17 @@
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  /* テーマエディタ限定の注意書き。ストアフロントには出力されない */
+  .moru-cta-banner__notice {
+    margin: var(--space-xs) 0 0;
+    padding: var(--space-xs) var(--space-sm);
+    border-left: 3px solid var(--color-accent-terracotta);
+    background-color: var(--color-bg-alt);
+    font-size: var(--font-size-xs);
+    line-height: 1.6;
+    color: var(--color-text);
   }
 
   @media (max-width: 749px) {

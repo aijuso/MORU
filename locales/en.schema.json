@@ -349,7 +349,7 @@
     "cta_banners": {
       "name": "MORU CTA banners",
       "block_name": "Banner",
-      "section_info": "Upload artwork that already contains its own wording and buttons, then set where it links. Keep the copy inside the image rather than in the theme.",
+      "section_info": "Upload artwork that already contains its own wording and buttons, then set where it links. Keep the copy inside the image rather than in the theme.\n\n■ Recommended image size: 1440 × 480 px (3:1)\nExported at that size the artwork stays sharp on retina screens, phone and desktop alike. Every banner in the same row must use this one size.",
       "columns_label": "Banners per row (desktop)",
       "columns_info": "Phones always show one. Export the artwork at the size it should appear on a phone; desktop places those side by side.",
       "width_label": "Width",
@@ -361,7 +361,7 @@
       "spacing_none": "None",
       "show_label": "Show this banner",
       "show_info": "Turn off to hide it. The banner stays in place, so a campaign can be brought back without rebuilding it.",
-      "image_info": "The image is never cropped. When two sit side by side, export both at the same size or their heights will not line up.",
+      "image_info": "Recommended 1440 × 480 px (3:1). The image is never cropped, so two banners of different sizes will not line up. Minimum width 1200 px; keep the ratio between 2.5:1 and 3.6:1. Use JPG for photographic artwork, PNG where lettering must stay crisp.",
       "link_label": "Link",
       "link_info": "Pick a collection, product or page from your store, or paste any address.",
       "alt_label": "Image description (alt text)",
