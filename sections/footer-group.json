@@ -42,7 +42,16 @@
         "col_about"
       ],
       "settings": {
-        "newsletter_text": "新着アイテムやお得な情報をお届けします。"
+        "logo": "shopify://shop_images/MORU.gif",
+        "wordmark": "MORU",
+        "brand_text": "猫との暮らしを、\nもっと心地よく、もっと楽しく。",
+        "show_newsletter": false,
+        "newsletter_heading": "ニュースレター",
+        "newsletter_text": "新着アイテムやお得な情報をお届けします。",
+        "instagram_url": "",
+        "pinterest_url": "",
+        "line_url": "",
+        "legal_menu": ""
       }
     }
   },

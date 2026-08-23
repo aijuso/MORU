@@ -11,15 +11,35 @@
   "sections": {
     "banner": {
       "type": "moru-collection-banner",
-      "settings": {}
+      "settings": {
+        "show_breadcrumbs": true,
+        "title_en": "",
+        "title_ja": "",
+        "description": ""
+      }
     },
     "grid": {
       "type": "moru-collection-grid",
-      "settings": {}
+      "settings": {
+        "products_per_page": 12,
+        "columns": "4",
+        "show_tag_filter": true,
+        "max_tags": 6,
+        "show_sort": true,
+        "show_swatches": true,
+        "swatch_option_names": "カラー,色,Color",
+        "show_subtitle": false
+      }
     },
     "recently_viewed": {
       "type": "moru-recently-viewed",
-      "settings": {}
+      "settings": {
+        "title": "閲覧した商品",
+        "products_to_show": 4,
+        "columns": "4",
+        "show_swatches": false,
+        "show_clear": true
+      }
     }
   },
   "order": [

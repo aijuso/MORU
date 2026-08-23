@@ -13,15 +13,24 @@
   "sections": {
     "announcement": {
       "type": "moru-announcement",
-      "settings": {}
+      "settings": {
+        "text": "¥15,000以上のご購入で送料無料 / 新規会員登録で¥500ptプレゼント",
+        "link": ""
+      }
     },
     "header": {
       "type": "moru-header",
-      "settings": {}
+      "settings": {
+        "logo": "shopify://shop_images/MORU.gif",
+        "logo_width": 140,
+        "wordmark": "MORU",
+        "menu": "main-menu",
+        "sale_link_title": "セール",
+        "show_login": true
+      }
     },
     "search_modal": {
       "type": "moru-search-modal",
-      "settings": {},
       "blocks": {
         "k1": {
           "type": "keyword",
@@ -46,11 +55,18 @@
         "k1",
         "k2",
         "k3"
-      ]
+      ],
+      "settings": {
+        "show_recent": true
+      }
     },
     "cart_drawer": {
       "type": "moru-cart-drawer",
-      "settings": {}
+      "settings": {
+        "open_on_add": true,
+        "tax_display": "included",
+        "tax_rate": 10
+      }
     }
   },
   "order": [

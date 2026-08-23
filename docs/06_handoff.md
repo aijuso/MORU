@@ -12,11 +12,25 @@
 
 ## 0. 直近のセッション(2026-08-23 深夜)— **フロント反映(ナビ7分類・新着の自動化)**
 
-> ⚠️ **テーマの変更はまだストアに出ていない。** このコンテナに Shopify CLI が無いため、
-> `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166203621616 --allow-live`
-> は**オーナーが実行する必要がある**(theme 166203621616 は `role: MAIN`)。
-> **Shopify 側の変更(コレクション公開・メニュー・new-arrivals の条件)は API で適用済みなので、
-> push しなくても既に反映されている。**
+> ✅ **ライブテーマ(#166203621616)へ push 済み**(2026-08-23)。`theme check` 73ファイル無指摘。
+> `shopify theme dev` のプレビューでトップ・全コレクションページの描画を確認済み。
+
+### ⚠️ push 前に必ずやること(この回で危うく壊しかけた)
+
+**テーマエディタで入れた設定はライブテーマにしか無い。** リポジトリの JSON は空のままなので、
+そのまま `theme push` すると**ロゴ・フォント・ヒーロー画像・アナウンス文が消える。**
+
+```
+shopify theme pull --theme 166203621616 --path <tmp>   # ライブを取得
+diff -rq . <tmp>                                        # 自分が触っていない差分を洗い出す
+# config/settings_data.json / sections/*-group.json / templates/*.json / locales/*.json
+# はライブ側を正として取り込んでから、自分の変更を載せ直す
+```
+
+実際、この回のライブには以下が入っていた(取り込み済み):
+フォント(Zen Kaku Gothic New)・`max_page_width` 等 / ヘッダーとフッターのロゴ `MORU.gif` /
+アナウンス文「¥15,000以上のご購入で送料無料 …」/ **ヒーロー3枚の画像とコピー** /
+ベストセラー5枠の商品指定 / カートドロワーの税設定
 
 ### Shopify 側(適用済み)
 
@@ -27,7 +41,7 @@
 - `new-arrivals` を **全商品・作成日降順**のスマートコレクションに変更し、`templateSuffix = new-arrivals` を設定。
   フラワーラウンジの `new-arrival` タグは不要になったので外した
 
-### テーマ側(コミット済み・**push 待ち**)
+### テーマ側(push 済み)
 
 - `templates/index.json` — 「カテゴリーから探す」を**7分類**に。新着グリッドは60日フィルタ。
   その下のグリッドは `cat-life`(1件)→ `pet` に
