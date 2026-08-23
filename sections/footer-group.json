@@ -13,7 +13,37 @@
   "sections": {
     "footer": {
       "type": "moru-footer",
-      "settings": {}
+      "blocks": {
+        "col_shopping": {
+          "type": "menu",
+          "settings": {
+            "heading": "ショッピング",
+            "menu": "footer-shopping"
+          }
+        },
+        "col_guide": {
+          "type": "menu",
+          "settings": {
+            "heading": "ご利用ガイド",
+            "menu": "footer-guide"
+          }
+        },
+        "col_about": {
+          "type": "menu",
+          "settings": {
+            "heading": "MORUについて",
+            "menu": "footer-about"
+          }
+        }
+      },
+      "block_order": [
+        "col_shopping",
+        "col_guide",
+        "col_about"
+      ],
+      "settings": {
+        "newsletter_text": "新着アイテムやお得な情報をお届けします。"
+      }
     }
   },
   "order": [

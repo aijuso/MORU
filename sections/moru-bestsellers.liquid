@@ -1,0 +1,202 @@
+{%- liquid
+  assign filled = 0
+  for block in section.blocks
+    if block.settings.product != blank
+      assign filled = filled | plus: 1
+    endif
+  endfor
+-%}
+
+<div class="moru-bestsellers">
+  <div class="moru-section-header">
+    <h2>{{ section.settings.title }}</h2>
+    {%- if section.settings.collection != blank -%}
+      <a class="moru-section-header__link" href="{{ section.settings.collection.url }}">
+        {{ section.settings.view_all_label }}
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true" focusable="false">
+          <path d="M9 1L13 5M13 5L9 9M13 5L1 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <ul class="moru-bestsellers__grid" role="list">
+    {%- for block in section.blocks -%}
+      <li class="moru-bestsellers__item" {{ block.shopify_attributes }}>
+        <span class="moru-bestsellers__rank moru-bestsellers__rank--{{ forloop.index }}">
+          <span aria-hidden="true">{{ forloop.index }}</span>
+          <span class="moru-bestsellers__rank-label">
+            {{- 'moru.bestsellers.rank_label' | t: rank: forloop.index -}}
+          </span>
+        </span>
+        {%- render 'moru-product-card',
+          product: block.settings.product,
+          ph_index: forloop.index,
+          show_subtitle: section.settings.show_subtitle
+        -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  {%- if filled == 0 -%}
+    <p class="moru-bestsellers__hint">{{ 'moru.bestsellers.empty_hint' | t }}</p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .moru-bestsellers {
+    padding-block: var(--space-2xl) var(--space-xl);
+  }
+
+  .moru-bestsellers__grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-bestsellers__item {
+    position: relative;
+    min-width: 0;
+  }
+
+  .moru-bestsellers__rank {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-surface);
+    background-color: var(--color-muted);
+  }
+
+  /* 順位の数字だけでは読み上げに意味が伝わらないので、「N位」を読み上げ用に添える */
+  .moru-bestsellers__rank-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* 参考デザインの順位色をブランドトークンに載せ替えたもの */
+  .moru-bestsellers__rank--1 {
+    background-color: var(--color-wood);
+  }
+
+  .moru-bestsellers__rank--2 {
+    background-color: color-mix(in srgb, var(--color-wood) 62%, var(--color-surface));
+    color: var(--color-text);
+  }
+
+  .moru-bestsellers__rank--3 {
+    background-color: color-mix(in srgb, var(--color-wood) 72%, var(--color-text));
+  }
+
+  .moru-bestsellers__rank--4 {
+    background-color: var(--color-accent-blue);
+  }
+
+  .moru-bestsellers__rank--5 {
+    background-color: color-mix(in srgb, var(--color-wood) 80%, var(--color-accent-terracotta));
+  }
+
+  .moru-bestsellers__hint {
+    margin-block-start: var(--space-md);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 1024px) {
+    .moru-bestsellers__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .moru-bestsellers__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.bestsellers.name",
+  "tag": "section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:moru.bestsellers.section_info"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "default": "t:moru.bestsellers.title_default"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:moru.bestsellers.collection_label",
+      "info": "t:moru.bestsellers.collection_info"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "t:moru.common.view_all_label",
+      "default": "t:moru.common.view_all_default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subtitle",
+      "label": "t:moru.product_grid.show_subtitle_label",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "rank",
+      "name": "t:moru.bestsellers.block_name",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:moru.common.product_label"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.bestsellers.name",
+      "blocks": [
+        { "type": "rank" },
+        { "type": "rank" },
+        { "type": "rank" },
+        { "type": "rank" },
+        { "type": "rank" }
+      ]
+    }
+  ]
+}
+{% endschema %}

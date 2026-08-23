@@ -1,4 +1,7 @@
-<div class="moru-categories">
+<div
+  class="moru-categories moru-categories--{{ section.settings.shape }}{% if section.settings.background == 'alt' %} moru-categories--boxed{% endif %}"
+  style="--moru-cat-columns: {{ section.settings.columns }};"
+>
   <div class="moru-section-header">
     <h2>{{ section.settings.title }}</h2>
     {% if section.settings.view_all_link != blank %}
@@ -45,7 +48,7 @@
 
   .moru-categories__circles {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(var(--moru-cat-columns, 8), minmax(0, 1fr));
     gap: var(--space-md);
     margin: 0;
     padding: 0;
@@ -104,14 +107,80 @@
     transform: scale(1.08);
   }
 
+  /*
+   * 参考デザインは、クリーム地の枠の中に白い正方形カードが並ぶ形。
+   * 丸("circle")も設定から選べるよう、どちらも同じマークアップで出し分ける。
+   */
+  .moru-categories--boxed {
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background-color: var(--color-bg-alt);
+  }
+
+  .moru-categories--square .moru-categories__circle-item {
+    display: block;
+  }
+
+  .moru-categories--square .moru-categories__circle-link {
+    gap: var(--space-xs);
+  }
+
+  .moru-categories--square .moru-categories__circle {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    padding: var(--space-xs);
+    border-radius: var(--radius-card);
+    background-color: var(--color-surface);
+  }
+
+  .moru-categories--square .moru-categories__circle-inner {
+    border-radius: 0;
+  }
+
+  .moru-categories--square .moru-categories__circle-inner img,
+  .moru-categories--square .moru-categories__circle-inner svg {
+    object-fit: contain;
+  }
+
+  .moru-categories--square .moru-categories__label {
+    font-size: var(--font-size-xs);
+  }
+
+  @media (max-width: 1024px) {
+    .moru-categories__circles {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
   @media (max-width: 749px) {
     .moru-categories__circles {
       gap: var(--space-xs);
     }
 
-    .moru-categories__circle {
+    .moru-categories--circle .moru-categories__circle {
       width: 4.25rem;
       height: 4.25rem;
+    }
+
+    .moru-categories--boxed {
+      padding: var(--space-md);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .moru-categories__circle,
+    .moru-categories__circle-inner img {
+      transition: none;
+    }
+
+    .moru-categories__circle-link:hover .moru-categories__circle {
+      transform: none;
+    }
+
+    .moru-categories__circle-link:hover .moru-categories__circle-inner img {
+      transform: none;
     }
   }
 {% endstylesheet %}
@@ -125,6 +194,35 @@
       "id": "title",
       "label": "t:moru.common.title",
       "default": "t:moru.category_browser.title_default"
+    },
+    {
+      "type": "select",
+      "id": "shape",
+      "label": "t:moru.category_browser.shape_label",
+      "options": [
+        { "value": "square", "label": "t:moru.category_browser.shape_square" },
+        { "value": "circle", "label": "t:moru.category_browser.shape_circle" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 4,
+      "max": 8,
+      "step": 1,
+      "label": "t:moru.category_browser.columns_label",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "t:moru.common.background_label",
+      "options": [
+        { "value": "alt", "label": "t:moru.usp.bg_alt" },
+        { "value": "none", "label": "t:moru.usp.bg_none" }
+      ],
+      "default": "alt"
     },
     {
       "type": "url",
@@ -142,7 +240,7 @@
     {
       "type": "category",
       "name": "t:moru.category_browser.block_category_name",
-      "limit": 6,
+      "limit": 10,
       "settings": [
         {
           "type": "text",

@@ -227,6 +227,10 @@
       "notice_too_small": "⚠ This image is {{ width }} px wide. 1440 px is recommended, 1200 px the minimum — below that it is scaled up and looks soft.",
       "notice_ratio": "⚠ This image is {{ width }} × {{ height }} px, away from the recommended 3:1 (1440 × 480 px). Side by side, it will not match its neighbour's height.",
       "notice_mismatch": "⚠ This banner's proportions differ from the others in its row. Since images are never cropped, their heights will not line up. Export them all at 1440 × 480 px."
+    },
+    "bestsellers": {
+      "rank_label": "No. {{ rank }}",
+      "empty_hint": "Pick the products to feature, in order, from the ranked slots in the theme editor."
     }
   }
 }

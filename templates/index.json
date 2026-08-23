@@ -32,6 +32,88 @@
       ],
       "settings": {}
     },
+    "usp_bar": {
+      "type": "moru-usp-bar",
+      "blocks": {
+        "usp_1": {
+          "type": "usp",
+          "settings": {
+            "icon": "truck",
+            "heading": "税込15,000円以上で送料無料",
+            "subheading": "全国一律"
+          }
+        },
+        "usp_2": {
+          "type": "usp",
+          "settings": {
+            "icon": "calendar",
+            "heading": "お届けの目安は2〜3週間",
+            "subheading": "商品により4週間以上いただく場合があります"
+          }
+        },
+        "usp_3": {
+          "type": "usp",
+          "settings": {
+            "icon": "shield",
+            "heading": "30日間の返品・交換",
+            "subheading": "届いてから、ゆっくり決められます"
+          }
+        },
+        "usp_4": {
+          "type": "usp",
+          "settings": {
+            "icon": "paw",
+            "heading": "猫と暮らす目線でセレクト",
+            "subheading": "置く場所と手ざわりを見て選んでいます"
+          }
+        }
+      },
+      "block_order": [
+        "usp_1",
+        "usp_2",
+        "usp_3",
+        "usp_4"
+      ],
+      "settings": {
+        "columns": 4,
+        "background": "alt"
+      }
+    },
+    "bestsellers": {
+      "type": "moru-bestsellers",
+      "blocks": {
+        "rank_1": {
+          "type": "rank",
+          "settings": {}
+        },
+        "rank_2": {
+          "type": "rank",
+          "settings": {}
+        },
+        "rank_3": {
+          "type": "rank",
+          "settings": {}
+        },
+        "rank_4": {
+          "type": "rank",
+          "settings": {}
+        },
+        "rank_5": {
+          "type": "rank",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "rank_1",
+        "rank_2",
+        "rank_3",
+        "rank_4",
+        "rank_5"
+      ],
+      "settings": {
+        "collection": "new-arrivals"
+      }
+    },
     "new_arrivals": {
       "type": "moru-product-grid",
       "settings": {
@@ -123,7 +205,11 @@
         "cat_1",
         "cat_2"
       ],
-      "settings": {}
+      "settings": {
+        "shape": "square",
+        "columns": 8,
+        "background": "alt"
+      }
     },
     "category_products": {
       "type": "moru-product-grid",
@@ -153,63 +239,81 @@
       ],
       "settings": {}
     },
-    "journal": {
-      "type": "moru-journal",
-      "settings": {}
-    },
-    "instagram": {
-      "type": "moru-instagram",
+    "community_journal": {
+      "type": "moru-community-journal",
       "blocks": {
-        "ig_1": {
-          "type": "image",
+        "photo_1": {
+          "type": "photo",
           "settings": {}
         },
-        "ig_2": {
-          "type": "image",
+        "photo_2": {
+          "type": "photo",
           "settings": {}
         },
-        "ig_3": {
-          "type": "image",
+        "photo_3": {
+          "type": "photo",
           "settings": {}
         },
-        "ig_4": {
-          "type": "image",
-          "settings": {}
-        },
-        "ig_5": {
-          "type": "image",
-          "settings": {}
-        },
-        "ig_6": {
-          "type": "image",
-          "settings": {}
-        },
-        "ig_7": {
-          "type": "image",
+        "photo_4": {
+          "type": "photo",
           "settings": {}
         }
       },
       "block_order": [
-        "ig_1",
-        "ig_2",
-        "ig_3",
-        "ig_4",
-        "ig_5",
-        "ig_6",
-        "ig_7"
+        "photo_1",
+        "photo_2",
+        "photo_3",
+        "photo_4"
       ],
       "settings": {}
+    },
+    "weekly_picks": {
+      "type": "moru-weekly-picks",
+      "blocks": {
+        "pick_1": {
+          "type": "pick",
+          "settings": {}
+        },
+        "pick_2": {
+          "type": "pick",
+          "settings": {}
+        },
+        "pick_3": {
+          "type": "pick",
+          "settings": {}
+        },
+        "pick_4": {
+          "type": "pick",
+          "settings": {}
+        },
+        "pick_5": {
+          "type": "pick",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "pick_1",
+        "pick_2",
+        "pick_3",
+        "pick_4",
+        "pick_5"
+      ],
+      "settings": {
+        "columns": 5
+      }
     }
   },
   "order": [
     "hero",
+    "usp_bar",
+    "bestsellers",
     "new_arrivals",
     "shop_the_room",
     "cta_banners_1",
     "category_browser",
     "category_products",
     "cta_banners_2",
-    "instagram",
-    "journal"
+    "community_journal",
+    "weekly_picks"
   ]
 }

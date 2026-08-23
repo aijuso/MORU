@@ -123,7 +123,9 @@
       "button_label": "Button label",
       "button_link": "Button link",
       "view_all_label": "\"View all\" link label",
-      "view_all_default": "View all"
+      "view_all_default": "View all",
+      "product_label": "Product",
+      "background_label": "Background"
     },
     "announcement": {
       "name": "MORU announcement bar",
@@ -344,7 +346,11 @@
       "view_all_link_label": "\"View all\" link URL",
       "block_category_name": "Category",
       "block_label_label": "Label",
-      "block_image_label": "Thumbnail image"
+      "block_image_label": "Thumbnail image",
+      "shape_label": "Thumbnail shape",
+      "shape_square": "Square",
+      "shape_circle": "Circle",
+      "columns_label": "Items per row (desktop)"
     },
     "cta_banners": {
       "name": "MORU CTA banners",
@@ -389,7 +395,7 @@
       "name": "MORU footer",
       "logo_label": "Logo image",
       "brand_text_label": "Brand description",
-      "brand_text_default": "An interior shop for people and their pets,\nwhere soft light meets the warmth of wood.\nEveryday pieces made to live with.",
+      "brand_text_default": "Making life with a cat more comfortable, and more fun.",
       "newsletter_heading_label": "Newsletter heading",
       "newsletter_heading_default": "Newsletter",
       "newsletter_text_label": "Newsletter description",
@@ -403,8 +409,8 @@
       "block_heading_label": "Column heading",
       "block_heading_default": "Shop",
       "legal_menu_info": "Leave empty to link to the legal notice, privacy policy and terms pages",
-      "preset_shop": "Shop",
-      "preset_support": "Customer care",
+      "preset_shop": "Shopping",
+      "preset_support": "Guide",
       "preset_about": "About"
     },
     "page_header": {
@@ -506,6 +512,57 @@
       "heading_info": "Leave empty to show the default heading",
       "block_name": "Feature",
       "body_label": "Body"
+    },
+    "usp": {
+      "name": "MORU promise bar",
+      "block_name": "Item",
+      "section_info": "A band under the hero listing what the shop promises. Keep it in step with your real shipping and returns settings.",
+      "columns_label": "Items per row (desktop)",
+      "columns_info": "Tablets and phones fall back to two columns.",
+      "bg_alt": "Cream box",
+      "bg_none": "Rules above and below only",
+      "icon_label": "Icon",
+      "icon_truck": "Delivery van",
+      "icon_calendar": "Calendar (delivery estimate)",
+      "icon_shield": "Shield (returns, guarantee)",
+      "icon_paw": "Paw (pets)",
+      "icon_leaf": "Leaf (materials, environment)",
+      "icon_check": "Check",
+      "sub_label": "Supporting line (small text)"
+    },
+    "bestsellers": {
+      "name": "MORU best sellers",
+      "block_name": "Ranked slot",
+      "section_info": "Products are numbered by their order here, so reorder them by hand as sales change.",
+      "title_default": "Best sellers",
+      "collection_label": "\"View all\" destination",
+      "collection_info": "Setting this shows a \"view all\" link beside the heading.",
+      "block_name_info": "A slot with no product shows as a placeholder."
+    },
+    "community_journal": {
+      "name": "MORU community + journal (side by side)",
+      "section_info": "Desktop places the photo feed on the left and the journal on the right; phones stack them.",
+      "social_header": "Left: community photos",
+      "journal_header": "Right: journal",
+      "social_title_default": "#MORUのある暮らし",
+      "callout_label": "Line under the photos",
+      "callout_default": "＼ みんなの投稿をもっと見る ／",
+      "handle_default": "@moru_petlife をフォロー"
+    },
+    "weekly": {
+      "name": "MORU weekly picks",
+      "block_name": "Pick",
+      "section_info": "Room photographs that link through to the product in them.",
+      "title_default": "Weekly picks",
+      "columns_label": "Items per row (desktop)",
+      "columns_info": "Phones fall back to two columns.",
+      "view_all_link_label": "\"View all\" destination",
+      "product_label": "Product this links to",
+      "product_info": "Picking one turns the photo into a link to that product.",
+      "image_info": "A room photograph. Left blank, the chosen product's main image is used.",
+      "link_label": "Link (when no product is chosen)",
+      "link_info": "A chosen product takes precedence over this.",
+      "caption_label": "Overlay the product name"
     }
   }
 }

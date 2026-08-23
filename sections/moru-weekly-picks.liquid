@@ -1,0 +1,224 @@
+<div class="moru-weekly">
+  <div class="moru-section-header">
+    <h2>{{ section.settings.title }}</h2>
+    {%- if section.settings.view_all_link != blank -%}
+      <a class="moru-section-header__link" href="{{ section.settings.view_all_link }}">
+        {{ section.settings.view_all_label }}
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true" focusable="false">
+          <path d="M9 1L13 5M13 5L9 9M13 5L1 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <ul class="moru-weekly__grid" role="list" style="--moru-weekly-columns: {{ section.settings.columns }};">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        # 商品を選べばその商品ページへ。選ばれていなければ手入力のURLを使う
+        assign pick_url = blank
+        assign pick_label = blank
+        if block.settings.product != blank
+          assign pick_url = block.settings.product.url
+          assign pick_label = block.settings.product.title
+        elsif block.settings.link != blank
+          assign pick_url = block.settings.link
+        endif
+
+        assign pick_image = block.settings.image
+        if pick_image == blank and block.settings.product != blank
+          assign pick_image = block.settings.product.featured_image
+        endif
+      -%}
+
+      {%- capture weekly_inner -%}
+        {%- if pick_image != blank -%}
+          {{
+            pick_image
+            | image_url: width: 800
+            | image_tag:
+              loading: 'lazy',
+              widths: '250, 400, 550, 800',
+              sizes: '(max-width: 640px) 50vw, 20vw',
+              alt: pick_label
+          }}
+        {%- else -%}
+          {{ 'lifestyle-1' | placeholder_svg_tag }}
+        {%- endif -%}
+        {%- if block.settings.show_caption and pick_label != blank -%}
+          <span class="moru-weekly__caption">{{ pick_label }}</span>
+        {%- endif -%}
+      {%- endcapture -%}
+
+      <li class="moru-weekly__item" {{ block.shopify_attributes }}>
+        {%- if pick_url != blank -%}
+          <a class="moru-weekly__media" href="{{ pick_url }}">{{ weekly_inner }}</a>
+        {%- else -%}
+          <div class="moru-weekly__media">{{ weekly_inner }}</div>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% stylesheet %}
+  .moru-weekly {
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .moru-weekly__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--moru-weekly-columns, 5), minmax(0, 1fr));
+    gap: var(--space-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-weekly__item {
+    min-width: 0;
+  }
+
+  .moru-weekly__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 1.15;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background-color: var(--color-bg-alt);
+    color: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .moru-weekly__media img,
+  .moru-weekly__media svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+
+  a.moru-weekly__media:hover img {
+    transform: scale(1.05);
+  }
+
+  .moru-weekly__caption {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    padding: var(--space-sm) var(--space-xs) var(--space-xs);
+    background-image: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-text) 70%, transparent) 0%,
+      transparent 100%
+    );
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .moru-weekly__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-xs);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .moru-weekly__media img {
+      transition: none;
+    }
+
+    a.moru-weekly__media:hover img {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:moru.weekly.name",
+  "tag": "section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:moru.weekly.section_info"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:moru.common.title",
+      "default": "t:moru.weekly.title_default"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 3,
+      "max": 6,
+      "step": 1,
+      "label": "t:moru.weekly.columns_label",
+      "info": "t:moru.weekly.columns_info",
+      "default": 5
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "t:moru.weekly.view_all_link_label"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "t:moru.common.view_all_label",
+      "default": "t:moru.common.view_all_default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pick",
+      "name": "t:moru.weekly.block_name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:moru.common.image",
+          "info": "t:moru.weekly.image_info"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:moru.weekly.product_label",
+          "info": "t:moru.weekly.product_info"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:moru.weekly.link_label",
+          "info": "t:moru.weekly.link_info"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_caption",
+          "label": "t:moru.weekly.caption_label",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "t:moru.weekly.name",
+      "blocks": [
+        { "type": "pick" },
+        { "type": "pick" },
+        { "type": "pick" },
+        { "type": "pick" },
+        { "type": "pick" }
+      ]
+    }
+  ]
+}
+{% endschema %}
