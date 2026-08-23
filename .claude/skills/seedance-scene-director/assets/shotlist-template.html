@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--
+  SHOTLIST TEMPLATE — seedance-scene-director
+
+  Fill and save to /mnt/user-data/outputs/shotlist.html, then present it.
+
+  RULES
+  - One .scene card = one generation = one clip.
+    Multiple shots live INSIDE one prompt as SHOT A / B / C.
+    Do NOT split a scene into separate 1a / 1b / 1c cards.
+  - pre.prompt must contain the COMPLETE prompt, every block top to bottom.
+    The user copies one block and pastes it. Nothing may be missing.
+  - Keep scene numbers stable across revisions so checkbox state survives.
+  - Write the .howto text in the user's language.
+  - Delete the project-constants <details> if the project has no STYLE constant.
+  - Delete unused .scene cards.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{PROJECT_TITLE}} — Director's Shotlist</title>
+<style>
+  :root {
+    --bg: #0e0e10;
+    --panel: #17171a;
+    --panel-2: #1d1d21;
+    --border: #2a2a30;
+    --text: #e8e8ea;
+    --text-dim: #9a9aa2;
+    --accent: #d4a259;
+    --done: #4ade80;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.5;
+    padding: 32px 24px 80px;
+  }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 28px; }
+  .howto {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 18px; font-size: 13px; color: var(--text-dim); margin-bottom: 20px;
+  }
+  details.constants {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 18px; margin-bottom: 28px;
+  }
+  details.constants summary {
+    cursor: pointer; font-weight: 600; color: var(--accent); user-select: none;
+  }
+  details.constants pre {
+    margin: 14px 0 0; padding: 14px; background: var(--panel-2); border-radius: 6px;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
+    white-space: pre-wrap; color: var(--text);
+  }
+  .scene {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 22px; margin-bottom: 18px;
+  }
+  .scene-header { display: flex; align-items: flex-start; gap: 12px; }
+  .scene-header input[type="checkbox"] {
+    width: 20px; height: 20px; margin-top: 3px; accent-color: var(--done);
+    cursor: pointer; flex-shrink: 0;
+  }
+  .scene-num { font-size: 18px; font-weight: 700; color: var(--accent); min-width: 44px; }
+  .scene-body { flex: 1; }
+  .scene-desc { font-size: 15px; }
+  .scene-meta {
+    font-size: 12px; color: var(--text-dim); margin-top: 4px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .scene.done .scene-desc { text-decoration: line-through; color: var(--text-dim); }
+  .prompt-block {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+    margin-top: 14px; overflow: hidden;
+  }
+  .prompt-label {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 14px; background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .copy-btn {
+    background: transparent; color: var(--accent); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit;
+  }
+  .copy-btn:hover { border-color: var(--accent); }
+  .copy-btn.copied { color: var(--done); border-color: var(--done); }
+  pre.prompt {
+    margin: 0; padding: 14px 16px; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; white-space: pre-wrap; color: var(--text);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>{{PROJECT_TITLE}}</h1>
+  <div class="subtitle">Director's Shotlist · {{MODEL_OR_SUBTITLE}}</div>
+
+  <div class="howto">
+    {{USAGE_NOTE_IN_USERS_LANGUAGE}}
+  </div>
+
+  <details class="constants">
+    <summary>Project constants</summary>
+    <pre>{{STYLE_AND_LOCKS_TAIL}}</pre>
+  </details>
+
+  <div class="scene">
+    <div class="scene-header">
+      <input type="checkbox" data-scene="1">
+      <div class="scene-num">1.</div>
+      <div class="scene-body">
+        <div class="scene-desc">{{ONE_LINE_DESCRIPTION}}</div>
+        <div class="scene-meta">{{DURATION}} · {{SHOT_COUNT}} · {{FORMAT}}</div>
+      </div>
+    </div>
+    <div class="prompt-block">
+      <div class="prompt-label">
+        <span>Prompt 1</span>
+        <button class="copy-btn">Copy</button>
+      </div>
+      <pre class="prompt">{{FULL_PROMPT_ALL_BLOCKS}}</pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.scene input[type="checkbox"]').forEach(cb => {
+    const key = 'shotlist-scene-' + cb.dataset.scene + '-done';
+    try {
+      if (localStorage.getItem(key) === '1') {
+        cb.checked = true;
+        cb.closest('.scene').classList.add('done');
+      }
+    } catch (e) {}
+    cb.addEventListener('change', () => {
+      try { localStorage.setItem(key, cb.checked ? '1' : '0'); } catch (e) {}
+      cb.closest('.scene').classList.toggle('done', cb.checked);
+    });
+  });
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = btn.closest('.prompt-block').querySelector('pre.prompt');
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        btn.classList.add('copied');
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.textContent = original;
+        }, 1500);
+      });
+    });
+  });
+</script>
+</body>
+</html>
