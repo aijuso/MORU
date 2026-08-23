@@ -161,15 +161,22 @@
     opacity: 0.9;
   }
 
+  /*
+   * 画像未設定のときの枠。推奨解像度 1440x480 と同じ 3:1 にしておかないと、
+   * 素の placeholder_svg_tag が正方形に近く出て、実際の見た目とかけ離れる。
+   */
   .moru-cta-banner__placeholder {
     display: block;
+    aspect-ratio: 3;
+    overflow: hidden;
     background-color: var(--color-bg-alt);
   }
 
   .moru-cta-banner__placeholder svg {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* テーマエディタ限定の注意書き。ストアフロントには出力されない */
