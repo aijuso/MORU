@@ -59,10 +59,17 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 8. 未確認の品質表現をしない: 「無垢材」「丸洗い可能」「完全防水」等は docs/00 第5章の表現注意に従う
 9. **商品画像は形状の正を常に実物写真に置く。** 形状・サイズを変える生成をしない。
    サムネは白抜き禁止・生活シーン(`docs/brand/reference-sheets/` シート02・03・05)
-10. 右サイドバー禁止。Full-widthセクションの縦積み
-11. UIの基本言語は日本語。文言は `locales/ja.default.json` の翻訳キーで管理(Liquid直書き禁止)
-12. すべてのセクションはテーマエディタから編集可能に(schema必須、ラベル日本語、presets必須)
-13. 依存ライブラリ・CSSフレームワーク追加禁止。CSSとJSは自作(軽量・可読性優先)
+10. 画像・動画の生成プロンプトを作るとき(`image-prompt-director` /
+    `seedance-scene-director` を使うとき)は、**スキル本文より先に各スキルの
+    `references/moru-notes.md` を読み**、MORU固有の制約(写真4原則・パレット・
+    形状ロック・9:16デフォルト等)を反映すること。原本と矛盾したら、
+    MORUの商品・ブランドに関する事項は **moru-notes と docs/00〜01 が勝つ**。
+    同名スキルがアカウント側(synced)にも存在するが、このリポジトリでは
+    **`.claude/skills/` 配下(moru-notes付き)が正**。
+11. 右サイドバー禁止。Full-widthセクションの縦積み
+12. UIの基本言語は日本語。文言は `locales/ja.default.json` の翻訳キーで管理(Liquid直書き禁止)
+13. すべてのセクションはテーマエディタから編集可能に(schema必須、ラベル日本語、presets必須)
+14. 依存ライブラリ・CSSフレームワーク追加禁止。CSSとJSは自作(軽量・可読性優先)
 
 ## 開発フロー
 
@@ -86,7 +93,7 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 - [x] **v0.2 へ移行**(Pet-first, Interior-always. / Concept・Mission・Vision・Values / 商品システム4階層)
 - [x] **ナビ・カテゴリ確定**(6分類・ヘッダー・スマートコレクション・内部タグ → docs/09)
 - [x] **商品登録スキル v2 化**(`.claude/skills/product-registration/`。リファレンスシート生成方式は廃止)
-- [x] **決定ログ新設**(docs/06_decisions_log.md / D-001〜D-029)
+- [x] **決定ログ新設**(docs/06_decisions_log.md / D-001〜D-032)
 - [ ] **テーマ実装への反映は未着手**(design token 色替え・ヘッダー改修・ホーム v3 化 → オーナー承認待ち)
 - [ ] **リファレンスシート画像7枚のコミット**(テキスト版のみ在り。docs/brand/reference-sheets/README.md)
 - [ ] **ホームモック `home_v3_upper/lower.png` の受領**

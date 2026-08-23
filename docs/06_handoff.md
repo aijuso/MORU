@@ -30,7 +30,9 @@
 | `docs/09_navigation_taxonomy.md` | **新設。** ナビ6分類・ヘッダー・スマートコレクション・内部タグ |
 | `docs/brand/reference-sheets/` | **新設。** シート01〜05 のテキスト版 + README |
 | `.claude/skills/product-registration/` | **新設(v2)。** リファレンスシート生成方式は廃止 |
-| `CLAUDE.md` | 絶対ルール13項目に再編・ステータス更新 |
+| `.claude/skills/image-prompt-director/` | **新設(移植)。** オーナーの汎用スキルの完全コピー + `references/moru-notes.md` |
+| `.claude/skills/seedance-scene-director/` | **新設(移植)。** 同上 |
+| `CLAUDE.md` | 絶対ルール14項目に再編・ステータス更新。**ルール10で moru-notes.md の優先読み込みを義務化** |
 
 ### ⚠️ 次のセッションが最初に確認すべきこと(v0.2 分)
 
@@ -42,6 +44,7 @@
 | **不整合** | v0.2 プロンプトは「前回の引き継ぎ(`docs/06_decisions_log.md`)」を参照していたが、**そのファイルはこのリポジトリに存在しなかった。** 別クローンの記憶と思われる。今回新設し、2026-08-23 から記録を開始した |
 | **不整合** | v0.2 プロンプトは `ops/products/` と `.claude/skills/product-registration/` の「全面改訂」を指示したが、**どちらもこのリポジトリに存在しなかった。** スキルは新規作成した。`ops/` は商品登録の実作業時に作る |
 | **不整合** | v0.2 プロンプトは旧 `brand_board.png` に言及したが、**このリポジトリには無い**(あるのは `home_v2_final.png` のみ) |
+| **既知** | **アカウント側 synced に同名スキルあり**(`image-prompt-director` / `seedance-scene-director`)。**どちらが読まれるかは環境依存。** スキル使用時は `references/moru-notes.md` の存在を確認し、無ければリポジトリ側のパス(`.claude/skills/<skill>/references/moru-notes.md`)を明示的に読むこと。原本 SKILL.md からこのノートへの参照は無い(原本は変更禁止のため CLAUDE.md 絶対ルール10で担保している) |
 
 ---
 
