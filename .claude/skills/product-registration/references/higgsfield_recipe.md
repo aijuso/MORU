@@ -63,7 +63,9 @@ The output must be one single clean photograph, never a sheet or collage.
 
 SCENE — <家具のある実際の部屋として書く。窓・サイドボード・額・植物・ラグまで具体的に>
 CAMERA — <高さと画角を必ず指定する。指定しないと商品写真のカメラを引き継ぐ>
-COLOUR — <オフホワイト+木を基調 / アクセントは1色だけ / 色は固定しない>
+COLOUR — <オフホワイト+木を基調 / アクセントは1色だけ / 色名は固定しない>
+ACCENT DISCIPLINE — <ラグは無地・低彩度。差し色は商品から離れた小物だけ。
+                     商品より彩度の高いものを背後や足元に置かない>
 COMPOSITION — <主役・余白・アングル>
 RENDERING — clean editorial interior photography, bright, airy, natural daylight,
 gentle contrast. No harsh studio lighting, no glossy HDR advertising look.
@@ -105,6 +107,36 @@ STRICTLY EXCLUDE: ...; brass or gold coloured chair tubing.
 **一般化: 商品の「一部分だけ色が転びやすい要素」(金属・木部・金具)は、
 部位を列挙して同一だと明言し、`STRICTLY EXCLUDE` にも否定形で入れる。**
 
+### ⚠️ 差し色が商品を食う: アクセントは「小さく・静かに」と書く
+
+**3回目の残課題(オーナー指摘)。** 商品の真下に敷いた**円形ラグが大きな彩度の高い色面**になり、
+マスタード(v1)やモスグリーン(v3)のほうが目に入って、**主役の椅子が目立たなくなった。**
+
+**原因は指示の解像度不足。** 「差し色は1〜2色」とだけ書くと、モデルは
+**「画面のいちばん大きい面を1色で塗る」**と解釈する。シート03 のルールは色数の話であって、
+**面積と彩度の話が抜けていた。**
+
+**対処: 面積・彩度・置き場所を分けて書く。**
+
+```
+ACCENT DISCIPLINE — the product must be the loudest thing in the frame.
+The rug directly under and behind the product is a QUIET, PLAIN, near-neutral
+floor covering — off-white, oatmeal, pale greige or soft sand. It must not be a
+large saturated colour field and must not carry a pattern; it exists to separate
+the product from the floor, nothing more.
+The single accent colour appears only on SMALL objects placed AWAY from the
+product — one vase, one book spine, one piece of wall art. Keep it to a few
+percent of the frame.
+No element behind or beneath the product may be more saturated than the product
+itself.
+```
+
+**セルフチェック(スクイントテスト)**: 出力を目を細めて見る、またはぼかす。
+**最初に目に入るのが商品でなければ不合格。** 背景の色面が勝っていたら作り直す。
+
+**一般化: 「1〜2色」のような数の指定だけでは足りない。
+面積(小さく)・彩度(商品より低く)・位置(商品から離す)を必ず書く。**
+
 ### この骨格で効いた点(実測)
 
 - **「IMAGE 2/3 はブランド基準。レイアウト・文字・掲載商品を絶対にコピーするな」を明示しないと、
@@ -124,8 +156,11 @@ STRICTLY EXCLUDE: ...; brass or gold coloured chair tubing.
 | シートのコピー | **なし**(除外指示が効いた) |
 | 惜しい点 | 案A はラグが右端で切れた。案B は円形ラグが収まり構図が良い → **count:2 で選ぶ価値がある** |
 
-**3回まわして完成した。** v1 = 環境の引き継ぎ / v2 = 環境は解消・金属が転ぶ / v3 = 両方解消。
-**アクセント色は毎回モデルが変えてきた**(v1 マスタード → v3 モスグリーン)。色を固定しない方針が効いている。
+**3回まわしたが、まだ完成していない。**
+v1 = 環境の引き継ぎ / v2 = 環境は解消・金属が転ぶ / v3 = 金属も解消。
+**ただし v1〜v3 すべてで、足元のラグの色面が強すぎて商品が主役になっていない**(オーナー指摘)。
+次は上の ACCENT DISCIPLINE を入れて再生成する。**色を固定しない方針自体は維持**
+(モデルは毎回違う色を選んだ: マスタード → モスグリーン)。問題は色名ではなく面積と彩度。
 
 ## まだ検証していないこと(次にやる人へ)
 
