@@ -394,3 +394,35 @@ discount を変更しない。**
 
 2026-08-23 までの docs には `--theme 166203621616 --allow-live` で push した記録が残っているが、
 **それは当時の運用で、現在は無効**。handoff 冒頭・docs/07 §2・CLAUDE.md を現運用に合わせて更新した。
+
+
+## D-095 Frontend は ChatGPT 側の担当。Claude Code は theme files を変更しない(2026-08-24)
+
+Shopify Frontend の実装・検証を **ChatGPT 側が並行して進めている。**
+作業テーマは **MORU Frontend Dev**(`166341181680` / UNPUBLISHED)。
+
+| 担当 | 範囲 |
+|---|---|
+| ChatGPT | Frontend Dev の theme files(数量アップセルUI / Cart Drawer / Cart Page) |
+| **Claude Code** | Shopify 側のデータ(商品・価格・**Discount Function**)と docs |
+
+**Claude Code は Frontend の theme files を変更しない。** 競合させない。
+MAIN への write / publish 禁止は D-094 のとおり。
+
+### ChatGPT 側で実装済み(2026-08-24 時点)
+
+- 商品ページの数量アップセル UI(1点 / 2点 / 3点以上)。
+  2点は1点目・2点目を個別選択、3点以上は `+1` で増やせる。**Variant 混在可**。
+  想定 10% / 15% OFF 価格を**参考表示**する
+- 複数 Variant は `cart/add.js` でまとめて追加
+- Cart Drawer / Cart Page に、**実際に Discount が適用された場合の**
+  通常価格(取り消し線)・割引後価格・「¥○○○ お得」・通常合計 / 割引合計 / 割引後合計 の表示
+
+### 現状と、Claude Code の担当
+
+**Discount Function が存在しないため Cart / Checkout の実価格は通常価格のまま。**
+商品ページの割引表示は参考値。**Frontend 側で擬似的に価格を書き換えない。**
+
+Claude Code は **Discount Function を作り、有効化後に Frontend Dev の表示価格と
+Cart / Checkout の実価格が一致するかを検証する。**
+不一致が Frontend 側にある場合は、**直さずに指摘としてまとめて ChatGPT 側へ渡す。**

@@ -272,14 +272,47 @@ docs/10 §3 が取り消し線の二重価格を禁止しているため、そ�
 
 ## 7. Phase B — 数量割引 Discount Function
 
-### 7-1. Frontend は実装済み(触らない)
+### 7-1. Frontend は実装済み(**Claude Code は触らない**)
 
-MORU Frontend Dev 側で、1点 / 2点 / 3点以上の UI がすでにある。
+**フロント実装は ChatGPT 側が並行して進めている。**
+作業テーマは **MORU Frontend Dev**(`166341181680` / UNPUBLISHED)。
 
-- 2点: 選択欄はちょうど2つ
-- 3点以上: 最初は3つ。ユーザーが `+1` で 4点、5点、6点… と追加できる
-- **Variant 違いを混在できる**(アヒル + カエル / アイボリー + ブルー / アヒル×2 + カエル×1 …)
-- Cart Drawer / Cart Page は **Shopify が実際に適用した discount を表示する実装済み**
+> 🚫 **Claude Code は Frontend の theme files を変更しない。**
+> ChatGPT 側の実装と競合させない。**MAIN(`166203621616`)への write / publish も禁止。**
+> Claude Code の担当は **Discount Function とその検証だけ**。
+
+#### 実装済み — 商品ページの数量アップセル UI
+
+| 点数 | 実装内容 |
+|---|---|
+| 1点 | 通常 |
+| 2点 | 1点目 / 2点目を**個別に選択可能**。Variant 違いを混在可能。**想定 10%OFF 価格を表示** |
+| 3点以上 | 最初は3点。**`+1` で 4点・5点・6点… と追加可能**。各点の Variant を個別選択可能。**想定 15%OFF 価格を表示** |
+
+対応済みの組み合わせ: アヒル + カエル / アヒル + カエル + ネズミ / アイボリー + ブルー / 同一 Variant 複数。
+**複数 Variant は `cart/add.js` でまとめて追加する。**
+
+#### 実装済み — Cart Drawer / Cart Page
+
+Shopify で**実際に Discount が適用された場合に**、次を表示する実装が入っている。
+
+- 通常価格(取り消し線)/ 割引後価格 / **¥○○○ お得**
+- 通常合計 / 割引合計 / 割引後合計
+
+#### 現状
+
+**Discount Function がまだ存在しないため、Cart / Checkout の実価格は通常価格のまま。**
+商品ページの 10% / 15% 表示は**参考表示**であって、実計算ではない。
+
+**Frontend 側で擬似的に価格を書き換えない**(ChatGPT 側の方針。Claude Code もこれを崩さない)。
+
+#### Claude Code に求められていること
+
+1. **Shopify Discount Function を作る**(§7-2。**Product ID 単位で数量合算**)
+2. **有効化後に、Frontend Dev の表示価格と Cart / Checkout の実価格が一致するかを検証する**
+
+ただし **Function の本番有効化・対象商品の確定・商品価格の変更は、
+価格監査と Owner 承認のあと。**
 
 ### 7-2. Function の仕様
 
@@ -350,6 +383,10 @@ MORU Frontend Dev 側で、1点 / 2点 / 3点以上の UI がすでにある。
 
 **最終的に Product Page 参考価格 / Cart Drawer / Cart Page / Checkout が一致すること。**
 ※ Product Page は**参考表示**。**Cart / Checkout の Shopify 実計算が source of truth。**
+
+不一致が出た場合、**Frontend の theme file を直して合わせにいかない。**
+Function 側の誤りなら Function を直す。Frontend 側の誤りなら
+**ChatGPT 側に渡す指摘としてまとめる**(再現手順・期待値・実測値)。
 
 ---
 

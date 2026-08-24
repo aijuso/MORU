@@ -13,10 +13,19 @@
 | Horizon | `166127468784` | UNPUBLISHED | 旧プロジェクト。触らない |
 | Development (87442c-vm) | `166203523312` | DEVELOPMENT | CLI が作った一時テーマ |
 
+**🚧 分業: Frontend は ChatGPT 側が並行実装中。Claude Code は theme files を触らない。**
+
+| 担当 | 範囲 |
+|---|---|
+| ChatGPT | MORU Frontend Dev の theme files(数量アップセルUI / Cart Drawer / Cart Page) |
+| **Claude Code** | **Shopify 側のデータ(商品・価格・Discount Function)と docs。theme files は変更しない** |
+
 **禁止事項:**
 
 - **MAIN(`166203621616`)へのテーマ書き込みを行わない。** `--allow-live` を使わない
 - **テーマの publish を行わない**(どのテーマからも)
+- **Frontend Dev(`166341181680`)の theme files も Claude Code からは変更しない。**
+  ChatGPT 側の実装と競合させない。直したい点があれば**指摘としてまとめて渡す**
 - 本書の過去セクションには `--theme 166203621616 --allow-live` で push した記録が残っているが、
   **それは 2026-08-23 時点の運用。現在は無効。踏襲しない**
 
