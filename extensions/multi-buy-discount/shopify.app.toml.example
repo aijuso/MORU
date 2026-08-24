@@ -1,0 +1,22 @@
+# MORU LIVING — Discount Function を載せるためのアプリ設定
+#
+# ⚠️ このリポジトリは Shopify **テーマ**。このファイルはテーマとは無関係で、
+#    `extensions/multi-buy-discount/`(Discount Function)を deploy するためだけに置いている。
+#    `shopify theme *` コマンドには影響しない(.shopifyignore で push 対象からも外してある)。
+#
+# `client_id` は Partner org でアプリを作る / 既存アプリに紐づけるときに
+# `shopify app config link` が自動で書き込む。**手で埋めない。**
+
+name = "MORU Discounts"
+application_url = "https://example.com"
+embedded = false
+
+[access_scopes]
+# Discount Function の登録・Discount の作成に必要
+scopes = "write_discounts"
+
+[webhooks]
+api_version = "2025-10"
+
+[build]
+include_config_on_deploy = true

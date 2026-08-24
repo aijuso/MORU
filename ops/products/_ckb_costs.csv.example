@@ -1,0 +1,7 @@
+product,variant,ckb_cost,ship_domestic_cn,agent_qc,intl_ship,duty_tax,landed
+# Owner が _ckb_cost_request_20260824.md を埋めたら、その内容をこの形式で
+# ops/products/_ckb_costs.csv に写して `python3 ops/tools/price_audit.py` を実行する。
+# product / variant は _price_audit_20260824_variants.csv の表記と完全一致させること。
+# 分解できない場合は landed だけ埋めてよい(残りは空 or 未確認)。
+MORU フラワーラウンジ,アイボリー,1381,未確認,未確認,未確認,未確認,3131
+MORU フラワーラウンジ,オリーブグリーン,1381,未確認,未確認,未確認,未確認,3131

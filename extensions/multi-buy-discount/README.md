@@ -90,3 +90,55 @@ off から始めて実績を見てから開けるのが安全。**Owner 承認�
 | 2 | **ハル ダイニングチェアに「2脚セット」Variant がある。** 対象にすると「2脚セット×1=割引なし / 1脚×2=10%OFF」という逆転が起きる。**対象外にする**(Phase A の判定も対象外) |
 | 3 | **デュオ ナイトテーブルの「2連」も同種のセット Variant。** 同じ理由で対象外 |
 | 4 | Product Page の 10% / 15% 表示は **ChatGPT 側の参考表示**。source of truth は Cart / Checkout の Shopify 実計算。有効化後に突き合わせる(docs/12 §7-7 末尾) |
+
+---
+
+## デプロイ状況(2026-08-24)— **⛔ Owner のログインが要る。まだ登録できていない**
+
+Owner から「`shopifyFunctions` に載るところまで進めてよい」と承認を受けたが、
+**この実行環境からはデプロイできない。** ブロックしているのは権限ではなく**ログイン方式**。
+
+### 実査したこと
+
+| 確認 | 結果 |
+|---|---|
+| ストアの `shopifyFunctions` | **0件**(まだ何も登録されていない) |
+| Shopify CLI | `@shopify/cli@4.7.0` を導入済み。動作する |
+| CLI の認証 | **デバイス認証(ブラウザ)必須。** `User verification code: ****` が出て
+`https://accounts.shopify.com/activate-with-code` を開こうとするが、**この環境にブラウザが無い**(`xdg-open ENOENT`)。コードの有効期限は約15分 |
+| 非対話デプロイ | `--allow-updates` 等の CI フラグはあるが、**`SHOPIFY_CLI_PARTNERS_TOKEN` が環境に無い**ので認証自体が通らない |
+| アプリ本体 | **まだ存在しない。** `client_id` は Partner org でアプリを作る/紐づけるときに発行される。`shopify.app.toml` は `client_id` 必須で、**手で埋められない** |
+| テーマ操作への影響 | **無し。** アプリ設定は `shopify.app.toml.example` として置いてあり、`shopify theme *` は影響を受けないことを確認済み |
+
+**Function は Admin API からは登録できない。** `shopifyFunctions` は読み取り専用で、
+Function は**アプリの deploy を通してしか**ストアに載らない。
+Shopify MCP の `graphql_mutation` でも代替できない。
+
+### Owner にお願いしたいこと(どちらか一方)
+
+**方法1: CI トークンを渡す(推奨・その場に居なくてよい)**
+Partner Dashboard で CLI 用トークンを発行し、環境変数 `SHOPIFY_CLI_PARTNERS_TOKEN` に入れてもらう。
+以降は非対話でデプロイできる。
+
+**方法2: その場でデバイス認証する(15分以内の同席が要る)**
+こちらでコマンドを走らせ、表示された verification code を Owner がブラウザで承認する。
+
+### 認証が通ったあとの手順(1回で終わる)
+
+```bash
+cp extensions/multi-buy-discount/shopify.app.toml.example ./shopify.app.toml
+shopify app config link          # ← Partner org でアプリを作る / 既存に紐づける(client_id が入る)
+shopify app deploy --allow-updates
+```
+
+`shopify app config link` は **Partner org に "MORU Discounts" というアプリを新規作成する。**
+既存アプリに載せたい場合は、そのアプリを選ぶこともできる。**どちらにするかは Owner 判断。**
+
+### デプロイ後に報告する項目(Owner 指定)
+
+```graphql
+query { shopifyFunctions(first: 25) { nodes { id title apiType apiVersion app { title } } } }
+```
+
+Function ID / title / handle / apiType(`discount`)/ apiVersion(`2025-10`)を報告して**止まる。**
+**Discount resource の作成・有効化・商品 metafield の設定・価格変更は、次の Owner 承認まで行わない。**
