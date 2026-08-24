@@ -66,6 +66,8 @@ CAMERA — <高さと画角を必ず指定する。指定しないと商品写�
 COLOUR — <オフホワイト+木を基調 / アクセントは1色だけ / 色名は固定しない>
 ACCENT DISCIPLINE — <ラグは無地・低彩度。差し色は商品から離れた小物だけ。
                      商品より彩度の高いものを背後や足元に置かない>
+LIGHT TEMPERATURE LOCK — <5200–5600K / 午前の光 / ゴールデンアワー禁止 / 白は白のまま>
+AIRINESS — <明るく均一・影は浅く・余白多め / hygge・韓国warm・秋色・ハニーオークを避ける>
 COMPOSITION — <主役・余白・アングル>
 RENDERING — clean editorial interior photography, bright, airy, natural daylight,
 gentle contrast. No harsh studio lighting, no glossy HDR advertising look.
@@ -131,11 +133,47 @@ No element behind or beneath the product may be more saturated than the product
 itself.
 ```
 
-**セルフチェック(スクイントテスト)**: 出力を目を細めて見る、またはぼかす。
-**最初に目に入るのが商品でなければ不合格。** 背景の色面が勝っていたら作り直す。
+**セルフチェック(スクイントテスト)**: 出力を目を細めて見て、最初に目に入るのが商品か確かめる。
+**ただし合否ゲートにしない。** 明らかに背景の色面が勝っているときだけ作り直し、
+**判断に迷う程度なら通して次へ進む。** ここで止まると作業が進まない。
+最終判断はオーナーがまとめて行う(§7 人間レビュー)。
 
 **一般化: 「1〜2色」のような数の指定だけでは足りない。
 面積(小さく)・彩度(商品より低く)・位置(商品から離す)を必ず書く。**
+
+### ⚠️ 暖色に寄る: 色温度を明示的にロックする
+
+**オーナー指摘。** 出力が**金色がかった夕方の光・ハチミツ色のオーク・全体に暖色**に寄りやすい。
+**北欧系のこもった暖かさ / 韓国インテリア風の warm トーン / ゴールデンアワー**のどれかに落ちて、
+MORU が求める**抜け感(明るく・軽く・空気が通る感じ)**にならない。
+
+**原因は2つある。片方はこちら側の問題。**
+
+1. **プロンプトに色温度の指定が無い。** `natural daylight` だけでは時間帯が定まらず、
+   モデルは絵として気持ちのいいゴールデンアワーに寄せてくる
+2. **リファレンスシート自体が暖色寄り**(下の「シート側の課題」を参照)。
+   シートを参照画像として渡している以上、シートの温度がそのまま出力に乗る
+
+**対処(プロンプト側):**
+
+```
+LIGHT TEMPERATURE LOCK — neutral daylight, roughly 5200–5600K, accurate white balance.
+Late-morning light on a bright overcast-to-clear day. NOT golden hour, NOT late
+afternoon, NOT sunset, NOT candle or lamp light. No amber cast, no honey tint,
+no warm colour grade, no sepia. Whites stay white.
+
+AIRINESS (抜け感) — the frame must feel open and full of air: bright even fill light,
+soft low-contrast shadows, generous empty space, a light and clean base of white and
+pale neutral. Do NOT make it cosy, dim, moody, or densely styled.
+Explicitly avoid: Scandinavian hygge warmth, Korean-interior warm beige styling,
+autumnal palettes, heavy honey-oak everywhere.
+
+Floor and walls: pale, neutral-toned oak or ash — not orange-brown honey oak.
+Walls are cool-leaning off-white, not cream.
+```
+
+**注意: 暖色を全部消すのではない。** 木とオフホワイトは残す。
+**消すのは「全体にかかった暖色のフィルター」と「夕方の光」。** 白が白であれば成功。
 
 ### この骨格で効いた点(実測)
 
