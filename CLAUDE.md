@@ -27,6 +27,7 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 | `docs/09_navigation_taxonomy.md` | **ナビ6分類・ヘッダー・コレクション・内部タグ**(v0.2確定) | 構造の正 |
 | `docs/10_pricing_rules.md` | 値付けルール(着地原価×3.0 / 丸め / 送料区分 / CPA上限) | 価格判断の正 |
 | `docs/11_product_registration_workflow.md` | **CKB → Shopify → フロントの商品登録ワークフロー**(画像読み取り・メタフィールド・落とし穴) | **商品を登録するときの手順書** |
+| `docs/12_price_redesign_and_multibuy.md` | **全商品価格再設計 + 数量割引Function**(Phase A 監査 / Phase B Function)の指示書 | **未着手。着手前に必読** |
 | `docs/mockups/` | 確定デザイン(受領日つき。最新1件が正 — docs/07 §3 の表を参照) | 見た目の正 |
 | `docs/brand/reference-sheets/` | **ブランドビジュアル リファレンスシート01〜05**(v0.2・PNG収録済み) | ビジュアルの正。**ただし商品画像の生成には現在使っていない(D-080)** |
 | `docs/brand/` | ロゴ(logo_terracotta.png)・商品参考写真 | ブランド素材 |

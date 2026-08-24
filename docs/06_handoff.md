@@ -1,12 +1,34 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: 2026-08-24(フェーズ転換セッション)
+> 最終更新: 2026-08-24(価格再設計タスクの起票)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
 > 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`
 > ⚠️ **2026-08-22 時点でこのテーマは `role: MAIN`(公開テーマ)。** docs は長らく「未公開」と書いていたが誤り。
 > ストア自体はパスワード保護されているため一般には見えないが、`shopify theme push` はライブテーマへの上書きになる。
 > 実行前に必ず `themes(first: 20) { nodes { id name role } }` で role を確認すること。
+
+---
+
+## ★ 次のセッションの主タスク — 全商品価格再設計 + 数量割引 Function
+
+**指示書は `docs/12_price_redesign_and_multibuy.md`。着手前に必ず全文を読む。**
+
+オーナーの意図: **恒常的な30%OFF前提の価格アンカーをやめ、「信頼できる通常価格 +
+複数購入時だけ合理的に割引(2点10% / 3点以上15%)」へ移行する。**
+
+- **Phase A** 全商品価格監査 — **READ / ANALYZE / PROPOSE ONLY。**
+  price / compare_at / tags / metafields / status / publication / discounts を**承認前に変更しない**
+- **Phase B** 数量割引 Discount Function(`cart.lines.discounts.generate.run`、
+  **PRODUCT ID 単位で数量合算**)— コードとテストまで。**本番有効化は禁止**
+
+実査でわかっている前提のズレ(docs/12 §4):
+**`compare_at_price` は全36商品 null で、ストアに30%OFF表示は存在しない。**
+現行ルールは docs/10 の「×3.0 + 20%クーポン」。
+**「30%OFF前提」がどこの話なのかをオーナーに確認してから監査に入ること。**
+
+最大の欠落は **Variant 別の CKB 原価が未記録**であること。
+`ops/products/_inventory_20260823.md` には商品あたり1値しかない。ここを埋めないと監査表が完成しない。
 
 ---
 
