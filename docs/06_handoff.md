@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: 2026-08-24(価格再設計タスクの起票)
+> 最終更新: 2026-08-24(価格監査 Phase A 実施 / Discount Function 実装)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
 
@@ -35,28 +35,43 @@ push 前に毎回 `themes(first: 20) { nodes { id name role } }` で role を確
 
 ---
 
-## ★ 次のセッションの主タスク — 全商品価格再設計 + 数量割引 Function
+## ★ 全商品価格再設計 + 数量割引 Function — **Phase A 実施済み / Phase B コード完了**
 
-**指示書は `docs/12_price_redesign_and_multibuy.md`。着手前に必ず全文を読む。**
+**指示書は `docs/12_price_redesign_and_multibuy.md`。決定は `docs/06_decisions_log.md` D-096〜D-099。**
 
-オーナーの意図: **恒常的な30%OFF前提の価格アンカーをやめ、「信頼できる通常価格 +
-複数購入時だけ合理的に割引(2点10% / 3点以上15%)」へ移行する。**
+### 成果物
 
-- **Phase A** 全商品価格監査 — **READ / ANALYZE / PROPOSE ONLY。**
-  price / compare_at / tags / metafields / status / publication / discounts を**承認前に変更しない**
-- **Phase B** 数量割引 Discount Function(`cart.lines.discounts.generate.run`、
-  **PRODUCT ID 単位で数量合算**)— コードとテストまで。**本番有効化は禁止**
+| 何 | 場所 |
+|---|---|
+| 価格監査 Phase A 本体 | `ops/products/_price_audit_20260824.md` |
+| Variant 単位 257行の台帳 | `ops/products/_price_audit_20260824_variants.csv` |
+| **Owner への CKB 原価依頼票** | `ops/products/_ckb_cost_request_20260824.md` |
+| Discount Function + テスト | `extensions/multi-buy-discount/`(17 passed / 0 failed) |
 
-**目的(オーナー確定)**: 現行の ×3.0 機械値付けを全商品再監査し、
-**割引を前提にしなくても通常価格そのものに納得感がある価格へ再設計する。**
-`compare_at_price` は全36商品 null で、ストアに30%OFF表示は存在しない — **これを正とする**。
-懸念は表示ではなく**値付け倍率**。
+**Shopify 側は1件も変更していない**(price / compare_at_price / tags / metafields /
+status / publication / discounts)。テーマファイルも触っていない。
 
-**最初の実作業は Variant 別 CKB 原価の再取得**(オーナー承認済み)。
-`ops/products/_inventory_20260823.md` には商品あたり1値しかない。
-デュオ / セル2種 / ピボ / ボア / ハル / ブランケット2種 を優先し、
-キャットタワー・キャットハンモックは CKB から新規取得する。
-**現時点の ×7〜×10 の倍率は Variant 原価欠落による可能性が高く、値下げ推奨の根拠に使わない。**
+### 次のセッションが最初に読むべきこと
+
+1. ⛔ **Variant 別 CKB 原価は、この実行環境からは取得できない(D-096)。**
+   Shopify に原価(`unitCost` 全 null)・重量(全 0kg)・価格履歴が無く、
+   `ckb.jp` に到達できず、認証情報も無い。**Owner が依頼票を埋めるまで新価格は確定できない。**
+   **同じ調査を繰り返さないこと。** 依頼票は優先度1(11商品62 Variant)/ 優先度2(10商品113 Variant)
+2. ✅ **§6 の ×7〜×10 は原価記録の取り違えだった(D-097)。値下げ推奨は0件。**
+   `_variant_decisions_20260823.md` の削除ログで9商品が説明できる。
+   **説明がつかないのは フラワー フロアクッション(×6.08)だけ。最優先で実測**
+3. ⚠️ **アブストラクト オブジェは ¥4,980〜¥58,980 の21種が1商品に同居。** 価格以前に構成の判断が要る
+4. ⚠️ **ストアに Discount は0件。** docs/10 §3 の「現行クーポン20%OFF」は事実と違う
+5. ⚠️ **送料無料しきい値はストア実設定 ¥7,700 / トップ表示 ¥15,000(D-099)。**
+   しきい値は**割引後の小計**で判定されるので、数量割引より先に一本化する
+
+### Owner 判断待ち(承認まで動かさない)
+
+1. CKB Variant 原価の提供(`_ckb_cost_request_20260824.md`)
+2. アブストラクト オブジェをどうするか(分割 / 非掲載 / 一部だけ残す)
+3. 送料無料しきい値を ¥7,700 と ¥15,000 のどちらに寄せるか
+4. まとめ買い対象を推奨13商品で確定してよいか(要確認6商品の扱い)
+5. 判定方法を **`custom.multi_buy_eligible`(boolean metafield)** にしてよいか(D-098)
 
 ---
 
