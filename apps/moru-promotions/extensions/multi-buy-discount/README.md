@@ -110,7 +110,11 @@ shopify app deploy --allow-updates
 
 ### ⛔ 現在ブロックされている(2026-08-24)
 
-Owner は **CI トークン方式**を選択したが、**`SHOPIFY_CLI_PARTNERS_TOKEN` がまだ環境に無い。**
+Owner は **CI トークン方式**を選択したが、トークンがまだ環境に無い。
+
+⚠️ **訂正: `SHOPIFY_CLI_PARTNERS_TOKEN` は古い方式で、Partner Dashboard での新規発行は廃止された。**
+正しくは Dev Dashboard の **App Automation Token** を作り、環境変数名は **`SHOPIFY_APP_AUTOMATION_TOKEN`**。
+**Owner 向けの手順は `apps/moru-promotions/DEPLOY_GUIDE.md`。**
 
 | 確認 | 結果 |
 |---|---|
@@ -123,7 +127,8 @@ Owner は **CI トークン方式**を選択したが、**`SHOPIFY_CLI_PARTNERS_
 **Function は Admin API からは登録できない**(`shopifyFunctions` は読み取り専用。
 アプリの deploy を通してしかストアに載らない)。Shopify MCP の `graphql_mutation` でも代替できない。
 
-→ **`SHOPIFY_CLI_PARTNERS_TOKEN` を環境変数に入れてもらえれば、上の2コマンドで完了する。**
+→ **`SHOPIFY_APP_AUTOMATION_TOKEN` が環境に入り、Client ID を教えてもらえれば完了する。**
+Client ID が分かれば `shopify app config link`(対話式)は不要で、`shopify app deploy --allow-updates` だけで済む。
 
 ### deploy 後に報告すること(Owner 指定)
 
