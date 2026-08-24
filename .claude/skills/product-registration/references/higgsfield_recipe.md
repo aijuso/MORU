@@ -43,16 +43,26 @@
 ```
 REFERENCE ROLES — follow strictly.
 
-IMAGE 1 = THE PRODUCT. Reproduce this exact <商品> faithfully: <構造を具体的に列挙>.
-Do not redesign it. Do not alter its proportions, <その商品で崩れやすい要素>.
+IMAGE 1 IS A PRODUCT-IDENTITY REFERENCE ONLY. Take from it ONLY the object itself:
+its construction, proportions, materials, colour and finish — <構造を具体的に列挙>.
+Reproduce that object faithfully; do not redesign it or alter its proportions.
+<素材ロック: 例 every tube of the frame is the SAME bright polished silver chrome.
+ No brass, no gold, no bronze, no mixed metals anywhere on the chair.>
+IGNORE EVERYTHING ELSE IN IMAGE 1. It is a supplier studio shot. Do NOT reuse its
+background, its bare wall, its skirting board, its flooring, its shadow, its lighting
+direction, its camera height, its focal length, its framing or its crop. The output
+must NOT look like that photograph re-lit — it must be a different photograph taken
+in a different, fully furnished room.
 
 IMAGE 2 and IMAGE 3 = MORU'S OFFICIAL BRAND DESIGN STANDARD (brand reference sheets).
-Use them ONLY as the photographic and styling standard: quality of light, airiness,
-room styling, framing discipline. NEVER copy their layout, grid, captions, Japanese text,
-logos, colour swatches, or any of the products shown inside them.
+THE ROOM AND THE CAMERA COME FROM THESE, not from IMAGE 1: their quality of daylight,
+their airy furnished interiors, their styling density and their framing discipline.
+But NEVER copy their layout, grid, captions, Japanese text, logos, colour swatches,
+or any of the products shown inside them.
 The output must be one single clean photograph, never a sheet or collage.
 
-SCENE — <1枚の写真として書く>
+SCENE — <家具のある実際の部屋として書く。窓・サイドボード・額・植物・ラグまで具体的に>
+CAMERA — <高さと画角を必ず指定する。指定しないと商品写真のカメラを引き継ぐ>
 COLOUR — <オフホワイト+木を基調 / アクセントは1色だけ / 色は固定しない>
 COMPOSITION — <主役・余白・アングル>
 RENDERING — clean editorial interior photography, bright, airy, natural daylight,
@@ -61,6 +71,39 @@ STRICTLY EXCLUDE — any text, lettering, captions, watermarks, logos; white cut
 studio background; people; animals (指定がある場合を除く); cat-ear or paw-print motifs;
 extra copies of the product.
 ```
+
+### ⚠️ 最重要: IMAGE 1 の「範囲」を切らないと環境まで引き継ぐ
+
+**1回目の失敗。** 「IMAGE 1 = THE PRODUCT」とだけ書いたら、**商品だけでなく撮影環境まで再現された。**
+仕入れ元スタジオの淡い壁・幅木・オークのフローリング・カメラの高さ・画角が、そのまま出力に残った。
+背景に植物とラグを足しただけの「同じ写真の焼き直し」になり、ブランドの世界観にならない。
+
+**対処(2回目で解消):**
+
+1. **`IMAGE 1 IS A PRODUCT-IDENTITY REFERENCE ONLY`** と書き、取るものを
+   「物体の構造・比率・素材・色・仕上げ」だけに限定する
+2. **`IGNORE EVERYTHING ELSE IN IMAGE 1`** を独立した行で書き、
+   **背景・壁・幅木・床・影・光の向き・カメラ高・焦点距離・フレーミング・クロップを個別に列挙して否定する**
+3. **`THE ROOM AND THE CAMERA COME FROM IMAGE 2/3`** と、部屋とカメラの出所を明示して移し替える
+4. **`CAMERA:` ブロックで高さと画角を能動的に指定する。** 書かないと商品写真のカメラに引きずられる
+5. SCENE は「家具のある実際の部屋」として具体的に書く(窓・サイドボード・額・植物・ラグ)
+
+### ⚠️ 素材の色が転ぶ: 金属仕上げは1行でロックする
+
+**2回目の残課題。** 後ろ脚だけ真鍮色に転んだ。周囲の木や暖色光に引っぱられたと思われる。
+
+**対処(3回目で解消): 部位を列挙して同一仕上げだと言い切り、除外にも書く。**
+
+```
+METAL FINISH LOCK: every tube of the frame — front legs, rear legs, stretchers,
+back uprights, seat rim — is the SAME bright polished silver chrome.
+No brass, no gold, no bronze, no warm metal, no mixed metals anywhere on the chair.
+...
+STRICTLY EXCLUDE: ...; brass or gold coloured chair tubing.
+```
+
+**一般化: 商品の「一部分だけ色が転びやすい要素」(金属・木部・金具)は、
+部位を列挙して同一だと明言し、`STRICTLY EXCLUDE` にも否定形で入れる。**
 
 ### この骨格で効いた点(実測)
 
@@ -80,6 +123,9 @@ extra copies of the product.
 | 文字の混入 | **なし** |
 | シートのコピー | **なし**(除外指示が効いた) |
 | 惜しい点 | 案A はラグが右端で切れた。案B は円形ラグが収まり構図が良い → **count:2 で選ぶ価値がある** |
+
+**3回まわして完成した。** v1 = 環境の引き継ぎ / v2 = 環境は解消・金属が転ぶ / v3 = 両方解消。
+**アクセント色は毎回モデルが変えてきた**(v1 マスタード → v3 モスグリーン)。色を固定しない方針が効いている。
 
 ## まだ検証していないこと(次にやる人へ)
 
