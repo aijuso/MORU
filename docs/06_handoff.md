@@ -3,10 +3,26 @@
 > 最終更新: 2026-08-24(価格再設計タスクの起票)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
-> 作業用テーマ: **MORU LIVING (Skeleton構築)** / theme id `166203621616`
-> ⚠️ **2026-08-22 時点でこのテーマは `role: MAIN`(公開テーマ)。** docs は長らく「未公開」と書いていたが誤り。
-> ストア自体はパスワード保護されているため一般には見えないが、`shopify theme push` はライブテーマへの上書きになる。
-> 実行前に必ず `themes(first: 20) { nodes { id name role } }` で role を確認すること。
+
+## ⚠️ テーマの運用ルール(最初に読む・2026-08-24 実査で確認)
+
+| テーマ | theme id | role | 扱い |
+|---|---|---|---|
+| **MORU Frontend Dev** | `166341181680` | UNPUBLISHED | ✅ **フロント作業はここに対して行う** |
+| MORU LIVING (Skeleton構築) | `166203621616` | **MAIN(公開テーマ)** | 🚫 **write / publish 禁止** |
+| Horizon | `166127468784` | UNPUBLISHED | 旧プロジェクト。触らない |
+| Development (87442c-vm) | `166203523312` | DEVELOPMENT | CLI が作った一時テーマ |
+
+**禁止事項:**
+
+- **MAIN(`166203621616`)へのテーマ書き込みを行わない。** `--allow-live` を使わない
+- **テーマの publish を行わない**(どのテーマからも)
+- 本書の過去セクションには `--theme 166203621616 --allow-live` で push した記録が残っているが、
+  **それは 2026-08-23 時点の運用。現在は無効。踏襲しない**
+
+**作業手順:** commit → `git push` → **`shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166341181680`**。
+push 前に毎回 `themes(first: 20) { nodes { id name role } }` で role を確認すること
+(id は入れ替わりうる。**名前ではなく role を見て MAIN を避ける**)。
 
 ---
 
@@ -22,13 +38,16 @@
 - **Phase B** 数量割引 Discount Function(`cart.lines.discounts.generate.run`、
   **PRODUCT ID 単位で数量合算**)— コードとテストまで。**本番有効化は禁止**
 
-実査でわかっている前提のズレ(docs/12 §4):
-**`compare_at_price` は全36商品 null で、ストアに30%OFF表示は存在しない。**
-現行ルールは docs/10 の「×3.0 + 20%クーポン」。
-**「30%OFF前提」がどこの話なのかをオーナーに確認してから監査に入ること。**
+**目的(オーナー確定)**: 現行の ×3.0 機械値付けを全商品再監査し、
+**割引を前提にしなくても通常価格そのものに納得感がある価格へ再設計する。**
+`compare_at_price` は全36商品 null で、ストアに30%OFF表示は存在しない — **これを正とする**。
+懸念は表示ではなく**値付け倍率**。
 
-最大の欠落は **Variant 別の CKB 原価が未記録**であること。
-`ops/products/_inventory_20260823.md` には商品あたり1値しかない。ここを埋めないと監査表が完成しない。
+**最初の実作業は Variant 別 CKB 原価の再取得**(オーナー承認済み)。
+`ops/products/_inventory_20260823.md` には商品あたり1値しかない。
+デュオ / セル2種 / ピボ / ボア / ハル / ブランケット2種 を優先し、
+キャットタワー・キャットハンモックは CKB から新規取得する。
+**現時点の ×7〜×10 の倍率は Variant 原価欠落による可能性が高く、値下げ推奨の根拠に使わない。**
 
 ---
 
@@ -108,7 +127,7 @@ Tier1 5商品で実際に通してから手順書にした。
 
 ## 0-A. 2026-08-23 深夜 — **フロント反映(ナビ7分類・新着の自動化)**
 
-> ✅ **ライブテーマ(#166203621616)へ push 済み**(2026-08-23)。`theme check` 73ファイル無指摘。
+> ✅ **(2026-08-23 当時の運用)ライブテーマ(#166203621616)へ push 済み**。**現在この宛先は禁止。** `theme check` 73ファイル無指摘。
 > `shopify theme dev` のプレビューでトップ・全コレクションページの描画を確認済み。
 
 ### ⚠️ push 前に必ずやること(この回で危うく壊しかけた)
@@ -117,7 +136,8 @@ Tier1 5商品で実際に通してから手順書にした。
 そのまま `theme push` すると**ロゴ・フォント・ヒーロー画像・アナウンス文が消える。**
 
 ```
-shopify theme pull --theme 166203621616 --path <tmp>   # ライブを取得
+shopify theme pull --theme 166341181680 --path <tmp>   # 作業テーマ(Frontend Dev)を取得
+# ライブ(166203621616)の設定を参照したいときは pull のみ可。push は禁止
 diff -rq . <tmp>                                        # 自分が触っていない差分を洗い出す
 # config/settings_data.json / sections/*-group.json / templates/*.json / locales/*.json
 # はライブ側を正として取り込んでから、自分の変更を載せ直す
@@ -300,7 +320,7 @@ docs/07 §4 の手順で PC(1440px)/ モバイル(390px)の**実描画まで確�
 
 | 事象 | 実際の原因 |
 |---|---|
-| テーマ `166203621616` は**公開テーマ(MAIN)** | docs が「未公開」と書いていたのが誤り。push 前に必ず role 確認(docs/07 §2) |
+| テーマ `166203621616` は**公開テーマ(MAIN)** | **書き込み禁止。**フロント作業は `166341181680`(MORU Frontend Dev / UNPUBLISHED)に対して行う。push 前に必ず role 確認(docs/07 §2) |
 | 検索モーダルの候補が出ない | **Predictive Search API は日本語非対応**。`/search/suggest` が 417。通常の検索インデックスから出すフォールバックに変更済み |
 | 商品ページが404 | 仕入れアプリ経由の商品は **POSチャネルにしか公開されない**ことがある。`publishablePublish` でオンラインストアへ公開 |
 | スウォッチが灰色 | `value.swatch.color` は **API から直接書けない**。商品メタフィールド `custom.swatch_colors` を読む実装を追加して解決 |
@@ -332,7 +352,7 @@ Skeleton Theme をベースに、**トップ / 商品 / カテゴリー / カー
 3. `shopify theme check` と Dev MCP `validate_theme` を通す
    (このコンテナに Shopify CLI は無い。`npm i @shopify/cli` で入れれば `shopify theme check` が使える)
 4. git commit → git push
-5. `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166203621616 --allow-live` で反映
+5. `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166341181680` で反映(**MAIN への push・`--allow-live` は禁止**)
    **※ 公開テーマなので `--allow-live` が必要。push 前に role を確認する(docs/07 §2)**
 6. Admin API で MD5 照合(docs/07 §1)→ テーマエディタのリンクをユーザーに渡す
 
@@ -723,7 +743,8 @@ docs/00 第12章は「『即納』『国内発送』と誤認させない」と�
 
 ## 8. よく使うリンク
 
-- テーマエディタ: https://rgy5ee-fv.myshopify.com/admin/themes/166203621616/editor
+- テーマエディタ(**作業用** MORU Frontend Dev): https://rgy5ee-fv.myshopify.com/admin/themes/166341181680/editor
+- テーマエディタ(MAIN / 参照のみ): https://rgy5ee-fv.myshopify.com/admin/themes/166203621616/editor
 - 商品ページ: 上記 + `?previewPath=/products/asset-pack-108447793154-example-product-4`
 - カテゴリーページ: 上記 + `?previewPath=/collections/asset-pack-108447793154-example-products`
 - カート: 上記 + `?previewPath=/cart`

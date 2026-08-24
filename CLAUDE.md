@@ -91,8 +91,10 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 - **ブランチは trunk 1本のみ。** 現行 trunk は `docs/06_handoff.md` 冒頭に記載。新しい作業ブランチは
   必ず trunk から派生させる(詳細は docs/07 §2)
 - **ストアは GitHub 連携していない。** git への push ではストアは変わらない。
-  反映は `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166203621616` のみ。
+  反映は `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166341181680`(**MORU Frontend Dev / UNPUBLISHED**)。
   順序は必ず commit → git push → theme push
+- **`166203621616`(MORU LIVING (Skeleton構築))は `role: MAIN` の公開テーマ。書き込み・publish 禁止。**
+  `--allow-live` を使わない。push 前に毎回 `themes(first: 20) { nodes { id name role } }` で role を確認する
 - **参考デザインを受け取ったら、実装前に `docs/mockups/` へコミットする**(docs/07 §3)。
   チャットの画像は次のセッションから見えない
 - セクション命名: `sections/moru-*.liquid`

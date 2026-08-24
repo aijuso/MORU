@@ -59,7 +59,7 @@ Admin API でストア側の MD5 を取り、作業ツリーと突き合わせ�
 
 ```graphql
 query {
-  theme(id: "gid://shopify/OnlineStoreTheme/166203621616") {
+  theme(id: "gid://shopify/OnlineStoreTheme/166341181680") {   # 作業テーマ MORU Frontend Dev
     files(first: 50) { nodes { filename checksumMd5 } pageInfo { hasNextPage endCursor } }
   }
 }
@@ -98,19 +98,25 @@ git に push してもストアは1バイトも変わらない。これは確認
 反映は Shopify CLI のみ:
 
 ```bash
-shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166203621616
+shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166341181680
 ```
 
-**⚠️ 2026-08-22 追記: theme 166203621616 は `role: MAIN`(公開テーマ)になっている。**
-それまでの docs は「未公開」と書いていたが誤りだった。push はライブテーマの上書きになるため、
-CLI は `--allow-live` を要求する。**push の前に必ず role を確認する:**
+**⚠️ 2026-08-24 更新: 宛先は `166341181680`(MORU Frontend Dev / UNPUBLISHED)。**
+
+| テーマ | id | role | 扱い |
+|---|---|---|---|
+| **MORU Frontend Dev** | `166341181680` | UNPUBLISHED | ✅ フロント作業の宛先 |
+| MORU LIVING (Skeleton構築) | `166203621616` | **MAIN** | 🚫 write / publish 禁止 |
+
+- **MAIN への書き込みを行わない。`--allow-live` を使わない。**
+- **どのテーマも publish しない。**
+- **push の前に必ず role を確認する**(id は入れ替わりうる。名前ではなく role で判定):
 
 ```graphql
 query { themes(first: 20) { nodes { id name role } } }
 ```
 
-`MAIN` だった場合、勝手に上書きしない。ユーザーに確認するか、
-`themeDuplicate` で未公開テーマを作ってそちらへ push し、確認後に公開切替する。
+宛先にしようとしたテーマが `MAIN` だった場合は、書き込まずにユーザーへ確認する。
 
 **順序は必ず commit → git push → theme push。** 逆にしない。
 「ストアだけ直して git は後で」を一度でもやると、次のセッションが今回と同じ誤認をする。
@@ -257,7 +263,7 @@ node --check bundle.js
 ### テーマ反映の制約
 
 Admin側 Shopify MCP の `graphql_mutation` は**公開(MAIN)テーマへのファイル書き込みをブロックする**。
-現在のテーマ `166203621616` は MAIN なので、反映は CLI の
-`shopify theme push --allow-live` **一択**。これはデバイス認証(有効期限15分)が要るため、
+フロント作業の宛先は `166341181680`(UNPUBLISHED)。反映は CLI の
+`shopify theme push --theme 166341181680` **一択**(MAIN への `--allow-live` は禁止)。これはデバイス認証(有効期限15分)が要るため、
 **push のタイミングでユーザーが席にいる必要がある**。
 実装だけなら承認不要なので、「まとめて実装 → 最後に一度だけ承認」が効率的。
