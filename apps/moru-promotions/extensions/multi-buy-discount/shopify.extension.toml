@@ -12,6 +12,6 @@ description = "同一 Product の合計数量が2点で10%OFF / 3点以上で15%
   export = "cartLinesDiscountsGenerateRun"
 
   [extensions.build]
-  command = ""
+  command = "npm run build"
   path = "dist/function.wasm"
   watch = [ "src/**/*.js", "src/**/*.graphql" ]

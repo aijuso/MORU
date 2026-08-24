@@ -3,13 +3,14 @@
 # Function ごとにアプリを作らず、このアプリ配下に Extension として並べる方針(Owner 決定)。
 # 想定: multi-buy / quantity discount, pair・set discount, seasonal sale 等
 #
-# ⚠️ `client_id` は `shopify app config link` が Partner org でアプリを作る/紐づけるときに
-#    自動で書き込む。**手で埋めない。** 埋まるまで `shopify app *` コマンドは
-#    「[client_id]: Required」で止まる(これは正常)。
+# `client_id` は Owner が Dev Dashboard で作成した "MORU Promotions" アプリのもの
+# (2026-08-24 受領)。秘密情報ではない。これが入っているので対話式の
+# `shopify app config link` は不要で、`shopify app deploy` を直接叩ける。
 #
 # このディレクトリはテーマ(リポジトリ直下)とは独立している。
 # `shopify theme *` はここを見ない。
 
+client_id = "7e71fcf4cf775c9c2568b1783bed5cfc"
 name = "MORU Promotions"
 application_url = "https://example.com"
 embedded = false

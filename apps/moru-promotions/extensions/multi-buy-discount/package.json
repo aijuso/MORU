@@ -1,0 +1,11 @@
+{
+  "name": "moru-multi-buy-discount",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "shopify app function build",
+    "typegen": "shopify app function typegen",
+    "test": "node tests/run_tests.mjs"
+  }
+}

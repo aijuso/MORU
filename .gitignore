@@ -14,8 +14,11 @@ node_modules/
 
 # `npm i @shopify/cli` は theme check を動かすためのローカル開発ツール。
 # テーマ本体の依存ではないので、納品ZIPに混ざらないよう追跡しない(docs/07 §6)
-package.json
-package-lock.json
+#
+# ⚠️ 先頭の `/` が要る。付けないと **どの階層の package.json も無視**されてしまい、
+#    apps/moru-promotions/ 配下のアプリ定義が黙ってコミットから漏れる(2026-08-24 に実際に漏れた)
+/package.json
+/package-lock.json
 
 ## Release files
 release

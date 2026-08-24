@@ -1,0 +1,15 @@
+{
+  "name": "moru-promotions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MORU LIVING の販促・割引用 Shopify Functions をまとめる内部アプリ",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "node extensions/multi-buy-discount/tests/run_tests.mjs",
+    "build": "shopify app build",
+    "deploy": "shopify app deploy --allow-updates"
+  },
+  "devDependencies": {
+    "@shopify/cli": "^4.7.0"
+  }
+}
