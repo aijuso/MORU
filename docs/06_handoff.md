@@ -46,7 +46,7 @@ push 前に毎回 `themes(first: 20) { nodes { id name role } }` で role を確
 | 価格監査 Phase A 本体 | `ops/products/_price_audit_20260824.md` |
 | Variant 単位 257行の台帳 | `ops/products/_price_audit_20260824_variants.csv` |
 | **Owner への CKB 原価依頼票** | `ops/products/_ckb_cost_request_20260824.md` |
-| Discount Function + テスト | `extensions/multi-buy-discount/`(17 passed / 0 failed) |
+| Discount Function + テスト | `apps/moru-promotions/extensions/multi-buy-discount/`(17 passed / 0 failed) |
 
 **Shopify 側は1件も変更していない**(price / compare_at_price / tags / metafields /
 status / publication / discounts)。テーマファイルも触っていない。

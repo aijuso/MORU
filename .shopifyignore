@@ -12,6 +12,6 @@
 # Ignore templates and sections with a regular expression:
 #   /(templates|sections)/.*\.json/
 
-# Discount Function(テーマではない。theme push の対象にしない)
-extensions/
+# Discount Function / 運用メモ(テーマではない。theme push の対象にしない)
+apps/
 ops/

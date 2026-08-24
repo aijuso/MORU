@@ -1,0 +1,36 @@
+# MORU Promotions — MORU LIVING の販促・割引用 Shopify Functions をまとめる内部アプリ
+#
+# Function ごとにアプリを作らず、このアプリ配下に Extension として並べる方針(Owner 決定)。
+# 想定: multi-buy / quantity discount, pair・set discount, seasonal sale 等
+#
+# ⚠️ `client_id` は `shopify app config link` が Partner org でアプリを作る/紐づけるときに
+#    自動で書き込む。**手で埋めない。** 埋まるまで `shopify app *` コマンドは
+#    「[client_id]: Required」で止まる(これは正常)。
+#
+# このディレクトリはテーマ(リポジトリ直下)とは独立している。
+# `shopify theme *` はここを見ない。
+
+name = "MORU Promotions"
+application_url = "https://example.com"
+embedded = false
+
+[access_scopes]
+# 最小権限。増やすときは理由を README に書く。
+#
+#   write_discounts — Function を割引として登録し、のちに Automatic Discount を作るのに必要。
+#                     read_discounts は write に含まれる
+#   read_products   — input query が Product の merchant-owned metafield
+#                     `custom.multi_buy_eligible` を読むため
+#
+# 付けていないもの(要らない): write_products / read_orders / read_customers /
+# read_inventory / write_themes / network access
+scopes = "read_products,write_discounts"
+
+[auth]
+redirect_urls = [ "https://example.com/auth/callback" ]
+
+[webhooks]
+api_version = "2025-10"
+
+[build]
+include_config_on_deploy = true
