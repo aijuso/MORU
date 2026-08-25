@@ -4,8 +4,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "shopify app function build",
     "typegen": "shopify app function typegen",
     "test": "node tests/run_tests.mjs"
+  },
+  "dependencies": {
+    "@shopify/shopify_function": "^2.0.1"
   }
 }

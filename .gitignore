@@ -23,3 +23,7 @@ node_modules/
 ## Release files
 release
 *.zip
+
+# Shopify Function のビルド成果物(javy が生成する wasm)。
+# deploy のたびに再生成されるのでコミットしない
+apps/moru-promotions/extensions/*/dist/
