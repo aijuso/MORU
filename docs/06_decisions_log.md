@@ -524,7 +524,12 @@ Discount は作っていない(`discountNodes` は0件のまま)。
 | 4 | `graphql-code-generator` が落ちる | CLI は JS ビルド時に必ず typegen を走らせる。この Function は生成型に依存しないので `typegen_command = "true"`(no-op)にした |
 | 5 | CLI が外に出られない | **この実行環境の Shopify CLI はプロキシを読まない。** `NODE_USE_ENV_PROXY=1` と `NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt` を付けないと Shopify への通信が無言でハングする |
 
-**まだ残っていること: ストアの `shopifyFunctions` は deploy 25分後も 0件。**
-app version は active なので、**`MORU Promotions` が `rgy5ee-fv.myshopify.com` に
-インストールされていない可能性が高い。** Admin API の `appInstallations` は権限が無く確認できない。
-**Owner に Dev Dashboard → Home → Install app を確認してもらう。**
+**ストアへの反映は確認済み。** 管理画面のアプリ詳細で
+Functions が **「利用可能: ディスカウント」**、アクティブ **0件**(= Discount 未作成)。意図どおり。
+
+**Admin API の `shopifyFunctions` では確認できない。**
+このクエリは「問い合わせているアプリ自身が持つ Function」しか返さない
+(*Returns Shopify Functions owned by the querying API client installed on the shop*)。
+Claude Code の Shopify MCP は別アプリなので**常に0件になる。**
+2026-08-25 にこれを「未インストールの可能性が高い」と誤判定した。**同じ誤判定をしないこと。**
+確認は管理画面 → 設定 → アプリと販売チャネル → MORU Promotions → Functions で行う。

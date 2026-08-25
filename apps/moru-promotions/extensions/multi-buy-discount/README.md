@@ -119,7 +119,8 @@ NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt \
 | scopes | `read_products,write_discounts` |
 | テスト | 17 passed / 0 failed |
 | ストアの `discountNodes` | **0件(意図どおり)** |
-| ストアの `shopifyFunctions` | **0件 — 未解決。下記参照** |
+| ストアの Function | **載っている**(管理画面 → アプリ → MORU Promotions →
+  Functions が「利用可能: ディスカウント」。アクティブ0件 = Discount 未作成) |
 
 ### ⚠️ ビルドで踏んだ罠(D-100)。踏み直さないこと
 
@@ -130,14 +131,19 @@ NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt \
 | TOML の `export` を camelCase にする | Wasm Component Model の制約で kebab-case 必須。JS 側の camelCase とは CLI が自動で対応づける |
 | プロキシ変数なしで CLI を叩く | この実行環境の Shopify CLI は `HTTPS_PROXY` を読まない。`NODE_USE_ENV_PROXY=1` と `NODE_EXTRA_CA_CERTS` が要る。無いと無言でハングする |
 
-### 未解決: ストアに Function が出てこない
+### ⚠️ `shopifyFunctions` クエリでは確認できない
 
-deploy 25分後も `shopifyFunctions` は0件。app version は active なので、
-**`MORU Promotions` が `rgy5ee-fv.myshopify.com` にインストールされていない可能性が高い。**
-Admin API の `appInstallations` は権限が無く、こちらからは確認できない。
+Admin API の `shopifyFunctions` は
+**「問い合わせているアプリ自身が持つ Function」しか返さない**(公式ドキュメント:
+*Returns Shopify Functions owned by the querying API client installed on the shop*)。
 
-→ **Owner に Dev Dashboard → 該当アプリ → Home → Install app を確認してもらう。**
-(`DEPLOY_GUIDE.md` の ②-2)
+Claude Code が使う Shopify MCP は MORU Promotions とは別のアプリなので、
+**このクエリは正常に deploy できていても永久に0件を返す。**
+「0件だから載っていない」と判断しないこと(2026-08-25 に一度誤判定した)。
+
+確認は **Shopify 管理画面 → 設定 → アプリと販売チャネル → MORU Promotions → Functions**。
+「利用可能: ディスカウント」と出ていれば載っている。
+「0 件がアクティブ」は Discount を作っていないだけで正常。
 
 ## Discount combination(docs/12 §7-6)
 
