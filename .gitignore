@@ -27,4 +27,3 @@ release
 # Shopify Function のビルド成果物(javy が生成する wasm)。
 # deploy のたびに再生成されるのでコミットしない
 apps/moru-promotions/extensions/*/dist/
-ops/products/_price_audit_variants_computed.csv

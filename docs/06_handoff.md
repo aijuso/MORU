@@ -75,12 +75,23 @@ Claude Code の Shopify MCP は別アプリなので**常に0件**になる。**
 | **在庫・販売可能性の全 Variant 監査** | `ops/products/_inventory_audit_20260825.md` + `_inventory_audit_20260825.csv`(257行) |
 | **Pages / Policy 監査** | `ops/_pages_policy_audit_20260825.md` |
 | **ペア採算ツール** | `ops/tools/pair_audit.py` + `ops/products/_pair_definitions.csv` |
+| **価格監査(原価223件反映)** | `ops/products/_price_audit_20260825.md` |
+| 商品単位サマリ | `ops/products/_price_summary_by_product.csv`(`ops/tools/product_summary.py` で生成) |
+
+### 🔴 いま Owner に決めていただきたい最重要2件(D-113 / D-114)
+
+1. **docs/10 の「×3.0」と docs/12 の「15%OFF後 ×2.6」が両立しない。**
+   ×3.0 × 0.85 = ×2.55。**ルールどおりに値付けした商品は15%OFFで必ず基準を割る。**
+   → 推奨は「15%OFF を出す商品だけ ×3.06 以上にする」。**実際に効くのは3商品だけ**
+2. **PAIR 第一候補が P-8 → P-6 に入れ替わる。**ソラ キャットハンモックが唯一 ×3.0 を割っており
+   (×2.42)、P-8 は ×2.12 で基準割れ。**ソラを ¥25,980 にすれば P-8 も成立する**
 
 ### Owner 待ち(ここが止まっている)
 
-1. **CKB Variant 原価**(`ops/products/_ckb_cost_request_20260824.md`)。
-   入ったら `ops/products/_ckb_costs.csv` に写して `python3 ops/tools/price_audit.py`。
-   **入力済みの商品から順に監査が完成する。全件そろうのを待たない**
+1. ✅ **CKB 商品原価 223 Variant を反映済み(2026-08-25)。**監査は
+   `ops/products/_price_audit_20260825.md`。**未取得は34 Variant / 3商品**
+   (アブストラクト21 / ルナ ウォールライト8 / セル モジュール5)。
+   ⚠️ **着地原価は実測ではなく推定**(`ckb_cost + ship_est`)。送料・手数料の実測値は未取得(D-112)
 2. **返品条件の決定**(A: 7日・不良のみ / B: 30日・お客様都合可)。**Shopify に返金ポリシーが1件も無い**(D-109・D-110)
 3. **特商法の空欄9項目**+ ストア設定の電話番号(すべて法定必須)
 4. **プライバシー・利用規約の本文**(ページが白紙)→ **5ページの公開**
