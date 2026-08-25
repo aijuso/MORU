@@ -35,10 +35,15 @@ CLASS  = P('_product_classification_20260825.csv')
 PAIRS  = P('_pair_definitions.csv')
 OUT_V  = P('_price_plan_variants_20260825.csv')
 OUT_P  = P('_price_plan_by_product_20260825.csv')
+OUT_S  = P('_refund_scenarios_20260825.csv')
 
 # docs/10 §4。いずれも実測ではない。
 PAYMENT_FEE_RATE = 0.036   # 仮置き(実測なし)
 CPA_RATIO        = 0.70
+# 30日間安心保証(D-125)の返金引当。**実績がないための暫定引当**であって
+# 「返品率が 5% である」という主張ではない。中心値 5% で判断し、3% / 8% も併記する。
+REFUND_RESERVES  = (0.03, 0.05, 0.08)
+REFUND_CENTRAL   = 0.05
 FREE_SHIP        = 7700    # 送料無料しきい値(割引後 subtotal で判定)
 
 # docs/13 のスクリーニング目安。Hard Gate にしない。
@@ -56,18 +61,26 @@ def num(v):
     except ValueError: return None
 
 
-def econ(price, landed):
-    """1点あたりの採算。landed が無ければ None を返す。"""
+def econ(price, landed, refund=REFUND_CENTRAL):
+    """1点あたりの採算。landed が無ければ None を返す。
+
+    refund は 30日間安心保証の返金引当率。原則返品不要で返金するため、
+    **引当は売価だけでなく着地原価も失う前提**で置く(返ってこない在庫)。
+        引当額 = (売価 + 着地原価) × refund
+    """
     if landed is None or price is None:
         return None
     gross = price - landed
     fee   = price * PAYMENT_FEE_RATE
-    cm    = gross - fee
+    reserve = (price + landed) * refund
+    cm    = gross - fee - reserve
     return {
         'price': round(price),
         'gross': round(gross),
         'gm':    gross / price if price else 0.0,
         'fee':   round(fee),
+        'reserve': round(reserve),
+        'refund_rate': refund,
         'cm':    round(cm),
         'roas':  (price / cm) if cm > 0 else None,
         'cpa':   round(cm * CPA_RATIO) if cm > 0 else 0,
@@ -136,6 +149,9 @@ def main():
         elif landed is None:
             src = '原価待ち'
 
+        # D-126: ハル 2脚セットは Summer Sale から外す。
+        # セット価格に既にセットメリットが入っているため、その上に 10% を重ねない。
+        sale_excluded = (p == 'ハル ダイニングチェア' and '2脚' in v)
         if cls in ('SUMMER_SALE', 'MULTI_BUY'):
             hit = pmap.get((p, cur))
             if hit is None:
@@ -152,13 +168,13 @@ def main():
             'ship_bucket': r['ship_bucket'], 'ship_est': int(ship_est) if ship_est else '',
             'ckb_cost': int(c['ckb']) if c.get('ckb') is not None else '',
             '推定着地原価': int(landed) if landed is not None else '原価待ち',
-            'cost_source': src,
+            'cost_source': src, 'Sale除外': 'YES(セット価格のため)' if sale_excluded else '',
             '現価格': cur, '新通常価格': new, '備考': note,
         }
 
         # シナリオ。適用しない施策は空欄にする(捏造した数字を並べない)。
         scen = {'通常': 1.00}
-        if cls == 'SUMMER_SALE':
+        if cls == 'SUMMER_SALE' and not sale_excluded:
             scen['SummerSale10'] = 0.90
         if cls == 'MULTI_BUY':
             scen['MB2点'] = 0.90
@@ -170,12 +186,12 @@ def main():
 
         for label, mul in (('通常',1.0),('SummerSale10',0.90),('MB2点',0.90),('MB3点以上',0.85),('PAIR15',0.85)):
             if label not in scen:
-                for k in ('売価','粗利額','粗利率','限界利益','BE_ROAS','CPA上限','倍率'):
+                for k in ('売価','粗利額','粗利率','限界利益','BE_ROAS','CPA上限','返金引当','倍率'):
                     row[f'{label}_{k}'] = ''
                 continue
             e = econ(new * mul, landed)
             if e is None:
-                for k in ('売価','粗利額','粗利率','限界利益','BE_ROAS','CPA上限','倍率'):
+                for k in ('売価','粗利額','粗利率','限界利益','BE_ROAS','CPA上限','返金引当','倍率'):
                     row[f'{label}_{k}'] = '原価待ち'
                 continue
             row[f'{label}_売価']     = e['price']
@@ -184,6 +200,7 @@ def main():
             row[f'{label}_限界利益'] = e['cm']
             row[f'{label}_BE_ROAS']  = f"{e['roas']:.2f}" if e['roas'] else '赤字'
             row[f'{label}_CPA上限']  = e['cpa']
+            row[f'{label}_返金引当']  = e['reserve']
             row[f'{label}_倍率']     = f"{e['mult']:.2f}" if e['mult'] else ''
 
         # ---- 警告(§12) ----
@@ -226,6 +243,32 @@ def main():
             else:
                 continue
             break
+
+    # ---- 返金引当 3 / 5 / 8% のシナリオ(D-125) ----
+    scen_rows = []
+    for row in rows:
+        if row['分類'] not in ('SUMMER_SALE', 'MULTI_BUY') or row['推定着地原価'] == '原価待ち':
+            continue
+        # その商品に実際に適用され得るいちばん深い割引で評価する
+        deepest, mul = '通常', 1.00
+        for label, m in (('SummerSale10', 0.90), ('MB3点以上', 0.85), ('PAIR15', 0.85)):
+            if row.get(f'{label}_売価') not in ('', None, '原価待ち') and m < mul:
+                deepest, mul = label, m
+        out = {'商品': row['商品'], 'variant': row['variant'], '分類': row['分類'],
+               'ship_bucket': row['ship_bucket'], '推定着地原価': row['推定着地原価'],
+               '新通常価格': row['新通常価格'], '最悪ケース施策': deepest,
+               '最悪ケース売価': round(row['新通常価格'] * mul)}
+        for rr in REFUND_RESERVES:
+            e = econ(row['新通常価格'] * mul, row['推定着地原価'], refund=rr)
+            tag = f'{int(rr*100)}%'
+            out[f'引当{tag}_返金引当額'] = e['reserve']
+            out[f'引当{tag}_粗利率']     = f"{e['gm']*100:.1f}%"
+            out[f'引当{tag}_限界利益']   = e['cm']
+            out[f'引当{tag}_BE_ROAS']    = f"{e['roas']:.2f}" if e['roas'] and e['roas'] > 0 else '赤字'
+            out[f'引当{tag}_CPA上限']    = e['cpa']
+        scen_rows.append(out)
+    with open(OUT_S, 'w', newline='', encoding='utf-8') as f:
+        w = csv.DictWriter(f, fieldnames=list(scen_rows[0].keys())); w.writeheader(); w.writerows(scen_rows)
 
     # ---- カート単位の送料無料しきい値(§12) ----
     for p_, vs in by_p.items():
@@ -329,7 +372,26 @@ def main():
                              f"単品施策合計 ¥{round(alt):,} → 差 ¥{e['price']-round(alt):+,}"))
 
     print(f'出力: {OUT_V}  ({len(rows)} Variant)')
-    print(f'出力: {OUT_P}  ({len(prows)} 商品)\n')
+    print(f'出力: {OUT_P}  ({len(prows)} 商品)')
+    print(f'出力: {OUT_S}  ({len(scen_rows)} Variant)\n')
+    print(f'=== 返金引当シナリオ(最悪ケース施策で評価・中心値 {int(REFUND_CENTRAL*100)}%) ===')
+    for rr in REFUND_RESERVES:
+        tag = f'{int(rr*100)}%'
+        gms = [float(x[f'引当{tag}_粗利率'].rstrip('%')) for x in scen_rows]
+        cms = [x[f'引当{tag}_限界利益'] for x in scen_rows]
+        neg = [x for x in scen_rows if x[f'引当{tag}_限界利益'] <= 0]
+        u50 = [x for x in scen_rows if float(x[f'引当{tag}_粗利率'].rstrip('%')) < 50]
+        u55 = [x for x in scen_rows if float(x[f'引当{tag}_粗利率'].rstrip('%')) < 55]
+        print(f'引当 {tag:>3}: 粗利率 {min(gms):.1f}〜{max(gms):.1f}% / 限界利益 ¥{min(cms):,}〜¥{max(cms):,} '
+              f'/ 限界利益ゼロ以下 {len(neg)} / 粗利率50%未満 {len(u50)} / 55%未満 {len(u55)}')
+    tag = f'{int(REFUND_CENTRAL*100)}%'
+    bad = sorted(scen_rows, key=lambda x: float(x[f'引当{tag}_粗利率'].rstrip('%')))[:8]
+    print(f'\n--- 引当 {tag} で粗利率がいちばん低い8 Variant ---')
+    for x in bad:
+        print(f"  {float(x[f'引当{tag}_粗利率'].rstrip('%')):.1f}% | 限界利益 ¥{x[f'引当{tag}_限界利益']:,} | "
+              f"BE_ROAS {x[f'引当{tag}_BE_ROAS']} | CPA上限 ¥{x[f'引当{tag}_CPA上限']:,} | "
+              f"{x['商品']} / {x['variant'][:24]} ({x['最悪ケース施策']})")
+    print()
     if unmapped:
         print('⚠️ 新価格マップに無い現価格:')
         for p, c in sorted(unmapped): print(f'   {p} ¥{c:,}')
