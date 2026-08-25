@@ -502,3 +502,29 @@ Function は **fail-closed**(metafield が無ければ対象外)。
 docs/10 §3 が「現行: フラワーラウンジ 発売記念クーポン20%OFF」と書いているのは事実と違い、
 docs/10 §4 の「クーポン併用前提で CPA上限 ¥3,196」という前提も現状と合っていない。
 **docs/10 の改訂は承認後に行う(docs/12 §10 のとおり先回りしない)。**
+
+## D-100 Discount Function を deploy した。ビルドが止まっていた原因は javy ではなくビルド設定の無限再帰(2026-08-25)
+
+**deploy は成功した。** `MORU Promotions` の app version `moru-promotions-3` が active。
+Discount は作っていない(`discountNodes` は0件のまま)。
+
+前セッションが「javy のダウンロードが遅い」と見立てていたハングは、**ダウンロードではなかった。**
+`shopify.extension.toml` の `[extensions.build] command = "npm run build"` が
+`extensions/multi-buy-discount/package.json` の `"build": "shopify app function build"` を呼び、
+それが同じ build command をまた呼ぶ。**プロセスが入れ子に増え続け、出力も出ないまま永久に止まる。**
+`ps --forest` で入れ子が見えて判明した。
+
+直したこと(いずれも挙動ではなく構成の問題):
+
+| # | 症状 | 原因と対処 |
+|---|---|---|
+| 1 | 出力ゼロで永久ハング | 上記の再帰。**JS Function は Shopify CLI(Javy)が直接ビルドするので build command は空でよい。** package.json の `build` スクリプトも削除した |
+| 2 | 「build command が無い」で落ちる | **JS Function のエントリは `src/index.js` に固定**。無いと `isJavaScript` が false になる。`src/index.js` から named export を再輸出するだけにした(ロジックは不変) |
+| 3 | `Invalid export names` | TOML の `export` は Wasm Component Model の制約で **kebab-case 必須**。`cart-lines-discounts-generate-run`。JS 側の camelCase とは CLI が自動で対応づける |
+| 4 | `graphql-code-generator` が落ちる | CLI は JS ビルド時に必ず typegen を走らせる。この Function は生成型に依存しないので `typegen_command = "true"`(no-op)にした |
+| 5 | CLI が外に出られない | **この実行環境の Shopify CLI はプロキシを読まない。** `NODE_USE_ENV_PROXY=1` と `NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt` を付けないと Shopify への通信が無言でハングする |
+
+**まだ残っていること: ストアの `shopifyFunctions` は deploy 25分後も 0件。**
+app version は active なので、**`MORU Promotions` が `rgy5ee-fv.myshopify.com` に
+インストールされていない可能性が高い。** Admin API の `appInstallations` は権限が無く確認できない。
+**Owner に Dev Dashboard → Home → Install app を確認してもらう。**

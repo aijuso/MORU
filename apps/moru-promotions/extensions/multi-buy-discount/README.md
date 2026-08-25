@@ -108,41 +108,44 @@ shopify app config link      # Partner org に "MORU Promotions" を作る / 既
 shopify app deploy --allow-updates
 ```
 
-### ⛔ 現在ブロックされている(2026-08-24)
+### ✅ deploy 済み(2026-08-25)
 
-Owner は **CI トークン方式**を選択したが、トークンがまだ環境に無い。
-
-⚠️ **訂正: `SHOPIFY_CLI_PARTNERS_TOKEN` は古い方式で、Partner Dashboard での新規発行は廃止された。**
-正しくは Dev Dashboard の **App Automation Token** を作り、環境変数名は **`SHOPIFY_APP_AUTOMATION_TOKEN`**。
-**Owner 向けの手順は `apps/moru-promotions/DEPLOY_GUIDE.md`。**
-
-| 確認 | 結果 |
-|---|---|
-| Shopify CLI | `@shopify/cli@4.7.0` 導入・動作確認済み |
-| `shopify app build` | **`[client_id]: Required` で停止**(それ以外の設定エラーは無い) |
-| `client_id` | **Partner org でアプリを作らないと発行されない。手で埋められない** |
-| CLI 認証 | トークンが無いとデバイス認証(ブラウザ)に落ちるが、**この環境にブラウザが無い**(`xdg-open ENOENT`) |
-| ストアの `shopifyFunctions` | **0件** |
-
-**Function は Admin API からは登録できない**(`shopifyFunctions` は読み取り専用。
-アプリの deploy を通してしかストアに載らない)。Shopify MCP の `graphql_mutation` でも代替できない。
-
-→ **`SHOPIFY_APP_AUTOMATION_TOKEN` が環境に入り、Client ID を教えてもらえれば完了する。**
-Client ID が分かれば `shopify app config link`(対話式)は不要で、`shopify app deploy --allow-updates` だけで済む。
-
-### deploy 後に報告すること(Owner 指定)
-
-```graphql
-query { shopifyFunctions(first: 25) { nodes { id title apiType apiVersion app { title } } } }
+```bash
+cd apps/moru-promotions
+npm ci
+NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt \
+  ./node_modules/.bin/shopify app deploy --allow-updates
 ```
 
-App名 / client ID / `shopify.app.toml` の場所 / Function title / handle / Function ID /
-apiVersion / scopes / deploy 結果 / `shopifyFunctions` の確認結果 / テスト結果 /
-**Shopify 上で Discount がまだ0件であること** を報告して**止まる。**
+| 項目 | 値 |
+|---|---|
+| App | MORU Promotions |
+| Client ID | `7e71fcf4cf775c9c2568b1783bed5cfc` |
+| app version | `moru-promotions-3`(active) |
+| extension uid | `a475e5e4-1bfc-6e0c-1036-c65f32d3a9cca5956889` |
+| api_version | `2025-10` |
+| scopes | `read_products,write_discounts` |
+| テスト | 17 passed / 0 failed |
+| ストアの `discountNodes` | **0件(意図どおり)** |
+| ストアの `shopifyFunctions` | **0件 — 未解決。下記参照** |
 
-**禁止(次の Owner 承認まで):** `discountAutomaticAppCreate` / Discount resource 作成 /
-Discount 有効化 / `custom.multi_buy_eligible` の商品への設定 / 商品価格変更 /
-MAIN theme 変更 / theme publish。
+### ⚠️ ビルドで踏んだ罠(D-100)。踏み直さないこと
+
+| やってはいけない | なぜ |
+|---|---|
+| `[extensions.build] command` に `npm run build` を書く | package.json の `build` が `shopify app function build` を呼び返して**無限再帰**。出力ゼロで永久にハングする(「javy が遅い」に見える)。**JS Function は CLI が直接ビルドするので空でよい** |
+| エントリを `src/index.js` 以外にする | CLI は `src/index.js`(または .ts/.jsx/.tsx)しか探さない。無いと `isJavaScript` が false になり「build command が無い」で落ちる |
+| TOML の `export` を camelCase にする | Wasm Component Model の制約で kebab-case 必須。JS 側の camelCase とは CLI が自動で対応づける |
+| プロキシ変数なしで CLI を叩く | この実行環境の Shopify CLI は `HTTPS_PROXY` を読まない。`NODE_USE_ENV_PROXY=1` と `NODE_EXTRA_CA_CERTS` が要る。無いと無言でハングする |
+
+### 未解決: ストアに Function が出てこない
+
+deploy 25分後も `shopifyFunctions` は0件。app version は active なので、
+**`MORU Promotions` が `rgy5ee-fv.myshopify.com` にインストールされていない可能性が高い。**
+Admin API の `appInstallations` は権限が無く、こちらからは確認できない。
+
+→ **Owner に Dev Dashboard → 該当アプリ → Home → Install app を確認してもらう。**
+(`DEPLOY_GUIDE.md` の ②-2)
 
 ## Discount combination(docs/12 §7-6)
 
