@@ -1,0 +1,24 @@
+api_version = "2025-10"
+
+[[extensions]]
+name = "MORU ペア・セット割引"
+handle = "moru-pair-set-discount"
+uid = "54593006-b244-854c-5c79-1dca16afacb8f0c73de2"
+type = "function"
+description = "設定した組み合わせ(グループ)の商品が全てカートに入ったら、その商品に割引を適用する。対象と割引率は Discount の app metafield から読む。設定が無ければ割引は0円(fail-closed)。"
+
+  [[extensions.targeting]]
+  target = "cart.lines.discounts.generate.run"
+  input_query = "src/cart_lines_discounts_generate_run.graphql"
+  # Wasm Component Model の制約で TOML の export は kebab-case。
+  # JS 側の camelCase export とは CLI が自動で対応づける。
+  export = "cart-lines-discounts-generate-run"
+
+  [extensions.build]
+  # JS Function は Shopify CLI(Javy)が直接ビルドする。build command は空にする。
+  # ここに "npm run build" を書くと package.json を呼び返して無限再帰する(D-100)。
+  command = ""
+  # 生成型(../generated/api)を import しないので typegen は不要。no-op にする。
+  typegen_command = "true"
+  path = "dist/function.wasm"
+  watch = [ "src/**/*.js", "src/**/*.graphql" ]
