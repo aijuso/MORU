@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: 2026-08-24(価格監査 Phase A 実施 / Discount Function 実装)
+> 最終更新: 2026-08-25(ペア・セット Function 追加 / ローンチ阻害監査 / DEV→MAIN 差分)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
 > 対象ストア: `rgy5ee-fv.myshopify.com`
 
@@ -35,6 +35,66 @@ push 前に毎回 `themes(first: 20) { nodes { id name role } }` で role を確
 
 ---
 
+## ★ 2026-08-25 現在 — ここを最初に読む
+
+| | |
+|---|---|
+| 作業ブランチ | `claude/moru-living-shopify-dev-yvnmni` |
+| ストア | `rgy5ee-fv.myshopify.com`(表示ドメイン `moruliving.myshopify.com`) |
+| Frontend Dev テーマ | `166341181680` / UNPUBLISHED / **ChatGPT が実装中。Claude Code は触らない** |
+| MAIN テーマ | `166203621616` / **MAIN。書き込み・publish 禁止** |
+| 販促アプリ | **MORU Promotions**(`7e71fcf4cf775c9c2568b1783bed5cfc`)/ app version **`moru-promotions-4`** が active |
+| Function | **2本 deploy 済み**(まとめ買い / ペア・セット) |
+| **Discount resource** | **0件。1つも作っていない。有効化もしていない** |
+| **注文** | **0件**(`ordersCount` = 0・EXACT) |
+| **在庫** | **36商品中35商品が 0。**在庫があるのは MORU フラワーラウンジ(10)だけ |
+| 送料無料 | **¥7,700 が正式値(D-101)。**ストア設定は元から ¥7,700 なので変更していない |
+
+### deploy 済みの Function
+
+| Extension | handle | uid | 対象判定 |
+|---|---|---|---|
+| まとめ買い割引 | `moru-multi-buy-discount` | `a475e5e4-1bfc-6e0c-1036-c65f32d3a9cca5956889` | Product metafield `custom.multi_buy_eligible`(**定義は作成済み・商品への設定は0件**) |
+| ペア・セット割引 | `moru-pair-set-discount` | `54593006-b244-854c-5c79-1dca16afacb8f0c73de2` | Discount の app metafield の JSON(**設定は空**) |
+
+**どちらも fail-closed。**設定を1件も入れないまま有効化しても割引は1円も出ない。
+
+⚠️ **Admin API の `shopifyFunctions` は「問い合わせているアプリ自身の Function」しか返さない。**
+Claude Code の Shopify MCP は別アプリなので**常に0件**になる。**未インストールと誤判定しないこと**(D-100)。
+確認は管理画面 → 設定 → アプリと販売チャネル → MORU Promotions → Functions。
+
+### 2026-08-25 に作った Owner 提出物
+
+| 何 | 場所 |
+|---|---|
+| **まとめ買い 推奨13 / 要確認6 の最終一覧** | `ops/products/_multibuy_final_20260825.md` |
+| **PAIR 候補8組** | `ops/products/_pair_candidates_20260825.md` |
+| **SUMMER SALE 候補8商品 + SALE collection 案** | `ops/products/_summer_sale_20260825.md` |
+| **ローンチ阻害事項の全件監査(BLOCKER 15件)** | `ops/_launch_blockers_20260825.md` |
+| **DEV → MAIN 差分 と promotion allowlist** | `ops/theme/_dev_to_main_20260825.md` |
+
+### Owner 待ち(ここが止まっている)
+
+1. **CKB Variant 原価**(`ops/products/_ckb_cost_request_20260824.md`)。
+   入ったら `ops/products/_ckb_costs.csv` に写して `python3 ops/tools/price_audit.py`。
+   **入力済みの商品から順に監査が完成する。全件そろうのを待たない**
+2. **在庫**。35商品が0のまま公開できない
+3. **5ページの公開**(特商法・プライバシー・利用規約・FAQ・About)
+4. **返品ポリシーの一本化**(表示「30日返品」/ 本文「不良・誤配送のみ7日以内」で矛盾)
+5. **「¥500ptプレゼント」「2年保証」の実体確認**
+6. まとめ買い13商品 / ペア8案 / SALE 8商品 の確定
+7. **アブストラクト オブジェ**(21 Variant が別商品)の分割 / 非掲載
+8. **MAIN 反映の可否**(`ops/theme/_dev_to_main_20260825.md` の allowlist)
+
+### やってはいけない(承認まで)
+
+- Discount の作成・有効化 / `custom.multi_buy_eligible` の商品設定
+- 商品の price / compare_at_price / tags / metafields / status / publication の変更
+- **MAIN テーマ `166203621616` への書き込み・publish**(`--allow-live` を使わない)
+- **Frontend Dev `166341181680` の theme files の変更**(ChatGPT が並行実装中)
+
+---
+
 ## ★ 全商品価格再設計 + 数量割引 Function — **Phase A 実施済み / Phase B コード完了**
 
 **指示書は `docs/12_price_redesign_and_multibuy.md`。決定は `docs/06_decisions_log.md` D-096〜D-099。**
@@ -62,14 +122,14 @@ status / publication / discounts)。テーマファイルも触っていない�
    **説明がつかないのは フラワー フロアクッション(×6.08)だけ。最優先で実測**
 3. ⚠️ **アブストラクト オブジェは ¥4,980〜¥58,980 の21種が1商品に同居。** 価格以前に構成の判断が要る
 4. ⚠️ **ストアに Discount は0件。** docs/10 §3 の「現行クーポン20%OFF」は事実と違う
-5. ⚠️ **送料無料しきい値はストア実設定 ¥7,700 / トップ表示 ¥15,000(D-099)。**
+5. ✅ **送料無料しきい値は ¥7,700 に決着(D-101・2026-08-25)。**ストア設定は元から ¥7,700 なので変更不要。
    しきい値は**割引後の小計**で判定されるので、数量割引より先に一本化する
 
 ### Owner 判断待ち(承認まで動かさない)
 
 1. CKB Variant 原価の提供(`_ckb_cost_request_20260824.md`)
 2. アブストラクト オブジェをどうするか(分割 / 非掲載 / 一部だけ残す)
-3. 送料無料しきい値を ¥7,700 と ¥15,000 のどちらに寄せるか
+3. ~~送料無料しきい値~~ → ✅ **¥7,700 に決着(D-101)**
 4. まとめ買い対象を推奨13商品で確定してよいか(要確認6商品の扱い)
 5. 判定方法を **`custom.multi_buy_eligible`(boolean metafield)** にしてよいか(D-098)
 
