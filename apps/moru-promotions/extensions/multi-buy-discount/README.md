@@ -73,7 +73,7 @@ Extension として並べる。** リポジトリ直下をアプリ化せず、`
 
 ```
 apps/moru-promotions/
-  shopify.app.toml        ← client_id は `shopify app config link` が書き込む
+  shopify.app.toml        ← client_id 記入済み。`shopify app config link` は不要
   package.json            ← npm test / build / deploy
   extensions/
     multi-buy-discount/   ← このディレクトリ
@@ -99,14 +99,6 @@ scopes = "read_products,write_discounts"
 > **deploy 後に metafield が読めることを確認できたら、外せるかを検証する。**
 > 逆に読めなかった場合は、`custom` ではなく **app-owned(`$app:multi_buy_eligible`)** への
 > 切り替えを検討する(その場合は Owner の metafield 方式の決定に関わるので相談する)。
-
-### 手順(認証が通れば1回で終わる)
-
-```bash
-cd apps/moru-promotions
-shopify app config link      # Partner org に "MORU Promotions" を作る / 既存に紐づける
-shopify app deploy --allow-updates
-```
 
 ### ✅ deploy 済み(2026-08-25)
 
