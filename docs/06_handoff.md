@@ -47,7 +47,7 @@ push 前に毎回 `themes(first: 20) { nodes { id name role } }` で role を確
 | Function | **2本 deploy 済み**(まとめ買い / ペア・セット) |
 | **Discount resource** | **0件。1つも作っていない。有効化もしていない** |
 | **注文** | **0件**(`ordersCount` = 0・EXACT) |
-| **在庫** | **36商品中35商品が 0。**在庫があるのは MORU フラワーラウンジ(10)だけ |
+| **在庫** | ✅ **全商品が購入可能**(257 Variant 中 255 が「在庫を追跡しない」設定・D-107)。<br>前回の「35商品が在庫0」は `totalInventory` の誤読だった |
 | 送料無料 | **¥7,700 が正式値(D-101)。**ストア設定は元から ¥7,700 なので変更していない |
 
 ### deploy 済みの Function
@@ -71,17 +71,21 @@ Claude Code の Shopify MCP は別アプリなので**常に0件**になる。**
 | **PAIR 候補8組** | `ops/products/_pair_candidates_20260825.md` |
 | **SUMMER SALE 候補8商品 + SALE collection 案** | `ops/products/_summer_sale_20260825.md` |
 | **ローンチ阻害事項の全件監査(BLOCKER 15件)** | `ops/_launch_blockers_20260825.md` |
-| **DEV → MAIN 差分 と promotion allowlist** | `ops/theme/_dev_to_main_20260825.md` |
+| **DEV → MAIN 差分 と promotion allowlist** | `ops/theme/_dev_to_main_20260825.md`(⚠️ **Frontend 修正前の checksum。作り直しが要る**) |
+| **在庫・販売可能性の全 Variant 監査** | `ops/products/_inventory_audit_20260825.md` + `_inventory_audit_20260825.csv`(257行) |
+| **Pages / Policy 監査** | `ops/_pages_policy_audit_20260825.md` |
+| **ペア採算ツール** | `ops/tools/pair_audit.py` + `ops/products/_pair_definitions.csv` |
 
 ### Owner 待ち(ここが止まっている)
 
 1. **CKB Variant 原価**(`ops/products/_ckb_cost_request_20260824.md`)。
    入ったら `ops/products/_ckb_costs.csv` に写して `python3 ops/tools/price_audit.py`。
    **入力済みの商品から順に監査が完成する。全件そろうのを待たない**
-2. **在庫**。35商品が0のまま公開できない
-3. **5ページの公開**(特商法・プライバシー・利用規約・FAQ・About)
-4. **返品ポリシーの一本化**(表示「30日返品」/ 本文「不良・誤配送のみ7日以内」で矛盾)
+2. **返品条件の決定**(A: 7日・不良のみ / B: 30日・お客様都合可)。**Shopify に返金ポリシーが1件も無い**(D-109・D-110)
+3. **特商法の空欄9項目**+ ストア設定の電話番号(すべて法定必須)
+4. **プライバシー・利用規約の本文**(ページが白紙)→ **5ページの公開**
 5. **「¥500ptプレゼント」「2年保証」の実体確認**
+5b. **国際配送ゾーンと「速達 ¥3,762」の停止可否**(D-108)
 6. まとめ買い13商品 / ペア8案 / SALE 8商品 の確定
 7. **アブストラクト オブジェ**(21 Variant が別商品)の分割 / 非掲載
 8. **MAIN 反映の可否**(`ops/theme/_dev_to_main_20260825.md` の allowlist)

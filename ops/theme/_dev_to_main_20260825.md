@@ -1,5 +1,13 @@
 # Theme Promotion: MORU Frontend Dev → MAIN(2026-08-25)
 
+
+> 🔴 **2026-08-25 追記 — この manifest はそのまま実行しないこと。**
+> ここに載っている checksum は **ChatGPT による Frontend 修正の「前」**のもの。
+> ChatGPT が MORU Frontend Dev の最終修正(カートページの偽レビュー削除 / 30日返品表示 /
+> 2年保証 / ¥500pt / ベストセラー / Bought together / offer_scope / locales の ¥15,000)を
+> 終えたあと、**DEV と MAIN を READ ONLY で取り直して manifest を作り直す。**
+> 手順とファイル分類の考え方は下記のまま使える。**変わるのは checksum と対象ファイルだけ。**
+
 > **Phase 1(READ ONLY)と Phase 2(manifest)まで。MAIN には1バイトも書いていない。**
 > Owner が「**MAIN反映実行**」と明示するまで書かない。theme publish は行わない(不要)。
 
@@ -169,3 +177,35 @@ DEV 側にも同じ問題が残っているため。**ChatGPT 側の修正が別
 - `templates/cart.json` の**偽レビューブロックは DEV にも残っている**(F-5)
 - `moru-quantity-offers` の `offer_scope: "all"` は**対象外商品にも割引表示を出す**(F-1)
 - `locales` の ¥15,000 既定値4箇所は**DEV でも未修正**(C-1)
+
+
+---
+
+## 再作成の手順(ChatGPT の修正完了後)
+
+1. `theme(id:){ files(first:250){ nodes { filename checksumMd5 size } } }` を DEV・MAIN 両方で叩く
+2. 差分を取り、**DEV のほうが小さい `.liquid`** と **`locales/*`** を必ず個別に中身確認する
+   (今回そこに実際の退化が見つかっている)
+3. Tier 1 / Tier 2 / Tier 3 / 除外 に振り分け直す
+4. **MAIN にしか無いファイルは上書きも削除もしない**
+
+### 今回分かっていて、次回も変わらないと思われる判断
+
+| 対象 | 判断 | 理由 |
+|---|---|---|
+| `config/settings_data.json` | **除外** | shared settings。無条件上書き禁止(Owner 指示) |
+| `locales/*`(4ファイル) | **除外(マージ必須)** | **MAIN のほうが大きい。**上書きすると `t:` キーが消える |
+| `sections/moru-header.liquid`(v1) | **除外** | **MAIN のほうが新しい。**DEV は v2 に移行済みで v1 を更新していない |
+| `sections/footer-group.json` | **除外** | 中身が同一。整形差だけ |
+| `templates/collection.new-arrivals.json`(MAIN のみ) | **触らない** | DEV に無いのは「消された」のではなく「作られていない」だけ |
+| `sections/moru-product-details.liquid` | **Tier 3(Owner 判断)** | DEV は偽レビューを消したが **`@app` ブロック対応も一緒に消えている**。MAIN の機能を残した**マージ版**を作る選択肢がある。加えて DEV 版は schema の `name` が日本語直書きで絶対ルール12に反する |
+| JSON テンプレート(`product` / `cart` / `collection` / `index`) | **Tier 1** | DEV が MAIN の完全な上位集合。**サイズが小さく見えるのは DEV 側が JSON を圧縮しているだけ**(1行ずつ突き合わせて確認済み) |
+
+## MAIN 反映に必要なもの(まだ無い)
+
+**Shopify MCP の `graphql_mutation` は MAIN(live)テーマへの書き込みをブロックする。**
+反映は Shopify CLI(`shopify theme push --theme 166203621616 --only <path>`)で行う必要があり、
+**テーマ用の認証(`SHOPIFY_CLI_THEME_TOKEN`)がこの実行環境にはまだ無い。**
+
+**ただしこれで作業は止まらない。**MAIN 反映は最後の工程で、それまでにやることが他に残っている。
+**トークンは「MAIN反映実行」の直前に用意していただければよい。**
