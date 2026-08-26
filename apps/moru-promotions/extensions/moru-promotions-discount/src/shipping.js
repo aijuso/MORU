@@ -39,6 +39,8 @@
  * **壊れた設定で送料を勝手に無料にしない。**
  */
 
+import { readConfig } from './promotions.js';
+
 /**
  * 割引前の subtotal を、明細の単価 × 数量から自前で組み立てる。
  * `cart.cost.subtotalAmount` を使わないのは、そちらが割引後の値になり得るため。
@@ -75,8 +77,7 @@ export function buildDeliveryResult(input, options = {}) {
   const classes = (input && input.discount && input.discount.discountClasses) || [];
   if (!classes.some((c) => String(c).toUpperCase() === 'SHIPPING')) return { operations: [] };
 
-  const config = (input.discount && input.discount.metafield && input.discount.metafield.jsonValue) || null;
-  const threshold = readThreshold(config);
+  const threshold = readThreshold(readConfig(input));
   if (threshold === null) return { operations: [] }; // fail-closed
 
   const subtotal = preDiscountSubtotal((input.cart && input.cart.lines) || []);

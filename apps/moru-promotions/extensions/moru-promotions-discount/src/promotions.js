@@ -69,6 +69,22 @@
  * import すると Node から素で読めなくなり、tests/run_tests.mjs が動かせなくなる。
  */
 
+/**
+ * 設定を読む。**Discount の `$app` metafield が正。**
+ * 無ければ shop の `custom.moru_promotions_config` にフォールバックする(D-138)。
+ *
+ * `$app` はこのアプリ専用の名前空間なので、**アプリ自身の Admin API トークンが無いと書けない。**
+ * 一方 shop の `custom` はマーチャント所有なので、管理画面から Discount を作る運用でも
+ * 設定を入れられる。**どちらも無ければ何もしない(fail-closed)。**
+ */
+export function readConfig(input) {
+  const app = input && input.discount && input.discount.metafield && input.discount.metafield.jsonValue;
+  if (app && typeof app === 'object') return app;
+  const shop = input && input.shop && input.shop.metafield && input.shop.metafield.jsonValue;
+  if (shop && typeof shop === 'object') return shop;
+  return null;
+}
+
 /** 定義順の優先度。数字が小さいほど強い(同率・同数量のときの決着用)。 */
 export const SOURCE_RANK = { pair: 0, multiBuy: 1, sale: 2 };
 
@@ -298,8 +314,8 @@ export function buildLinesResult(input, options = {}) {
   const classes = (input && input.discount && input.discount.discountClasses) || [];
   if (!classes.some((c) => String(c).toUpperCase() === 'PRODUCT')) return { operations: [] };
 
-  const config = (input.discount && input.discount.metafield && input.discount.metafield.jsonValue) || null;
-  if (!config || typeof config !== 'object') return { operations: [] }; // fail-closed
+  const config = readConfig(input);
+  if (!config) return { operations: [] }; // fail-closed
 
   const byProduct = foldCartByProduct((input.cart && input.cart.lines) || []);
   if (byProduct.size === 0) return { operations: [] };

@@ -9,6 +9,7 @@ import {
   normalizePairs, normalizeTiers, percentageFor, foldCartByProduct,
   buildCandidates, resolveWinners, buildLinesResult,
 } from '../src/promotions.js';
+import { readConfig } from '../src/promotions.js';
 import { preDiscountSubtotal, readThreshold, buildDeliveryResult } from '../src/shipping.js';
 
 let passed = 0, failed = 0;
@@ -99,6 +100,31 @@ test('しきい値が数値でなければ null', () => {
   assert.equal(readThreshold({}), null);
   assert.equal(readThreshold(null), null);
   assert.equal(readThreshold({ freeShippingThreshold: 7700 }), 7700);
+});
+
+console.log('\n-- 設定の読み出し(shop フォールバック / D-138)--');
+test('$app の設定があればそれを使う', () => {
+  const i = input([], CONFIG);
+  i.shop = { metafield: { jsonValue: { freeShippingThreshold: 1 } } };
+  assert.equal(readConfig(i).freeShippingThreshold, 7700);
+});
+test('$app が無ければ shop の custom へ落ちる', () => {
+  const i = input([], null);
+  i.shop = { metafield: { jsonValue: CONFIG } };
+  assert.equal(readConfig(i).freeShippingThreshold, 7700);
+});
+test('どちらも無ければ null(fail-closed)', () => {
+  assert.equal(readConfig(input([], null)), null);
+});
+test('shop フォールバックだけでも割引が出る', () => {
+  const i = input([line(1, P(4), V(4), 1)], null);
+  i.shop = { metafield: { jsonValue: CONFIG } };
+  assert.equal(flatten(buildLinesResult(i))['gid://shopify/CartLine/1'].pct, 10);
+});
+test('shop フォールバックだけでも送料無料が出る', () => {
+  const i = input([line(1, P(4), V(4), 1, 9000)], null, ['PRODUCT', 'SHIPPING']);
+  i.shop = { metafield: { jsonValue: CONFIG } };
+  assert.equal(buildDeliveryResult(i).operations.length, 1);
 });
 
 console.log('\n-- カートの畳み込み --');

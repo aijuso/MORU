@@ -175,3 +175,46 @@ variables: `_discount_create_variables_20260826.json`
 
 **5 は 4 が通ってから。**旧2本の Discount は作っていないので、
 削除しても顧客に見えている割引は変わらない。
+
+---
+
+## 6. 追補(2026-08-26)— 認証ブロッカーの解消と実行済みの変更
+
+### 実行済み(Owner 承認済みの範囲)
+
+| 変更 | 件数 | 結果 |
+|---|---|---|
+| Product 価格 | **211 Variant / 31商品** | **不一致 0**(257 Variant 全件 readback) |
+| `custom.multi_buy_eligible = true` | **13商品** | **設定漏れ 0 / 誤設定 0** |
+
+readback: `_price_readback_20260826.csv`(257行・全件 match)。
+`compare_at_price` は**全 Variant で null のまま**(1件も作っていない)。
+
+### 認証ブロッカーの解消(D-138)
+
+**Function が設定を2段階で読むようにした。**
+
+```
+1. Discount の $app metafield(function-configuration)   ← アプリ自身のトークンが要る
+2. 無ければ shop の custom.moru_promotions_config       ← マーチャント所有。誰でも書ける
+3. どちらも無ければ何もしない(fail-closed)
+```
+
+**これで Admin API トークンが無くても運用できる:**
+
+- 設定 JSON は **shop の `custom` metafield** に入れる(`metafieldsSet` で書ける)
+- Discount 本体は **Shopify 管理画面から作成する**
+  (割引 → 自動割引を作成 → アプリ `MORU Promotions` の `moru-promotions-discount` を選ぶ)
+- **トークンがあるなら従来どおり `discountAutomaticAppCreate` + `$app` metafield でもよい。**
+  その場合は `$app` が優先される
+
+variables: `_shop_config_set_variables_20260826.json`
+(`ownerId` は `__SHOP_GID__` のまま。実行時に実際の Shop GID へ差し替える)
+
+> ⚠️ **shop metafield を書いても、Discount が無ければ割引は1円も出ない。**
+> 設定だけ先に入れても顧客には影響しない。
+
+### DEV テストの前提が1つ増えた
+
+Discount を管理画面から作る場合、**`discountClasses` に PRODUCT と SHIPPING の
+両方が付くかを作成後に確認する。**片方だけだとその機能が丸ごと動かない(fail-closed)。

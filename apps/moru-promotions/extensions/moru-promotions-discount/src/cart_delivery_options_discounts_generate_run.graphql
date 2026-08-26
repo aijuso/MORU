@@ -11,4 +11,10 @@ query Input {
     discountClasses
     metafield(namespace: "$app", key: "function-configuration") { jsonValue }
   }
+  # $app はこのアプリ専用なので、アプリ自身のトークンが無いと書けない。
+  # 管理画面から Discount を作る運用でも設定を入れられるように、
+  # マーチャント所有の shop metafield をフォールバックとして読む(D-138)。
+  shop {
+    metafield(namespace: "custom", key: "moru_promotions_config") { jsonValue }
+  }
 }
