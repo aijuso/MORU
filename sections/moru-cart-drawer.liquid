@@ -120,6 +120,18 @@
           </ul>
         {% endif %}
 
+        {%- comment -%}
+          ドロワーには割引の「名前」と金額しか出ていなかったので、
+          前に入れたクーポンが残っていても、それがクーポンだと分からなかった。
+          コードで入った割引だけを名指しし、外し方はカートページに渡す。
+        {%- endcomment -%}
+        {%- assign code_discounts = cart.discount_applications | where: 'type', 'discount_code' -%}
+        {% if code_discounts.size > 0 %}
+          <a class="moru-cart-drawer__codes-link" href="{{ routes.cart_url }}">
+            {{ 'moru.cart.coupon_manage' | t }}
+          </a>
+        {% endif %}
+
         <div class="moru-cart-drawer__subtotal">
           <span>{{ 'moru.cart.subtotal' | t }}</span>
           <strong>{{ cart.total_price | money }}</strong>
@@ -405,6 +417,14 @@
     list-style: none;
     font-size: var(--font-size-xs);
     color: var(--color-sale);
+  }
+
+  .moru-cart-drawer__codes-link {
+    display: inline-block;
+    margin-block-end: var(--space-md);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+    text-decoration: underline;
   }
 
   .moru-cart-drawer__discounts li {

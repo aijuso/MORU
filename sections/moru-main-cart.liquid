@@ -193,17 +193,62 @@
 
       <aside class="moru-cart__summary">
         {% if section.settings.show_coupon %}
-          <div class="moru-cart__coupon">
-            <input
-              type="text"
-              class="moru-cart__coupon-input"
-              placeholder="{{ 'moru.cart.coupon_placeholder' | t }}"
-              aria-label="{{ 'moru.cart.coupon_placeholder' | t }}"
-              data-coupon-input
-            >
-            <button type="button" class="moru-cart__coupon-apply" data-coupon-apply>
-              {{ 'moru.cart.coupon_apply' | t }}
-            </button>
+          {%- comment -%}
+            入力したコードがどうなったのかを必ず見せる。
+
+            `cart.discount_codes` は Liquid には存在しない。使えるのは
+            `cart.discount_applications` で、`type` が `discount_code` のものが
+            「コードで入った割引」。適用されなかったコードはここに現れないので、
+            入力直後の結果は JS 側でカートの変化を見て伝える。
+          {%- endcomment -%}
+          {%- assign code_discounts = cart.discount_applications | where: 'type', 'discount_code' -%}
+          <div class="moru-cart__coupon-block" data-coupon-block>
+            {% if code_discounts.size > 0 %}
+              <p class="moru-cart__coupon-label">{{ 'moru.cart.coupon_applied_label' | t }}</p>
+              <ul class="moru-cart__coupon-tags" role="list">
+                {% for code_discount in code_discounts %}
+                  <li class="moru-cart__coupon-tag">
+                    <span class="moru-cart__coupon-tag-code">{{ code_discount.title }}</span>
+                    <span class="moru-cart__coupon-tag-amount">
+                      &minus;{{ code_discount.total_allocated_amount | money }}
+                    </span>
+                  </li>
+                {% endfor %}
+              </ul>
+              <button type="button" class="moru-cart__coupon-clear" data-coupon-clear>
+                {{ 'moru.cart.coupon_clear' | t }}
+              </button>
+            {% endif %}
+
+            <div class="moru-cart__coupon">
+              <input
+                type="text"
+                class="moru-cart__coupon-input"
+                placeholder="{{ 'moru.cart.coupon_placeholder' | t }}"
+                aria-label="{{ 'moru.cart.coupon_placeholder' | t }}"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                data-coupon-input
+              >
+              <button type="button" class="moru-cart__coupon-apply" data-coupon-apply>
+                {{ 'moru.cart.coupon_apply' | t }}
+              </button>
+            </div>
+
+            <p class="moru-cart__coupon-status" data-coupon-status role="status" aria-live="polite" hidden></p>
+
+            {%- capture coupon_strings -%}
+              {
+                "empty": {{ 'moru.cart.coupon_empty' | t | json }},
+                "working": {{ 'moru.cart.coupon_working' | t | json }},
+                "success": {{ 'moru.cart.coupon_success' | t: code: '%code%' | json }},
+                "removed": {{ 'moru.cart.coupon_removed' | t | json }},
+                "notApplied": {{ 'moru.cart.coupon_not_applied' | t: code: '%code%' | json }},
+                "error": {{ 'moru.cart.coupon_error' | t | json }}
+              }
+            {%- endcapture -%}
+            <script type="application/json" data-coupon-strings>{{ coupon_strings }}</script>
           </div>
         {% endif %}
 
@@ -713,10 +758,76 @@
     background-color: var(--color-bg-alt);
   }
 
+  .moru-cart__coupon-block {
+    margin-block-end: var(--space-lg);
+  }
+
   .moru-cart__coupon {
     display: flex;
     gap: var(--space-sm);
-    margin-block-end: var(--space-lg);
+  }
+
+  .moru-cart__coupon-label {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-muted);
+  }
+
+  .moru-cart__coupon-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: 0 0 var(--space-sm);
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-cart__coupon-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: 0.25rem var(--space-sm);
+    border: 1px solid var(--color-accent-olive);
+    border-radius: 999px;
+    font-size: var(--font-size-xs);
+    color: var(--color-accent-olive);
+  }
+
+  .moru-cart__coupon-tag-code {
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .moru-cart__coupon-clear {
+    display: inline-block;
+    margin: 0 0 var(--space-sm);
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--color-muted);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .moru-cart__coupon-clear:hover {
+    color: var(--color-text);
+  }
+
+  .moru-cart__coupon-status {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--font-size-xs);
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .moru-cart__coupon-status[data-tone='success'] {
+    color: var(--color-accent-olive);
+  }
+
+  .moru-cart__coupon-status[data-tone='error'] {
+    color: var(--color-accent-terracotta);
   }
 
   .moru-cart__coupon-input {
@@ -1085,6 +1196,7 @@
         const plus = event.target.closest('[data-cart-plus]');
         const remove = event.target.closest('[data-cart-remove]');
         const coupon = event.target.closest('[data-coupon-apply]');
+        const couponClear = event.target.closest('[data-coupon-clear]');
         const upsell = event.target.closest('[data-upsell-add]');
 
         if (minus || plus) {
@@ -1098,9 +1210,18 @@
           this.change(item.dataset.line, 0);
         } else if (coupon) {
           this.applyCoupon();
+        } else if (couponClear) {
+          this.clearCoupons();
         } else if (upsell) {
           this.addUpsell(upsell);
         }
+      });
+
+      root.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        if (!event.target.closest('[data-coupon-input]')) return;
+        event.preventDefault();
+        this.applyCoupon();
       });
 
       root.addEventListener('change', (event) => {
@@ -1150,18 +1271,137 @@
         return;
       }
       this.root.innerHTML = next.innerHTML;
+      // セクションを丸ごと入れ替えるので、直前に出した結果メッセージは消える。
+      // 「押したのに何も起きない」に逆戻りしないよう、入れ替えた後に出し直す。
+      if (this.pendingStatus) {
+        this.showStatus(this.pendingStatus.message, this.pendingStatus.tone);
+        this.pendingStatus = null;
+      }
       document.dispatchEvent(new CustomEvent('moru:cart:updated'));
     }
 
-    applyCoupon() {
+    /**
+     * 文言は locales/ja.default.json が正。Liquid 直書きはしない。
+     * この JavaScript ブロックの中では Liquid が展開されないので、
+     * セクション側が書き出した JSON を読む。コード名の差し込みは %code%。
+     */
+    get strings() {
+      const tag = this.root.querySelector('[data-coupon-strings]');
+      if (!tag) return {};
+      try {
+        return JSON.parse(tag.textContent);
+      } catch (error) {
+        return {};
+      }
+    }
+
+    /** 結果を必ず1つ画面に出す。無言で終わらせない。 */
+    showStatus(message, tone) {
+      const el = this.root.querySelector('[data-coupon-status]');
+      if (!el) return;
+      el.textContent = message;
+      el.dataset.tone = tone || 'info';
+      el.hidden = false;
+    }
+
+    /** セクション入れ替えを挟む場合は、入れ替え後に出し直す。 */
+    queueStatus(message, tone) {
+      this.pendingStatus = { message: message, tone: tone };
+    }
+
+    async fetchCart() {
+      const response = await fetch(this.root_url + 'cart.js', {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) throw new Error('cart fetch failed');
+      return response.json();
+    }
+
+    /**
+     * `discount` パラメータは「いま効かせたいコードの全部」を渡す仕様。
+     * 空文字を渡すと、入力済みのコードが全部外れる(自動割引は影響を受けない)。
+     */
+    async setDiscount(value) {
+      const response = await fetch(this.root_url + 'cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ discount: value }),
+      });
+      if (!response.ok) throw new Error('discount update failed');
+      return response.json();
+    }
+
+    /**
+     * コードで入った割引の一覧。
+     * Liquid にも Ajax にも「入力されたが効かなかったコード」を返す口が無いので、
+     * 効いているものだけがここに出る。
+     */
+    codeDiscountsOf(cart) {
+      const apps = (cart && cart.cart_level_discount_applications) || [];
+      return apps.filter((app) => app && app.type === 'discount_code');
+    }
+
+    hasAutomaticDiscount(cart) {
+      const apps = (cart && cart.cart_level_discount_applications) || [];
+      const auto = apps.some((app) => app && app.type === 'automatic');
+      const itemAuto = ((cart && cart.items) || []).some((item) =>
+        (item.discounts || []).length > 0
+      );
+      return auto || itemAuto;
+    }
+
+    async applyCoupon() {
       const input = this.root.querySelector('[data-coupon-input]');
+      const button = this.root.querySelector('[data-coupon-apply]');
       const code = input ? input.value.trim() : '';
+
       if (!code) {
+        this.showStatus(this.strings.empty, 'error');
         if (input) input.focus();
         return;
       }
-      window.location.href =
-        this.root_url + 'discount/' + encodeURIComponent(code) + '?redirect=' + this.root_url + 'cart';
+
+      if (button) button.disabled = true;
+      this.showStatus(this.strings.working, 'info');
+
+      try {
+        const before = await this.fetchCart();
+        const beforeCodes = this.codeDiscountsOf(before).length;
+        const after = await this.setDiscount(code);
+
+        // 効いたかどうかは、カートが実際に変わったかで判定する。
+        // 併用できない自動割引のほうが得な場合、Shopify はコードを採用しない。
+        // そのとき割引額は動かないので、増えていなければ「効かなかった」。
+        const applied =
+          this.codeDiscountsOf(after).length > beforeCodes ||
+          Number(after.total_discount || 0) > Number(before.total_discount || 0);
+
+        if (applied) {
+          if (input) input.value = '';
+          this.queueStatus(this.strings.success.replace('%code%', code), 'success');
+        } else {
+          // ここには2つの原因が混ざる。コードが間違っている場合と、
+          // コードは生きているが今のカートでは他の割引のほうが得な場合。
+          // 区別する手段が Shopify 側に無いので、どちらでも正しい言い方にする。
+          this.queueStatus(this.strings.notApplied.replace('%code%', code), 'info');
+        }
+
+        await this.refresh();
+      } catch (error) {
+        this.showStatus(this.strings.error, 'error');
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
+
+    async clearCoupons() {
+      try {
+        await this.setDiscount('');
+        this.queueStatus(this.strings.removed, 'info');
+        await this.refresh();
+      } catch (error) {
+        this.showStatus(this.strings.error, 'error');
+      }
     }
   }
 
