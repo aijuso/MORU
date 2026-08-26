@@ -40,10 +40,15 @@ OUT_S  = P('_refund_scenarios_20260825.csv')
 # docs/10 §4。いずれも実測ではない。
 PAYMENT_FEE_RATE = 0.036   # 仮置き(実測なし)
 CPA_RATIO        = 0.70
-# 30日間安心保証(D-125)の返金引当。**実績がないための暫定引当**であって
-# 「返品率が 5% である」という主張ではない。中心値 5% で判断し、3% / 8% も併記する。
+# 30日間安心保証(D-125 / **D-130 で式を訂正**)の返金引当。
+# **実績がないための暫定引当**であって「返品率が 5% である」という主張ではない。
+# 中心値 5% で判断し、3% / 8% も併記する。
 REFUND_RESERVES  = (0.03, 0.05, 0.08)
 REFUND_CENTRAL   = 0.05
+# 返金1件あたりに **追加で** かかる費用(返送料 / 再配送費 / 決済手数料の非返還分 /
+# 返金処理費用)。**いずれも実測が無いので現在 0 円**。値が分かったらここを直す。
+# 0 のまま「費用は無い」と読まないこと。未計上であることを出力にも明記している。
+REFUND_EXTRA_PER_CASE = 0
 FREE_SHIP        = 7700    # 送料無料しきい値(割引後 subtotal で判定)
 
 # docs/13 のスクリーニング目安。Hard Gate にしない。
@@ -64,15 +69,20 @@ def num(v):
 def econ(price, landed, refund=REFUND_CENTRAL):
     """1点あたりの採算。landed が無ければ None を返す。
 
-    refund は 30日間安心保証の返金引当率。原則返品不要で返金するため、
-    **引当は売価だけでなく着地原価も失う前提**で置く(返ってこない在庫)。
-        引当額 = (売価 + 着地原価) × refund
+    refund は 30日間安心保証の返金引当率。
+
+        返金引当額 = 売価 × refund + 追加費用 × refund
+
+    **着地原価は引当に入れない(D-130)。**粗利額の時点で
+    `売価 − 着地原価` として既に控除しているため、引当にも入れると二重控除になる。
+    返送料・再配送費・決済手数料の非返還分などが分かれば
+    REFUND_EXTRA_PER_CASE に入れる(現在 0・未計上)。
     """
     if landed is None or price is None:
         return None
     gross = price - landed
     fee   = price * PAYMENT_FEE_RATE
-    reserve = (price + landed) * refund
+    reserve = (price + REFUND_EXTRA_PER_CASE) * refund
     cm    = gross - fee - reserve
     return {
         'price': round(price),

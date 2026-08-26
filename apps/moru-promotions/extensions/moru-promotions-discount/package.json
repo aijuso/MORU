@@ -1,0 +1,12 @@
+{
+  "name": "moru-promotions-discount",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "node tests/run_tests.mjs"
+  },
+  "dependencies": {
+    "@shopify/shopify_function": "^2.0.1"
+  }
+}

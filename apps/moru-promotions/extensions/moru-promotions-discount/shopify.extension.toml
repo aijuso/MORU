@@ -1,0 +1,30 @@
+api_version = "2025-10"
+
+[[extensions]]
+name = "MORU 販促割引(統合)"
+handle = "moru-promotions-discount"
+uid = "ed96ca74-83c1-80c0-6013-247f4b793a0fcc7642d055774ef8"
+type = "function"
+description = "PAIR / まとめ買い / Summer Sale を1つの Function で判定し、1商品につき割引を1つだけ適用する(加算しない)。あわせて、割引前 subtotal がしきい値以上なら送料無料を維持する。対象・率・しきい値は Discount の app metafield から読む。設定が無ければ何もしない(fail-closed)。"
+
+  # 商品割引: PAIR 15% > まとめ買い 2点10%/3点以上15% > Summer Sale 10%
+  [[extensions.targeting]]
+  target = "cart.lines.discounts.generate.run"
+  input_query = "src/cart_lines_discounts_generate_run.graphql"
+  # Wasm Component Model の制約で TOML の export は kebab-case。
+  export = "cart-lines-discounts-generate-run"
+
+  # 配送割引: 割引「前」の subtotal がしきい値以上なら送料 100%OFF
+  [[extensions.targeting]]
+  target = "cart.delivery-options.discounts.generate.run"
+  input_query = "src/cart_delivery_options_discounts_generate_run.graphql"
+  export = "cart-delivery-options-discounts-generate-run"
+
+  [extensions.build]
+  # JS Function は Shopify CLI(Javy)が直接ビルドする。build command は空にする。
+  # ここに "npm run build" を書くと package.json を呼び返して無限再帰する(D-100)。
+  command = ""
+  # 生成型(../generated/api)を import しないので typegen は不要。no-op にする。
+  typegen_command = "true"
+  path = "dist/function.wasm"
+  watch = [ "src/**/*.js", "src/**/*.graphql" ]
