@@ -709,3 +709,97 @@ JS の `.replace('%code%', code)` も併せて外した。
 `bulkOperationRunQuery` でページ本文を JSONL に書き出し、
 `bulkOperationRunMutation` で流し込む(手入力を挟まない)方式を予定する。
 テーマ反映で使ったのと同じ考え方。
+
+---
+
+## 21. ローンチ前バックエンド整理(2026-08-26)
+
+### 1. ピボ テーブルランプ をローンチ対象から外した
+
+**`publishableUnpublish` は MCP の安全ポリシーで拒否された**
+(「Unpublishing is blocked to prevent accidental storefront catalog removal」)。
+そこで**既存の非ローンチ4商品と同じ `status: DRAFT`** にした。可逆で、商品データは残る。
+
+| | |
+|---|---|
+| status | ACTIVE → **DRAFT** |
+| resourcePublications | **0件**(オンラインストア・POS から外れた) |
+| onlineStoreUrl | null |
+| Variant | **3件そのまま**(レッド / ダークグリーン / オレンジ・各 ¥26,980・SKU 変更なし) |
+| メディア | **23枚そのまま** |
+
+**戻すときは `status: ACTIVE` に戻すだけ。** 画像修正後に復帰できる。
+
+### 2. sale collection を Function の config と同期した
+
+**`sale` collection は手動コレクションではなく、`TAG EQUALS 'sale'` のスマートコレクションだった。**
+したがって商品を直接ぶら下げることはできず、**同期の手段はタグ付けのみ。**
+
+⚠️ **以前の「セールタグを追加しない」という取り決めを、この指示が上書きする形になる。**
+当時はセールが動いていなかったのでタグは実態のない表示になったが、
+いまは SUMMER SALE 10% が Function で実際に効いているので、
+**タグは事実と一致する**(docs/01 §4「その表示が事実か」)。**タグを外せば元に戻せる。**
+
+`shop.custom.moru_promotions_config` の `sale.productIds`(= Function が読む正本)を
+そのまま読み、**18商品に `sale` タグを付けた。手打ちの別リストは作っていない。**
+
+| | |
+|---|---|
+| collection 商品数 | **18**(同期前は 0) |
+| config `sale.productIds` | **18** |
+| **差分** | **0**(双方向とも欠落なし) |
+
+MORU フラワーラウンジ / クラウド サイドテーブル / クリアシェード テーブルランプ /
+コイル サイドテーブル / コーデュロイ フォールディングチェア / ジオメトリック ブックスタンド /
+セル サイドボード / ツインベル アラームクロック / デュオ ナイトテーブル /
+**ハル ダイニングチェア** / ビス ダイニングチェア / **ピボ テーブルランプ(DRAFT)** /
+フラワー キャットタワー / ボア ラウンジチェア / マッシュルーム コードレステーブルランプ /
+モコ ラウンジチェア / ロロ サイドテーブル / ロンド コーヒーテーブル
+
+- **ハル ダイニングチェアは商品として含まれている**(指示どおり)
+- **`excludedVariantIds` は config を一切触っていないので維持**
+  (`50296095768816` / `50296095670512` = 2脚セット Variant)。
+  **コレクション所属は商品単位、実際の割引除外は Function の Variant 判定が正**という
+  切り分けもそのまま
+- **ソラ キャットハンモックは `sale.productIds` に含まれていない**(確認済み)
+
+#### 🔴 ただし ピボ は `sale.productIds` に含まれていた
+
+Owner の想定は「ローンチ対象外の商品は含まれていないはず」だったが、
+**ピボは含まれている。** config は変更禁止なので**そのまま残し、タグも付けた**
+(DRAFT なので顧客には出ない)。**config から外すかどうかは Owner 判断。**
+
+### 3. Checkout の配送予定文言 — **実機確認はできていない**
+
+**ストアはパスワード保護中で、解除は禁止されているため、チェックアウトまで進めない。**
+
+代わりに出どころを特定した。
+
+**テーマ側は問題なし。** 全ファイルを検索したが「3〜5営業日」は**存在しない**。
+出ているのはいずれも正しい表現:
+
+| 場所 | 文言 |
+|---|---|
+| `templates/product.json` | お届け目安はご注文から約2〜3週間 … 4週間以上かかる場合があります |
+| `templates/page.faq.json` | 通常2〜3週間前後 … 4週間以上かかる場合があります |
+| `templates/page.tokushoho.json` | 通常2〜3週間前後 … 4週間以上かかる場合があります |
+| `templates/index.json` | お届けの目安は2〜3週間 / 4週間以上いただく場合があります |
+| `locales/ja.default.schema.json` | ご注文から2〜3週間前後(国際配送) |
+
+**「3〜5営業日」の出どころは配送料金レートの transit time。**
+`/cart/shipping_rates.json` が `"delivery_days":[3,5]` を返していた。
+**速達が「1〜2営業日」と表示されていたのと同じ設定項目。**
+
+⚠️ **この項目はこの接続の Admin API バージョンからは触れない。**
+
+- `DeliveryMethodDefinition` に transit time のフィールドが**無い**
+- `DeliveryProfileInput.methodDefinitionsToUpdate` にも**無い**
+- 新しい `Market.delivery.shipping.optionDefinitions`
+  (`transitTimeMinSeconds` / `transitTimeMaxSeconds`)は
+  **このバージョンに存在しない**(`Cannot query field "delivery" on type "Market"`)
+
+**→ Shopify 管理画面から消す必要がある:**
+設定 → 配送と配達 → 一般プロフィール → 国内配送 → **通常配送** → 配送日数(transit time)を削除。
+
+削除すればチェックアウトに営業日表示が出なくなり、
+**お届け目安はテーマ側の「2〜3週間 / 4週間以上」だけが残る。**
