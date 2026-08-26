@@ -183,3 +183,142 @@ Frontend Dev theme / 既存 Function のコード / `_discount_config` の中身
 2. Discount resource が2件になることの承認
 3. Flow でのメール送信を入れるか(入れなくても成立する)
 4. コード文字列(案: `MORU500`)
+
+---
+
+# 追記(2026-08-26)— Owner GO を受けて実行した内容
+
+## 8. 訂正: アカウントページには出さない
+
+**初版で「アカウントページに Frontend Dev から MORU500 を表示」と書いたのは誤り。**
+新しい顧客アカウントのページは Liquid テーマから自由に差し込める場所ではなく、
+追加コンテンツは Checkout and Accounts Editor / Customer Account UI Extension /
+アプリブロック側の領分。**Owner 指摘のとおり。**
+
+**正しい置き場所はストア側(通常の Liquid テーマ)。**
+ログイン中は `customer` がグローバルで使えるので:
+
+```liquid
+{% if customer != nil and customer.orders_count == 0 %}
+  新規会員限定 ¥500 OFF / コード: MORU500 [コピーする]
+{% endif %}
+```
+
+**セグメントの条件(`customer_account_status = ENABLED AND number_of_orders = 0`)と
+表示条件(`customer != nil and customer.orders_count == 0`)が一致している。**
+ログインしている時点で `ENABLED`、`orders_count == 0` が `number_of_orders = 0` に対応する。
+**見えている人 = 使える人。**
+
+ログイン後のストア側リダイレクトもテーマから制御できるので、
+**登録直後にこのブロックへ着地させるのが最短。**(Frontend Dev 担当)
+
+## 9. 作成したもの(2026-08-26)
+
+| 種別 | ID | 内容 |
+|---|---|---|
+| Segment | `gid://shopify/Segment/578826076400` | 新規会員(登録済み・未購入)<br>`customer_account_status = 'ENABLED' AND number_of_orders = 0` |
+| Discount | `gid://shopify/DiscountCodeNode/1484417040624` | 新規会員登録 ¥500OFF |
+
+```
+code                    MORU500
+status                  ACTIVE
+discountClasses         ["ORDER"]
+customerGets            ¥500 / appliesOnEachItem: false / AllDiscountItems
+context                 DiscountCustomerSegments → 上記セグメント1件
+appliesOncePerCustomer  true
+usageLimit              null(無制限。セグメント + once-per-customer で足りる)
+minimumRequirement      null(最低購入金額なし)
+endsAt                  null(有効期限なし)
+combinesWith            order / product / shipping すべて false
+```
+
+**Discount resource は 2件**(`MORU 販促割引(統合)` + `新規会員登録 ¥500OFF`)。
+
+## 10. 🔴 実測はまだできていない
+
+**理由は2つ。どちらも回避できない。**
+
+1. **顧客が0人。** `MORU500` はセグメント限定なので、
+   **ログイン済みの新規会員が1人もいないと発動しない。**
+   サンドボックスからは新しい顧客アカウントにログインできない
+   (メールのワンタイムコードを受け取れない)
+2. **ストアのパスワード保護が戻っている**(`passwordProtection.enabled: true`)。
+   これは前回こちらから戻すよう進言した状態で、正しい。
+   **`/password` は叩かない**(前回 429 を連発した経緯があるため)
+
+**したがって実測は Owner の手元で1回だけ行う必要がある。** 手順は §11。
+
+## 11. Owner にお願いする実測(3カート・注文は確定しない)
+
+**前提: 会員登録(ログイン)を1回済ませておく。** その時点でセグメントに入る。
+セグメントの反映に数分かかることがある。
+
+### 🔴 テスト1(本番)— 統合 Discount と競合させる
+
+カート: **フェイクファー クリームホワイト 150×200 を 2点**(¥7,960)
+`MORU500` を入力してチェックアウト直前まで進み、**送料込みの合計**を見る。
+
+| 出た数字 | 意味 | 判定 |
+|---|---|---|
+| **¥7,164** | 統合 Discount が残った(−¥796 / 送料無料)。コードは適用されない | ✅ **PASS** |
+| **¥8,330** | MORU500 が勝ち、送料 ¥870 が復活した | 🔴 **NG。この状態では公開しない** |
+| ¥6,664 | 両方効いた(−¥1,296 / 送料無料) | ⚠️ 想定外。`combinesWith` が全 false なので起きないはず |
+
+### テスト2 — 競合しないカートでコードが効くか
+
+カート: **ソラ キャットハンモック 1点**(¥20,480・施策対象外・元から送料無料)
+期待: **−¥500 → ¥19,980 / 送料 ¥0**
+
+### テスト3 — しきい値未満
+
+カート: **ミニ アラームクロック 1点**(¥4,480)
+期待: **−¥500 → ¥3,980 / 送料 ¥870 → 合計 ¥4,850**
+
+### そのほか確認してほしいこと
+
+- ログアウト状態で `MORU500` を入れると**弾かれる**こと(セグメント制限が効いている証拠)
+
+## 12. テスト1が NG だった場合 — Plan S(送料無料を独立させる)
+
+**すぐ C-2(併用可にして加算させる)にはしない。** Owner 指示のとおり、
+**送料無料を商品販促から切り離す構造**を先に検討する。
+
+### いまの構造が問題を作っている
+
+```
+MORU 販促割引(統合)  … PRODUCT + ORDER + SHIPPING を1件で持つ / combinesWith 全 false
+```
+
+**送料無料が商品割引と同じ1件に同居しているせいで、
+商品割引が負けると送料無料まで道連れになる。**
+
+### Plan S
+
+**配送割引だけを別の Automatic Discount に分離する。**
+
+```
+① MORU 販促割引(商品)   PRODUCT     combinesWith: shipping ✅ / order ✕ / product ✕
+② MORU 送料無料          SHIPPING    combinesWith: product ✅ / order ✅ / shipping ✕
+③ MORU500                ORDER       combinesWith: shipping ✅ / product ✕ / order ✕
+```
+
+- ① ⟷ ② … 併用される → **商品割引 + 送料無料**(いまと同じ)
+- ③ ⟷ ② … 併用される → **¥500 + 送料無料**
+- ① ⟷ ③ … **併用されない** → Shopify がどちらか得な方を選ぶ
+
+**どちらが選ばれても送料無料は残る。** 「¥500 は商品割引と加算しない」も守られる。
+
+### 必要な作業
+
+1. `moru-promotions-discount` から配送ターゲットを外し、
+   **配送専用の Function extension を新設**(`shipping.js` はそのまま流用できる)
+2. Automatic Discount をもう1件作成(Discount resource は **3件**になる)
+3. 3件の `combinesWith` を上表のとおり設定
+4. 21ケース + 送料の実測をやり直す
+
+**①②③ の分離は Function の改修を伴う。Owner GO なしには着手しない。**
+
+### Plan S を採らない場合の代替
+
+- **C-2**: `combinesWith` を開けて ¥500 を常に加算する(送料無料は残るが、割引は重なる)
+- **F**: ¥500 を統合 Function の中に取り込む(クーポンではなく自動適用になる)
