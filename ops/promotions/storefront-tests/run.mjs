@@ -2,7 +2,8 @@
 //
 //   MORU_STOREFRONT_PASSWORD=... node ops/promotions/storefront-tests/run.mjs
 //
-// パスワードは **環境変数からのみ** 読む。ファイル・ログにも残さない。
+// パスワード保護は Owner が一時解除しているので、認証処理は行わない。
+// `/password` は叩かない(叩くとレート制限に入る)。
 //
 // ブラウザは使わない。Shopify の `/cart/add.js` と `/cart.js` を直接叩いて
 // カートを作り、返ってきた JSON の割引額を見る。テーマの DOM に依存しないので
@@ -12,11 +13,6 @@
 
 // shop.url の正規ドメイン。rgy5ee-fv は 301 でここへ飛ぶ。
 const STORE = process.env.MORU_STORE_URL || 'https://moruliving.myshopify.com';
-const PASSWORD = process.env.MORU_STOREFRONT_PASSWORD;
-if (!PASSWORD) {
-  console.error('MORU_STOREFRONT_PASSWORD が未設定。中止する。');
-  process.exit(2);
-}
 
 // 実データの Variant GID → 数値 ID(cart/add.js が使うのは数値 ID)
 const V = {
@@ -99,6 +95,8 @@ function remember(res) {
     if (i > 0) jar.set(pair.slice(0, i).trim(), pair.slice(i + 1).trim());
   }
 }
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function call(path, { method = 'GET', body } = {}) {
   const res = await fetch(STORE + path, {
     method,
@@ -115,40 +113,36 @@ async function call(path, { method = 'GET', body } = {}) {
   return res;
 }
 
-async function main() {
-  // パスワードページを通過する。値はログに出さない。
-  // Shopify はパスワード投稿を絞る(429)ので、待って何度か試す。
-  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-  let ok = false;
-  for (let attempt = 1; attempt <= 8 && !ok; attempt++) {
-    await call('/password');
-    const form = new URLSearchParams({ form_type: 'storefront_password', utf8: '✓', password: PASSWORD });
-    const res = await fetch(STORE + '/password', {
-      method: 'POST', redirect: 'manual',
-      headers: { cookie: cookieHeader(), 'content-type': 'application/x-www-form-urlencoded',
-                 'user-agent': 'MORU-promotions-test' },
-      body: form.toString(),
-    });
-    remember(res);
-    if (res.status === 429) {
-      console.log(`   パスワード投稿が 429(レート制限)。60秒待って再試行 ${attempt}/8`);
-      await wait(60000);
-      continue;
-    }
-    ok = (await call('/cart.js')).status === 200;
-    if (!ok) { console.log(`   まだ入れない(POST ${res.status})。30秒待って再試行 ${attempt}/8`); await wait(30000); }
+/** cart/add は連投すると 429 になる。少し待って数回試す。 */
+async function addToCart(id, quantity) {
+  for (let i = 1; i <= 6; i++) {
+    const res = await call('/cart/add.js', { method: 'POST', body: { id, quantity } });
+    if (res.status < 400) return res;
+    if (res.status !== 429) return res;
+    await sleep(3000 * i);
   }
-  console.log(ok ? '✅ ストアフロントに入れた' : '❌ パスワードを通過できなかった');
-  if (!ok) process.exit(1);
+  return { status: 429 };
+}
+
+async function main() {
+  // パスワード保護は解除されている前提。認証はしない。
+  const probe = await call('/cart.js');
+  if (probe.status !== 200) {
+    console.error(`❌ ストアフロントに入れない (cart.js → ${probe.status})。`);
+    console.error('   パスワード保護がまだ有効な可能性がある。/password は叩かない(レート制限のため)。');
+    process.exit(1);
+  }
+  console.log('✅ ストアフロントに入れた(パスワード保護は解除されている)');
 
   const results = [];
   for (const c of CASES) {
     await call('/cart/clear.js', { method: 'POST' });
     for (const [id, qty] of c.items) {
-      const add = await call('/cart/add.js', { method: 'POST', body: { id, quantity: qty } });
+      const add = await addToCart(id, qty);
       if (add.status >= 400) {
         console.log(`  ⚠️ ${c.id}: cart/add に失敗 (variant ${id} → ${add.status})`);
       }
+      await sleep(500);
     }
     const cartRes = await call('/cart.js');
     const raw = await cartRes.text();
@@ -169,6 +163,7 @@ async function main() {
     const e = c.expect;
     const pass = subtotal === e.subtotal && Math.round(discount) === e.discount;
     results.push({ ...c, subtotal, discount, after, names: uniq, pass });
+    await sleep(700);
     console.log(`${pass ? 'PASS' : 'FAIL'} ${c.id} ${c.name}`);
     console.log(`      小計 ${yen(subtotal)}(期待 ${yen(e.subtotal)}) / 割引 -${yen(discount)}(期待 -${yen(e.discount)}) / 割引後 ${yen(after)}`);
     if (uniq.length) console.log(`      割引名: ${uniq.join(' / ')}`);
