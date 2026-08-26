@@ -1,0 +1,95 @@
+{
+  "metafields": [
+    {
+      "ownerId": "gid://shopify/Product/10218058285296",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218057892080",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218008183024",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218009329904",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218008969456",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218005397744",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218057531632",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218006446320",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218005364976",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218009133296",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218008346864",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218009166064",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    },
+    {
+      "ownerId": "gid://shopify/Product/10218057990384",
+      "namespace": "custom",
+      "key": "multi_buy_eligible",
+      "type": "boolean",
+      "value": "true"
+    }
+  ]
+}

@@ -1117,3 +1117,73 @@ Owner 側で CKB 原価概算ツールの Excel 一括投入を試したが正�
 **小 ¥800 / 中 ¥1,750 / 大 ¥3,500 を estimate として維持。**
 実注文・個別見積が取れた商品から**順次 landed 実測へ更新**する。
 **推測で他 SKU へ横展開しない**(D-129 の方針を継続)。
+
+## D-134 まとめ買い対象の正本を Product metafield ひとつにする(2026-08-26・Owner決定)
+
+**`custom.multi_buy_eligible`(boolean)が唯一の Source of Truth。**
+
+Frontend Dev 側も `product.metafields.custom.multi_buy_eligible.value == true` の
+ときだけまとめ買い UI を出す fail-closed 実装になっているため、
+**Function 側に `multiBuy.productIds` を持たせると同じことを2箇所で手管理する**ことになり、
+「UI には出るのに割引が付かない / その逆」が起きる。
+
+```
+custom.multi_buy_eligible = true
+  → PDP にまとめ買い UI が出る(Frontend)
+  → 統合 Function もまとめ買い対象として認識する(Backend)
+```
+
+- 統合 Function から `multiBuy.productIds` の読み取りを**削除**した
+- 設定 JSON で変えられるのは **`multiBuy.tiers`(数量しきい値と率)だけ**
+- ただし **`multiBuy` キーそのものが無ければ、まとめ買いは動かない。**
+  対象商品は metafield が正だが、**施策の ON/OFF は設定側で持つ**
+  (空の設定でいきなり割引が出るのは fail-closed に反するため)
+- PAIR / Sale / `freeShippingThreshold` / `sale.excludedVariantIds` は
+  引き続き Discount app metafield の設定で管理する
+
+テスト **44 passed / 0 failed**(「設定 JSON に productIds を書いても対象は増えない」を追加)。
+
+## D-135 `moru-promotions-5` / `-6` を release(2026-08-26)
+
+- **`moru-promotions-5`** — 統合 Function の初回 release
+- **`moru-promotions-6`** — `shopify.app.toml` に
+  `[discount.metafields.app.function-configuration]` を宣言し、D-134 を反映
+
+**release 後も Discount resource は 0件のまま**(実査確認済み)。
+**Function を release しただけでは顧客向け割引は有効にならない。**
+Discount resource を作って初めて適用される。
+
+## D-136 🔴 Discount 作成には MORU Promotions 自身の Admin API トークンが要る(2026-08-26)
+
+Function の設定 JSON は **アプリ予約名前空間 `$app`** の metafield に入る。
+**`$app` は MORU Promotions 専用なので、他のアプリからは書き込めない。**
+
+Claude が使っている MCP は別アプリ(`Shopify Claude Connector App`)なので、
+**`discountAutomaticAppCreate` を Claude 側から実行できない。**
+
+- 管理画面から作る経路も、**設定 JSON を入れる UI が無い**(admin UI extension 未作成)ため
+  今のままでは使えない。設定が空 = fail-closed で割引は1円も出ない
+- `shopify app deploy` で使った Automation Token は **Dev Dashboard 用であって
+  ストアの Admin API トークンではない**
+- **→ MORU Promotions アプリの Admin API アクセストークンを別途用意する必要がある**
+
+一方 **`metafieldsSet`(まとめ買い13商品)は `custom` 名前空間 = マーチャント所有**なので、
+**現在の権限で実行できる。**制約がかかるのは Discount 作成だけ。
+
+## D-137 Discount 作成・metafield 設定の materials を用意(2026-08-26)
+
+`ops/promotions/` に実行材料一式を置いた。**Shopify は未変更。**
+
+| ファイル | 中身 |
+|---|---|
+| `_shopify_gids_20260826.json` | 商品名 → Product GID(Admin 実査・36商品) |
+| `_discount_config_20260826.json` | Function に渡す設定 JSON |
+| `_discount_create_variables_20260826.json` | `discountAutomaticAppCreate` の variables |
+| `_multibuy_assignment_20260826.csv` | metafield 設定予定 13商品 |
+| `_multibuy_set_variables_20260826.json` | `metafieldsSet` の variables |
+| `README.md` | 実行 Runbook + **DEV テストケース A〜E(21件)** |
+
+生成は `ops/tools/promotion_config.py`(**Shopify を1件も変更しない**)。
+
+**両 mutation とも `validate_graphql_codeblocks` で検証済み。**
+`combinesWith` は3つとも false にして、加算禁止を Shopify 側でも二重に担保する。

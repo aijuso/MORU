@@ -34,7 +34,6 @@
  *       "percentage": 15 }
  *   ],
  *   "multiBuy": {
- *     "productIds": ["gid://shopify/Product/3"],
  *     "tiers": [ { "minQuantity": 2, "percentage": 10 },
  *                { "minQuantity": 3, "percentage": 15 } ]
  *   },
@@ -46,9 +45,16 @@
  * }
  * ```
  *
- * `multiBuy.productIds` が空のときだけ、Product metafield
- * `custom.multi_buy_eligible` が true の商品を対象とみなす(旧方式の後方互換)。
- * どちらも無ければ Multi-buy は動かない。
+ * ## まとめ買いの対象は Product metafield が唯一の正(D-134)
+ *
+ * **`custom.multi_buy_eligible = true` の商品だけがまとめ買いの対象。**
+ * 設定 JSON に対象商品リストは**持たない。**
+ *
+ * Frontend(PDP のまとめ買い UI)も同じ metafield を見て出し分けているため、
+ * ここに productIds を置くと**同じことを2箇所で手管理する**ことになり、
+ * 「UI には出るのに割引が付かない / その逆」が起きる。**正本は1つにする。**
+ *
+ * 設定 JSON で変えられるのは `multiBuy.tiers`(数量しきい値と率)だけ。
  *
  * `sale.excludedVariantIds` は **Variant 単位**の除外。
  * ハル ダイニングチェアの2脚セット(既にセット割が入っている)を Summer Sale から
@@ -205,13 +211,15 @@ export function buildCandidates(config, byProduct) {
   }
 
   // ---- 2. Multi-buy ----
-  const mb = (config.multiBuy && typeof config.multiBuy === 'object') ? config.multiBuy : {};
-  const mbIds = toIdList(mb.productIds);
-  const mbTiers = normalizeTiers(mb.tiers);
-  for (const [productId, entry] of byProduct) {
-    // 設定に productIds があればそれが正。無ければ metafield へ落ちる(後方互換)。
-    const eligible = mbIds.length ? mbIds.includes(productId) : entry.lines.some((l) => l.eligible);
-    if (!eligible) continue;
+  // 対象判定は Product metafield `custom.multi_buy_eligible` だけを見る(D-134)。
+  // 設定 JSON に対象商品リストを持たせない = Frontend と正本を1つにするため。
+  // `multiBuy` キーが設定に無いときは、まとめ買いそのものを動かさない。
+  // 対象商品は metafield が正だが、**施策の ON/OFF は設定側で持つ**。
+  // 空の設定でいきなり割引が出るのは fail-closed に反する。
+  const mb = (config.multiBuy && typeof config.multiBuy === 'object') ? config.multiBuy : null;
+  const mbTiers = mb ? normalizeTiers(mb.tiers) : [];
+  for (const [productId, entry] of (mb ? byProduct : [])) {
+    if (!entry.lines.some((l) => l.eligible)) continue;
     const percentage = percentageFor(entry.quantity, mbTiers);
     if (percentage <= 0) continue;
     // まとめ買いは Product の全数量が対象。

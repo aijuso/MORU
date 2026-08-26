@@ -45,7 +45,6 @@ Owner 方針(**加算禁止・1商品につき割引1つ**)をコードで保証
       "percentage": 15 }
   ],
   "multiBuy": {
-    "productIds": ["gid://shopify/Product/..."],
     "tiers": [ { "minQuantity": 2, "percentage": 10 },
                { "minQuantity": 3, "percentage": 15 } ]
   },
@@ -59,8 +58,13 @@ Owner 方針(**加算禁止・1商品につき割引1つ**)をコードで保証
 ```
 
 - `pairs` は旧 `groups` キーでも読む(`pair-set-discount` からの移行用)
-- `multiBuy.productIds` が空のときだけ、Product metafield `custom.multi_buy_eligible`
-  が true の商品を対象とみなす(旧 `multi-buy-discount` との後方互換)
+- 🔴 **まとめ買いの対象商品は設定 JSON に持たない(D-134)。**
+  Product metafield **`custom.multi_buy_eligible = true` が唯一の正本。**
+  Frontend(PDP のまとめ買い UI)も同じ metafield を見ているため、ここに
+  productIds を置くと**同じことを2箇所で手管理する**ことになる。
+  設定 JSON で変えられるのは `multiBuy.tiers`(数量しきい値と率)だけ。
+  ただし **`multiBuy` キーそのものが無ければ、まとめ買いは動かない**
+  (施策の ON/OFF は設定側で持つ = 空の設定でいきなり割引が出ない)
 - **`sale.excludedVariantIds` は Variant 単位の除外。**
   ハル ダイニングチェア 2脚セット(既にセット割が入っている)を Summer Sale から
   外すのに使う(D-126)。**Product 単位では外せない**
@@ -72,6 +76,7 @@ Owner 方針(**加算禁止・1商品につき割引1つ**)をコードで保証
 | PRODUCT 割引クラスが無い | 商品割引を出さない |
 | SHIPPING 割引クラスが無い | 配送割引を出さない |
 | 設定 metafield が無い / 壊れている | **何もしない** |
+| `multiBuy` キーが無い | metafield が true でも まとめ買いを出さない |
 | `freeShippingThreshold` が数値でない | 配送割引を出さない(標準の条件がそのまま働く) |
 | カートが空 / 対象商品なし | 何もしない |
 
@@ -80,7 +85,7 @@ Owner 方針(**加算禁止・1商品につき割引1つ**)をコードで保証
 ## テスト
 
 ```
-node tests/run_tests.mjs     # 43 passed / 0 failed
+node tests/run_tests.mjs     # 44 passed / 0 failed
 ```
 
 Shopify の生成コード(`../generated/api`)を import していないので、

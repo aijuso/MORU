@@ -1,0 +1,177 @@
+# Promotion 実行 Runbook(2026-08-26)
+
+> **この時点で Shopify は未変更。**Discount 0件 / 商品価格・タグ・status・publication・
+> MAIN テーマ すべて据え置き。**Owner が GO と言うまで何も実行しない。**
+
+| ファイル | 中身 |
+|---|---|
+| `_shopify_gids_20260826.json` | 商品名 → Product GID(Admin 実査・36商品) |
+| `_discount_config_20260826.json` | Function に渡す設定 JSON |
+| `_discount_create_variables_20260826.json` | `discountAutomaticAppCreate` の variables |
+| `_multibuy_assignment_20260826.csv` | `custom.multi_buy_eligible = true` の設定予定一覧(13商品) |
+| `_multibuy_set_variables_20260826.json` | `metafieldsSet` の variables |
+
+生成: `python3 ops/tools/promotion_config.py`(Shopify を1件も変更しない)
+
+---
+
+## 0. 前提 — deploy 済みのもの
+
+| 項目 | 値 |
+|---|---|
+| App | **MORU Promotions** `7e71fcf4cf775c9c2568b1783bed5cfc` |
+| released version | **`moru-promotions-6`** |
+| Function handle | **`moru-promotions-discount`** |
+| Extension UID | `ed96ca74-83c1-80c0-6013-247f4b793a0fcc7642d055774ef8` |
+| ターゲット | `cart.lines.discounts.generate.run` / `cart.delivery-options.discounts.generate.run` |
+| テスト | **44 passed / 0 failed** |
+
+---
+
+## 🔴 実行前に解決が要る1点 — Admin API アクセストークン
+
+Function の設定 JSON は **アプリ予約名前空間 `$app`** の metafield に入る
+(`shopify.app.toml` の `[discount.metafields.app.function-configuration]` で定義)。
+
+**`$app` は MORU Promotions 専用の名前空間なので、他のアプリからは書き込めない。**
+Claude が使っている MCP は別アプリ(`Shopify Claude Connector App`)なので、
+**この Discount 作成 mutation を Claude 側から実行できない。**
+
+実行できるのは次のいずれか:
+
+1. **MORU Promotions アプリ自身の Admin API アクセストークン**を用意して mutation を叩く
+2. Shopify 管理画面から作成する
+   → ただし**設定 JSON を入れる UI が無い**(admin UI extension を作っていない)。
+     設定が空 = fail-closed なので**割引は1円も出ない。**この経路は今のままでは使えない
+
+**→ 1 が必要。**`shopify app deploy` で使った Automation Token は Dev Dashboard 用で、
+**ストアの Admin API トークンではない。**別途取得が要る。
+
+> `metafieldsSet`(まとめ買いの13商品)は **`custom` 名前空間 = マーチャント所有**なので、
+> **こちらは今の権限で実行できる。**制約がかかるのは Discount 作成だけ。
+
+---
+
+## 1. まとめ買い対象 13商品に `custom.multi_buy_eligible = true`
+
+**正本はこの Product metafield ひとつ**(D-134)。Frontend の PDP UI も同じ値を見る。
+設定 JSON には対象商品リストを持たせていない。
+
+```graphql
+mutation SetMultiBuyEligible($metafields: [MetafieldsSetInput!]!) {
+  metafieldsSet(metafields: $metafields) {
+    metafields { id namespace key value type owner { ... on Product { id title } } }
+    userErrors { field message code }
+  }
+}
+```
+
+variables: `_multibuy_set_variables_20260826.json`
+
+- 定義は既存: `gid://shopify/MetafieldDefinition/258121728240`(boolean・ALL_VALID)
+- **DRAFT 4商品(ルナ / セル モジュール / プラッシュ / アブストラクト)と
+  保留のソラには設定しない。**
+- 現在の設定件数は **0件**(全36商品で `null` を実査確認済み)
+
+## 2. 商品価格の一括反映
+
+`ops/products/_new_price_map_20260825.csv` が Source of Truth。
+**31商品 / 211 Variant。**変更内容は `_price_plan_variants_20260825.csv` の
+`現価格` → `新通常価格` 列。
+
+## 3. Discount を1件作成(**Owner Gate**)
+
+```graphql
+mutation CreateMoruPromotions($discount: DiscountAutomaticAppInput!) {
+  discountAutomaticAppCreate(automaticAppDiscount: $discount) {
+    automaticAppDiscount {
+      discountId title status startsAt endsAt discountClasses
+      appDiscountType { functionId title }
+    }
+    userErrors { field message code }
+  }
+}
+```
+
+variables: `_discount_create_variables_20260826.json`
+
+- `discountClasses: ["PRODUCT", "SHIPPING"]` — **両方必要。**
+  PRODUCT が無いと商品割引が、SHIPPING が無いと送料無料が動かない(fail-closed)
+- `combinesWith` は **3つとも false**。Owner 方針の「加算禁止」を Shopify 側でも二重に担保する
+- `startsAt` は `null`(= 即時)。日時を指定するなら Owner が決める
+- **両 mutation とも `validate_graphql_codeblocks` で検証済み**(必要スコープ
+  `write_discounts` / `read_discounts` はアプリに付与済み)
+
+---
+
+## 4. DEV テストケース一覧(Discount 作成後・本番前に必ず通す)
+
+`shopify theme dev` ではなく **実際のチェックアウトまで**通す。単体テストは
+すべてモック入力なので、**実データでの確認はここでしかできない。**
+
+### A. 送料無料(Owner 指定の5項目)
+
+| # | カート | 割引前 | 割引後 | 期待 |
+|---|---|---|---|---|
+| A-1 | フェイクファー 150×200 × 2点 | ¥7,960 | ¥7,164 | **送料無料が維持される** 🔴最重要 |
+| A-2 | 手編みコースター ¥2,980帯 × 3点 | ¥8,940 | ¥7,599 | **送料無料が維持される** |
+| A-3 | ジオメトリック 本体のみ × 1点 | ¥7,980 | ¥7,182 | **送料無料が維持される** |
+| A-4 | ミニ アラームクロック × 1点 | ¥4,480 | ¥4,480 | **送料無料が付かない**(¥7,700 未満) |
+| A-5 | ボア ラウンジチェア × 1点 | ¥14,980 | ¥13,482 | 従来どおり無料 |
+| A-6 | ミニ × 1点 のみ(割引なし) | ¥4,480 | — | **送料が正しく発生する** |
+
+> ⚠️ **A-1 が本命。**配送ターゲットが読む `line.cost.amountPerQuantity` が
+> 商品割引の**前か後か**はドキュメントから断定できなかった。**ここで実測する。**
+> 後だった場合は、割引率が設定 metafield にあるので足し戻して復元できる
+> (`ops/_promotion_architecture_20260825.md` §1)。
+
+### B. 割引の優先順位・加算禁止
+
+| # | カート | 期待 |
+|---|---|---|
+| B-1 | クラウド × 1 + マッシュルーム × 1 | **両方 15%OFF**・合計 ¥18,666・送料無料 |
+| B-2 | クラウド × 1 のみ | **10%OFF**(Sale)¥10,782。PAIR は成立しない |
+| B-3 | クラウド × 3 + マッシュルーム × 1 | クラウドは **1個だけ 15%**、残り2個は割引なし |
+| B-4 | フェイクファー × 2点 | **10%OFF**(まとめ買い2点) |
+| B-5 | フェイクファー × 3点 | **15%OFF**・全数量 |
+| B-6 | フェイクファー 100×150 × 2 + 150×200 × 1 | **合算 3点 → 15%OFF**(Variant をまたぐ) |
+| B-7 | フェイクファー × 1 + フランネル × 1 | **どちらも割引なし**(別 Product は合算しない) |
+| B-8 | 任意の1商品 | **割引が2つ表示されていない**(加算されていない) |
+
+### C. Summer Sale の除外
+
+| # | カート | 期待 |
+|---|---|---|
+| C-1 | ハル **1脚** × 1 | **10%OFF** ¥18,882 |
+| C-2 | ハル **2脚セット** × 1 | **割引なし** ¥33,980 🔴 |
+| C-3 | ハル 1脚 × 1 + 2脚セット × 1 | 1脚だけ 10%OFF |
+
+### D. 除外商品
+
+| # | カート | 期待 |
+|---|---|---|
+| D-1 | ソラ キャットハンモック × 3 | **割引なし**(保留・metafield 未設定) |
+| D-2 | セル サイドボード × 2 | **10%OFF のみ**(Sale 対象・まとめ買い対象外) |
+
+### E. fail-closed
+
+| # | 操作 | 期待 |
+|---|---|---|
+| E-1 | Discount を一時停止する | **割引が全部消える。**送料は標準条件に戻る |
+| E-2 | 設定 metafield を空の `{}` にする | **割引が出ない。送料無料も付かない** |
+
+---
+
+## 5. 実行順序
+
+```
+0. Admin API アクセストークンを用意する        ← 🔴 これが無いと 3 が実行できない
+1. metafieldsSet(13商品)                      ← 今の権限で実行できる
+2. 商品価格の一括反映(31商品 / 211 Variant)
+3. Discount を1件作成(Owner Gate)
+4. DEV テスト A〜E を通す                       ← 本番有効化の前提条件
+5. 旧 multi-buy-discount / pair-set-discount 拡張を削除して再 deploy
+```
+
+**5 は 4 が通ってから。**旧2本の Discount は作っていないので、
+削除しても顧客に見えている割引は変わらない。

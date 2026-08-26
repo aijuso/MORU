@@ -1,0 +1,25 @@
+{
+  "discount": {
+    "title": "MORU 販促割引(統合)",
+    "functionHandle": "moru-promotions-discount",
+    "discountClasses": [
+      "PRODUCT",
+      "SHIPPING"
+    ],
+    "startsAt": null,
+    "endsAt": null,
+    "combinesWith": {
+      "productDiscounts": false,
+      "orderDiscounts": false,
+      "shippingDiscounts": false
+    },
+    "metafields": [
+      {
+        "namespace": "$app",
+        "key": "function-configuration",
+        "type": "json",
+        "value": "{\"freeShippingThreshold\":7700,\"pairs\":[{\"id\":\"P-6\",\"title\":\"ソファの脇\",\"productIds\":[\"gid://shopify/Product/10218006315248\",\"gid://shopify/Product/10218008248560\"],\"percentage\":15}],\"multiBuy\":{\"tiers\":[{\"minQuantity\":2,\"percentage\":10},{\"minQuantity\":3,\"percentage\":15}]},\"sale\":{\"title\":\"SUMMER SALE\",\"percentage\":10,\"productIds\":[\"gid://shopify/Product/10214219743472\",\"gid://shopify/Product/10218006315248\",\"gid://shopify/Product/10218006348016\",\"gid://shopify/Product/10218058318064\",\"gid://shopify/Product/10218008084720\",\"gid://shopify/Product/10218008150256\",\"gid://shopify/Product/10218006479088\",\"gid://shopify/Product/10218008379632\",\"gid://shopify/Product/10218006511856\",\"gid://shopify/Product/10218009198832\",\"gid://shopify/Product/10218009231600\",\"gid://shopify/Product/10218008510704\",\"gid://shopify/Product/10218060808432\",\"gid://shopify/Product/10218058350832\",\"gid://shopify/Product/10218008248560\",\"gid://shopify/Product/10218008051952\",\"gid://shopify/Product/10218057924848\",\"gid://shopify/Product/10218006577392\"],\"excludedVariantIds\":[\"gid://shopify/ProductVariant/50296095768816\",\"gid://shopify/ProductVariant/50296095670512\"]}}"
+      }
+    ]
+  }
+}

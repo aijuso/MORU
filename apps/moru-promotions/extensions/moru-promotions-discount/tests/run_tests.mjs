@@ -21,7 +21,11 @@ const P = (n) => `gid://shopify/Product/${n}`;
 const V = (n) => `gid://shopify/ProductVariant/${n}`;
 
 /** カート行を作る。price は割引前の単価。 */
-function line(id, productId, variantId, quantity, price = 1000, eligible = false) {
+// P(3) は「まとめ買い対象商品」として扱う。対象判定は Product metafield が唯一の正(D-134)なので、
+// テストのカート行でも metafield を立てて表現する。
+const MULTI_BUY_PRODUCTS = new Set([`gid://shopify/Product/3`]);
+
+function line(id, productId, variantId, quantity, price = 1000, eligible = MULTI_BUY_PRODUCTS.has(productId)) {
   return {
     id: `gid://shopify/CartLine/${id}`,
     quantity,
@@ -44,7 +48,7 @@ function input(lines, config, classes = ['PRODUCT']) {
 const CONFIG = {
   freeShippingThreshold: 7700,
   pairs: [{ id: 'P-6', title: 'ソファの脇', productIds: [P(1), P(2)], percentage: 15 }],
-  multiBuy: { productIds: [P(3)], tiers: [{ minQuantity: 2, percentage: 10 }, { minQuantity: 3, percentage: 15 }] },
+  multiBuy: { tiers: [{ minQuantity: 2, percentage: 10 }, { minQuantity: 3, percentage: 15 }] },
   sale: { productIds: [P(1), P(2), P(4)], percentage: 10, excludedVariantIds: [V(99)] },
 };
 
@@ -117,6 +121,8 @@ test('設定 metafield が無ければ何もしない', () => {
   assert.deepEqual(buildLinesResult(input([line(1, P(3), V(1), 3)], null)).operations, []);
 });
 test('設定が空オブジェクトでも何もしない', () => {
+  // 対象商品は metafield が正だが、施策の ON/OFF は設定側。
+  // multiBuy キーが無ければ metafield が true でも割引は出ない。
   assert.deepEqual(buildLinesResult(input([line(1, P(3), V(1), 3)], {})).operations, []);
 });
 test('カートが空なら何もしない', () => {
@@ -168,21 +174,23 @@ test('同一 Product の Variant 違いを合算して 3点にする', () => {
   assert.equal(f['gid://shopify/CartLine/2'].pct, 15);
 });
 test('別 Product は数量を合算しない', () => {
-  const cfg = { ...CONFIG, multiBuy: { productIds: [P(3), P(5)], tiers: CONFIG.multiBuy.tiers } };
   // P(3) 1点 + P(5) 1点 = どちらも 1点。合算して 2点にはしない。
-  const f = flatten(buildLinesResult(input([line(1, P(3), V(1), 1), line(2, P(5), V(5), 1)], cfg)));
+  const f = flatten(buildLinesResult(input(
+    [line(1, P(3), V(1), 1), line(2, P(5), V(5), 1, 1000, true)], CONFIG)));
   assert.deepEqual(f, {});
 });
 test('1点では割引が出ない', () => {
   assert.deepEqual(flatten(buildLinesResult(input([line(1, P(3), V(1), 1)], CONFIG))), {});
 });
-test('productIds 未設定なら metafield へ落ちる(旧方式の互換)', () => {
-  const cfg = { multiBuy: { tiers: CONFIG.multiBuy.tiers } };
-  const f = flatten(buildLinesResult(input([line(1, P(7), V(7), 3, 1000, true)], cfg)));
+test('対象判定は Product metafield だけを見る(D-134)', () => {
+  const f = flatten(buildLinesResult(input([line(1, P(7), V(7), 3, 1000, true)], CONFIG)));
   assert.equal(f['gid://shopify/CartLine/1'].pct, 15);
 });
 test('metafield が false なら対象外(fail-closed)', () => {
-  const cfg = { multiBuy: { tiers: CONFIG.multiBuy.tiers } };
+  assert.deepEqual(flatten(buildLinesResult(input([line(1, P(7), V(7), 3, 1000, false)], CONFIG))), {});
+});
+test('設定 JSON に productIds を書いても対象は増えない(正本は metafield ひとつ)', () => {
+  const cfg = { ...CONFIG, multiBuy: { productIds: [P(7)], tiers: CONFIG.multiBuy.tiers } };
   assert.deepEqual(flatten(buildLinesResult(input([line(1, P(7), V(7), 3, 1000, false)], cfg))), {});
 });
 
@@ -221,14 +229,15 @@ test('1商品につき candidate は1つ(加算されない)', () => {
 });
 test('同率 15% ならカバー数量が多い方(まとめ買い)が勝つ', () => {
   // P(1)×3(まとめ買い対象にもする)+ P(2)×1 → PAIR は1個ぶんしか当たらない。
-  const cfg = { ...CONFIG, multiBuy: { productIds: [P(1)], tiers: CONFIG.multiBuy.tiers } };
-  const f = flatten(buildLinesResult(input([line(1, P(1), V(1), 3), line(2, P(2), V(2), 1)], cfg)));
+  const f = flatten(buildLinesResult(input(
+    [line(1, P(1), V(1), 3, 1000, true), line(2, P(2), V(2), 1)], CONFIG)));
   assert.equal(f['gid://shopify/CartLine/1'].pct, 15);
   assert.equal(f['gid://shopify/CartLine/1'].quantity, 3, 'PAIR の1個ぶんだけになってしまった');
 });
 test('率・数量が同じなら定義順で PAIR が勝つ', () => {
-  const cfg = { ...CONFIG, multiBuy: { productIds: [P(1)], tiers: [{ minQuantity: 1, percentage: 15 }] } };
-  const f = flatten(buildLinesResult(input([line(1, P(1), V(1), 1), line(2, P(2), V(2), 1)], cfg)));
+  const cfg = { ...CONFIG, multiBuy: { tiers: [{ minQuantity: 1, percentage: 15 }] } };
+  const f = flatten(buildLinesResult(input(
+    [line(1, P(1), V(1), 1, 1000, true), line(2, P(2), V(2), 1)], cfg)));
   assert.match(f['gid://shopify/CartLine/1'].message, /ソファの脇/);
 });
 test('Sale 対象外 Variant は PAIR には乗れる(除外は Sale 限定)', () => {

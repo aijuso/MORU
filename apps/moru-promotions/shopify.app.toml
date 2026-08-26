@@ -27,6 +27,20 @@ embedded = false
 # read_inventory / write_themes / network access
 scopes = "read_products,write_discounts"
 
+# Function の設定 JSON を入れる metafield の定義。
+# **アプリ予約名前空間 `$app` の下に置く。**Function の input query が
+# `metafield(namespace: "$app", key: "function-configuration")` で読むのはこれ。
+#
+# ⚠️ `$app` はこのアプリ専用の名前空間なので、**他のアプリからは書き込めない。**
+# したがって Discount の作成(= この metafield への書き込み)は、
+# **MORU Promotions アプリ自身の Admin API アクセストークン**で行う必要がある。
+# 別アプリ(Claude の MCP 等)の権限では書けない。
+[discount.metafields.app.function-configuration]
+type = "json"
+name = "Function configuration"
+access.admin = "merchant_read_write"
+access.storefront = "none"
+
 [auth]
 redirect_urls = [ "https://example.com/auth/callback" ]
 
