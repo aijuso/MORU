@@ -5,7 +5,11 @@ query Input {
       cost { amountPerQuantity { amount } }
       merchandise { __typename ... on ProductVariant { id product { id } } }
     }
-    deliveryGroups { id }
+    # 配送オプションは title で許可判定する(D-146)。
+    # 未知の配送方法を自動的に無料にしないため、group 単位ではなく option 単位で当てる。
+    deliveryGroups {
+      deliveryOptions { handle title }
+    }
   }
   discount {
     discountClasses

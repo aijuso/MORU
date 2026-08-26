@@ -9,7 +9,10 @@ import {
   normalizePairs, normalizeTiers, percentageFor, foldCartByProduct,
   buildPromotions, allocatePromotions, buildLinesResult, readConfig,
 } from '../src/promotions.js';
-import { preDiscountSubtotal, readThreshold, buildDeliveryResult } from '../src/shipping.js';
+import {
+  preDiscountSubtotal, readThreshold, buildDeliveryResult,
+  readAllowedOptionTitles, allowedDeliveryOptionHandles,
+} from '../src/shipping.js';
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -38,15 +41,23 @@ function line(id, productId, variantId, quantity, price = 1000, eligible = MULTI
   };
 }
 
+/** 配送グループ。title だけが許可判定に使われる(D-146)。 */
+function group(titles) {
+  return {
+    deliveryOptions: titles.map((title, n) => ({ handle: `${title}-${n}`, title })),
+  };
+}
+
 function input(lines, config, classes = ['PRODUCT']) {
   return {
-    cart: { lines, deliveryGroups: [{ id: 'gid://shopify/CartDeliveryGroup/1' }] },
+    cart: { lines, deliveryGroups: [group(['通常配送'])] },
     discount: { discountClasses: classes, metafield: config === null ? null : { jsonValue: config } },
   };
 }
 
 const CONFIG = {
   freeShippingThreshold: 7700,
+  freeShippingDeliveryOptionTitles: ['通常配送'],
   pairs: [{ id: 'P-6', title: 'ソファの脇', productIds: [P(1), P(2)], percentage: 15 }],
   multiBuy: { tiers: [{ minQuantity: 2, percentage: 10 }, { minQuantity: 3, percentage: 15 }] },
   sale: { productIds: [P(1), P(2), P(4)], percentage: 10, excludedVariantIds: [V(99)] },
@@ -334,11 +345,71 @@ test('配送グループが無ければ何もしない', () => {
   i.cart.deliveryGroups = [];
   assert.deepEqual(buildDeliveryResult(i).operations, []);
 });
-test('全 deliveryGroup を対象にする', () => {
+
+console.log('\n-- D-146: 通常配送だけを無料にする --');
+const targetsOf = (i) =>
+  (buildDeliveryResult(i).operations[0] || { deliveryDiscountsAdd: { candidates: [{ targets: [] }] } })
+    .deliveryDiscountsAdd.candidates[0].targets;
+
+test('★速達など許可リストに無い配送方法は無料にしない', () => {
   const i = input([line(1, P(4), V(4), 1, 9000)], CONFIG, SHIP);
-  i.cart.deliveryGroups = [{ id: 'a' }, { id: 'b' }];
-  assert.equal(buildDeliveryResult(i).operations[0].deliveryDiscountsAdd.candidates[0].targets.length, 2);
+  i.cart.deliveryGroups = [group(['通常配送', '速達'])];
+  const t = targetsOf(i);
+  assert.equal(t.length, 1, '許可していない配送方法まで対象になっている');
+  assert.equal(t[0].deliveryOption.handle, '通常配送-0');
 });
+test('★将来追加された未知の配送方法も自動的には無料にしない', () => {
+  const i = input([line(1, P(4), V(4), 1, 9000)], CONFIG, SHIP);
+  i.cart.deliveryGroups = [group(['当日便', 'クール便'])];
+  assert.deepEqual(buildDeliveryResult(i).operations, []);
+});
+test('同じ title の配送オプションが複数あれば全部対象にする(¥870 と ¥0)', () => {
+  // Shopify は「通常配送 ¥870」と「¥7,700以上の条件で出る 通常配送 ¥0」を別オプションとして返す。
+  const i = input([line(1, P(4), V(4), 1, 9000)], CONFIG, SHIP);
+  i.cart.deliveryGroups = [group(['通常配送', '通常配送'])];
+  assert.equal(targetsOf(i).length, 2);
+});
+test('複数の配送グループにまたがっても許可された配送方法だけ拾う', () => {
+  const i = input([line(1, P(4), V(4), 1, 9000)], CONFIG, SHIP);
+  i.cart.deliveryGroups = [group(['通常配送']), group(['速達'])];
+  const t = targetsOf(i);
+  assert.equal(t.length, 1);
+  assert.equal(t[0].deliveryOption.handle, '通常配送-0');
+});
+test('title の前後の空白は無視する', () => {
+  const i = input([line(1, P(4), V(4), 1, 9000)], CONFIG, SHIP);
+  i.cart.deliveryGroups = [{ deliveryOptions: [{ handle: 'h', title: '  通常配送 ' }] }];
+  assert.equal(targetsOf(i).length, 1);
+});
+test('★許可リストが無い設定では何もしない(fail-closed)', () => {
+  const { freeShippingDeliveryOptionTitles, ...noAllowList } = CONFIG;
+  assert.deepEqual(
+    buildDeliveryResult(input([line(1, P(4), V(4), 1, 9000)], noAllowList, SHIP)).operations, []);
+});
+test('★許可リストが空配列でも何もしない(fail-closed)', () => {
+  const empty = { ...CONFIG, freeShippingDeliveryOptionTitles: [] };
+  assert.deepEqual(
+    buildDeliveryResult(input([line(1, P(4), V(4), 1, 9000)], empty, SHIP)).operations, []);
+});
+test('readAllowedOptionTitles: 不正な値は null', () => {
+  assert.equal(readAllowedOptionTitles(null), null);
+  assert.equal(readAllowedOptionTitles({}), null);
+  assert.equal(readAllowedOptionTitles({ freeShippingDeliveryOptionTitles: '通常配送' }), null);
+  assert.equal(readAllowedOptionTitles({ freeShippingDeliveryOptionTitles: [' ', 1, null] }), null);
+  assert.deepEqual(readAllowedOptionTitles({ freeShippingDeliveryOptionTitles: [' 通常配送 '] }), ['通常配送']);
+});
+test('allowedDeliveryOptionHandles: handle が無いオプションは無視する', () => {
+  const groups = [{ deliveryOptions: [{ handle: '', title: '通常配送' }, { title: '通常配送' }] }];
+  assert.deepEqual(allowedDeliveryOptionHandles(groups, ['通常配送']), []);
+});
+test('allowedDeliveryOptionHandles: 同じ handle は重複させない', () => {
+  const groups = [
+    { deliveryOptions: [{ handle: 'a', title: '通常配送' }] },
+    { deliveryOptions: [{ handle: 'a', title: '通常配送' }] },
+  ];
+  assert.deepEqual(allowedDeliveryOptionHandles(groups, ['通常配送']), ['a']);
+});
+
 test('単価が読めない行は subtotal に数えない', () => {
   const bad = { id: 'x', quantity: 2, merchandise: { product: { id: P(1) } }, cost: {} };
   assert.equal(preDiscountSubtotal([bad, line(1, P(1), V(1), 1, 1000)]), 1000);

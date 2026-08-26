@@ -543,3 +543,61 @@ PAIR は成立セット数(この場合1セット)ぶんしか当たらないの
 | **A. 現状維持** | PAIR が必ず勝つ。打ち出しと一致する | 上記のカートで顧客が ¥1,298 損をする |
 | **B. 割引額で比較**(推奨) | 顧客がいちばん得な割引が選ばれる | PAIR を組んでも Sale が勝つカートが出る |
 | C. PAIR を全数量に当てる | PAIR がセット数を超えて当たる | セット割の意味が薄れる。採算計算も変わる |
+
+---
+
+## 12. 追補(2026-08-26 その5)— 速達の停止と送料無料の対象限定(D-146)
+
+### 変更した Shopify 設定
+
+| 対象 | 変更 |
+|---|---|
+| `DeliveryMethodDefinition/925779427568`(速達 ¥3,762・国内配送ゾーン) | **`active: false`**(削除ではなく無効化) |
+
+```graphql
+mutation DeactivateExpress($id: ID!, $profile: DeliveryProfileInput!) {
+  deliveryProfileUpdate(id: $id, profile: $profile) {
+    profile { id name }
+    userErrors { field message }
+  }
+}
+```
+```json
+{
+  "id": "gid://shopify/DeliveryProfile/117061550320",
+  "profile": {
+    "locationGroupsToUpdate": [{
+      "id": "gid://shopify/DeliveryLocationGroup/118542205168",
+      "zonesToUpdate": [{
+        "id": "gid://shopify/DeliveryZone/470859448560",
+        "methodDefinitionsToUpdate": [
+          { "id": "gid://shopify/DeliveryMethodDefinition/925779427568", "active": false }
+        ]
+      }]
+    }]
+  }
+}
+```
+
+**戻すときは `active: true` にするだけ。** 料金・条件・名称はそのまま残っている。
+
+### 設定 metafield に許可リストを足した
+
+`shop.custom.moru_promotions_config` に
+`"freeShippingDeliveryOptionTitles": ["通常配送"]` を追加。
+**このキーが無い / 空だと Function は送料を一切割り引かない**(fail-closed)。
+
+⚠️ **順序が大事。** Function を先にリリースして metafield が古いままだと、
+**その間だけ送料無料が止まる。** metafield を先に入れてから deploy する。
+今回もその順で実施した。
+
+### 触っていないもの
+
+Product 価格 / Product metafield / status / publication /
+MAIN theme(`166203621616`)/ Frontend Dev theme(`166341181680`)/ Discount resource の件数。
+
+### 未処理のまま残した設定
+
+**国際ゾーン(27カ国)の `Standard` ¥3,000 は有効なまま。**
+今回の指示は速達だけだったので触っていない。
+**国際配送の停止は既報のローンチ阻害項目で、Owner 判断待ち。**

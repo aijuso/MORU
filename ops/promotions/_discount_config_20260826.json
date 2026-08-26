@@ -1,5 +1,8 @@
 {
   "freeShippingThreshold": 7700,
+  "freeShippingDeliveryOptionTitles": [
+    "通常配送"
+  ],
   "pairs": [
     {
       "id": "P-6",
