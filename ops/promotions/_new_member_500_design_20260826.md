@@ -322,3 +322,51 @@ MORU 販促割引(統合)  … PRODUCT + ORDER + SHIPPING を1件で持つ / com
 
 - **C-2**: `combinesWith` を開けて ¥500 を常に加算する(送料無料は残るが、割引は重なる)
 - **F**: ¥500 を統合 Function の中に取り込む(クーポンではなく自動適用になる)
+
+---
+
+## 13. 🔴 セグメント条件を修正した(2026-08-26)
+
+**Owner が会員登録した直後に確認したところ、セグメントのメンバーが 0人だった。**
+
+```
+Customer  高木海飛 / createdAt 2026-08-26T09:12:31Z / numberOfOrders 0
+          tags: ["Login with Shop", "Shop"]
+          state: DISABLED        ← ここ
+```
+
+**新しい顧客アカウントでは `Customer.state` が `ENABLED` にならない。**
+`state` は旧アカウント方式(パスワード + アクティベーションメール)の名残で、
+新方式で登録しても `DISABLED` のまま。
+
+つまり **`customer_account_status = 'ENABLED'` は新方式では誰にもマッチしない。**
+この条件のままだと **MORU500 は永久に誰も使えなかった。**
+
+### 修正後
+
+```
+customer_account_status = 'ENABLED' AND number_of_orders = 0   ← 誰もマッチしない
+                          ↓
+number_of_orders = 0                                           ← 修正後
+```
+
+セグメント名も「新規会員(未購入)」に変更。**メンバー 1人**(Owner)を確認済み。
+
+### `number_of_orders = 0` だけで足りる理由
+
+このセグメントには**メルマガ登録だけの人も入る**。
+だが **`MORU500` は割引コードなので、チェックアウト時にログインしていないと
+そもそも顧客が特定されず弾かれる。**
+
+**ログインしている = 会員登録している。**
+したがって `number_of_orders = 0` に絞れば、実効的には
+**「会員登録済み かつ 未購入」**と同じになる。
+
+**ストア側の表示条件ともぴったり一致する:**
+
+```liquid
+{% if customer != nil and customer.orders_count == 0 %}
+```
+
+`customer != nil` = ログイン済み、`orders_count == 0` = `number_of_orders = 0`。
+**見えている人 = 使える人。**
