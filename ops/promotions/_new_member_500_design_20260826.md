@@ -483,3 +483,63 @@ Owner が実機で見たのは MAIN 側(= リポジトリ版)。
 
 ⚠️ Dev MCP の `validate_theme_codeblocks` はこのセッションで接続できなかったため、
 `docs/07_session_protocol.md` §6 に従い `shopify theme check` で代替した。
+
+---
+
+## 18. Frontend Dev への統合(2026-08-26)
+
+Owner 判断で **`MORU Frontend Dev`(166341181680)をフロントエンドの正本**とし、
+repo/MAIN 版で上書きせず、Dev 版へクーポン差分だけを載せ直した。
+
+### 統合前に分かったこと
+
+**Dev は cart 周りが大きく作り替わっていた。** repo と同名ファイルを直すだけでは届かない:
+
+| Dev の状態 | 影響 |
+|---|---|
+| `sections/moru-cart-drawer-v2.liquid` が新設され、**`header-group.json` はこちらを使っている** | **repo で直した `moru-cart-drawer.liquid` は Dev では死んでいた** |
+| `sections/moru-main-cart.liquid` が**圧縮版に書き換え**(41,505 → 31,437 bytes) | repo 版を push すると ChatGPT の作業を消す |
+| `moru-cart-discount-summary` / `moru-header-v2` / `moru-promo-hub` / `moru-quantity-offers` など**新規セクション8件** | repo には存在しない |
+| `locales/*.json` は **2026-08-23 の初回 push から未更新** | repo と内容一致(差分 468/446 bytes は Shopify が剥がすヘッダーコメント分) |
+
+**`moru-cart-drawer.liquid` への変更は取り消した。** 生きているのは v2 のほう。
+
+### やった手順
+
+1. Dev の現物を Admin API で取得し、**ローカルで byte 単位に復元**
+2. **復元物の md5 が Dev の `checksumMd5` と一致することを確認してから**パッチを当てた
+   - `moru-main-cart.liquid` … `6ff9e3db5a23a3592821dab98d77599f` 一致
+   - `moru-cart-drawer-v2.liquid` … `fd8acbd8c8d49966ae0437db872db760` 一致
+   - **一致しなければ復元ミスなので、そこで止める前提**にした
+3. クーポン差分だけを再適用(Dev の圧縮スタイルに合わせた)
+4. 検証 → Dev のみへ upsert → checksum で readback
+
+⚠️ `shopify theme pull/push` はこの環境では使えない(対話ログインが要り、
+Theme Access トークンも無い)。**Admin API の `themeFilesUpsert` を使った。**
+38KB の本文を手で書き写すと転記ミスの危険があるため、
+`stagedUploadsCreate` で実ファイルをアップロードし、`body: { type: URL }` で取り込ませた。
+**手入力を挟まないので転記ミスが起こり得ない。**
+
+### 反映結果(`MORU Frontend Dev` のみ)
+
+| ファイル | ローカル md5 | Dev の checksumMd5 | size | 判定 |
+|---|---|---|---|---|
+| `sections/moru-main-cart.liquid` | `e24172bc3f876164439e3c1f12fcae1f` | `e24172bc3f876164439e3c1f12fcae1f` | 38,607 | ✅ |
+| `sections/moru-cart-drawer-v2.liquid` | `67452f9cb22d07fbe7809188a963f66d` | `67452f9cb22d07fbe7809188a963f66d` | 18,492 | ✅ |
+| `locales/ja.default.json` | `e8968d0d1936dd9168aa6d7c8826a835` | `e8968d0d1936dd9168aa6d7c8826a835` | 12,187 | ✅ |
+| `locales/en.json` | `38c5e2a1b24630512b9bf903068a5375` | `38c5e2a1b24630512b9bf903068a5375` | 9,733 | ✅ |
+
+**4ファイルすべて完全一致。**
+
+### MAIN は未変更
+
+`166203621616` / `updatedAt: 2026-08-24T07:51:57Z`(据え置き)。
+`moru-main-cart.liquid` は `0da03aa7…` のまま、`locales/ja.default.json` は `54d9414e…` のまま。
+
+### 検証
+
+- `shopify theme check` … **74ファイル / 0 offense**(Dev 構成に合わせた作業ツリーで実行)
+- `{% javascript %}` の JS 構文 … 両ファイルとも `node --check` 通過
+- `ja.default.json` / `en.json` … JSON パース通過・coupon キー11件が両言語で対応
+- ⚠️ Dev MCP の `validate_theme_codeblocks` は本セッションで接続できず、
+  `docs/07_session_protocol.md` §6 に従い `shopify theme check` で代替
