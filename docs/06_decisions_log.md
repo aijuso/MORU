@@ -1324,3 +1324,39 @@ Function association(app version から復元)/ **Discount resource は 0件な�
 **merchant-owned なので保持される**。
 
 **実質的に失うものは無いが、根拠が無いままやることではない。**まず api_version 修正を試す。
+
+## D-143 Discount を作成。readback 全項目一致。ただし勝者判定に設計上の問題(2026-08-26)
+
+**Discount 1件を Owner が管理画面から作成。readback は全項目一致。**
+
+`gid://shopify/DiscountAutomaticNode/1484384305392` / `MORU 販促割引(統合)` / **ACTIVE** /
+`functionId 01a03b6e-…` は deploy manifest の `moru-promotions-discount` の uuid と一致 /
+`combinesWith` 3つとも false / discount 側 metafield 0件(shop フォールバックを使う) /
+`errorHistory` null。
+
+`discountClasses` は `PRODUCT, ORDER, SHIPPING`。**ORDER は管理画面から外せない**
+(割引クラスを管理しない Function は3つとも既定 ON という Shopify 仕様)。
+**この Function は注文全体の割引を発行しないので実害はない。**
+
+### 🔴 見つかった問題: 率だけで勝者を決めると顧客が損をするカートがある
+
+カート **クラウド ×3 + マッシュルーム ×1**(現在の本番価格)で:
+
+| | 合計割引 |
+|---|---|
+| いまの挙動(PAIR 15% が勝つ・クラウドは1個だけ) | **−¥3,294** |
+| Sale 10% が全数量に当たっていた場合 | **−¥4,592** |
+
+**差 ¥1,298 ぶん顧客が損をする。**
+
+原因は `resolveWinners` の比較順が **①率 → ②数量 → ③定義順** で、
+**②が「同率のとき」しか効かない**こと。PAIR は成立セット数ぶんしか当たらないのに、
+率が高いだけで全数量に当たる Sale を追い出し、**残りには何も付かない**(1商品1割引のため)。
+
+**直し方の案: 第一基準を「率」から「割引額の見込み」へ**
+(`Σ(単価 × 対象数量) × percentage`)。同率なら数量が多い方が自動的に勝ち、
+同額のときだけ定義順で決める。**1商品1割引・加算禁止は変わらない。**
+
+⚠️ **①率 → ②数量 → ③定義順 は Owner が明示承認したルールなので勝手に変えない。**
+変えると「PAIR 15% > Summer Sale 10%」の打ち出しと実挙動がズレるケースが出る。
+**A. 現状維持 / B. 割引額で比較(推奨) / C. PAIR を全数量に当てる** から Owner が選ぶ。
