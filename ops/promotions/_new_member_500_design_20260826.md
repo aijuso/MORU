@@ -543,3 +543,110 @@ Theme Access トークンも無い)。**Admin API の `themeFilesUpsert` を使�
 - `ja.default.json` / `en.json` … JSON パース通過・coupon キー11件が両言語で対応
 - ⚠️ Dev MCP の `validate_theme_codeblocks` は本セッションで接続できず、
   `docs/07_session_protocol.md` §6 に従い `shopify theme check` で代替
+
+---
+
+## 19. 訂正と追加確認(2026-08-26)
+
+### 訂正: Discount は **2件**
+
+**前回「Discount 1件」と書いたのは古い数え方だった。** `MORU500` を作った時点で2件になっている。
+
+| # | ID | 種別 | title | code | status |
+|---|---|---|---|---|---|
+| 1 | `DiscountAutomaticNode/1484384305392` | Automatic (App) | MORU 販促割引(統合) | — | ACTIVE |
+| 2 | `DiscountCodeNode/1484417040624` | Code (Basic) | 新規会員登録 ¥500OFF | `MORU500` | ACTIVE |
+
+```
+1) discountClasses: PRODUCT / ORDER / SHIPPING
+   combinesWith:    order false / product false / shipping false
+   functionId:      01a03b6e-7661-7590-8dbf-d5b2e47e837d
+   errorHistory:    null
+
+2) discountClasses: ORDER
+   combinesWith:    order false / product false / shipping false
+   appliesOncePerCustomer: true / usageLimit: null / asyncUsageCount: 0
+   startsAt: 2026-08-26T00:00:00Z / endsAt: null
+```
+
+**「Discount resource は常に1件」は統合 Function 用 Automatic に対する取り決めで、
+コード割引はその枠外**という整理で運用する。
+
+### ソラ キャットハンモック — **購入可能な状態**
+
+`Product/10218060906736` / handle `sora-cat-hammock` / **ACTIVE**
+
+| | |
+|---|---|
+| オンラインストア | **公開済み**(2026-08-23T10:03:55Z) |
+| POS | 公開済み |
+| Variant | 4件すべて `availableForSale: true` / ¥20,480 |
+| 在庫追跡 | **オフ**(`tracked: false`)= 在庫切れにならない |
+| タグ | `pet-furniture` / `tier-core` |
+
+**「市場確認 Hold / 非ローンチ候補」の判断と、いまの公開状態が食い違っている。**
+publication は**変更していない。** どう扱うか指示待ち。
+
+### ピボ テーブルランプ — **中国語テキストが残っている**
+
+`Product/10218008510704` / handle `pivo-table-lamp` / ACTIVE / メディア23枚。
+
+**ギャラリー写真4枚(webp)は文字なしで問題なし。**
+**説明画像19枚(png)のうち17枚に中国語が残っている。**
+
+| 画像 | 中国語 | 内容 |
+|---|---|---|
+| 3 | あり | 包豪斯・中古・设计 / 呈现光效与Loft情调风格的融合… |
+| 4 | **なし** | 英字のみ(PERSONALITY / NORTHERN FURNITURE / ORIGINALITY) |
+| 5 | あり | Design concept / 家 / 释放欲望,诠释个性 / 心境之美,给心灵一个居所 |
+| 6 | あり | 优质 电镀铬色灯体 / 经多重工序处理 / 色泽均匀，质感细腻 / **防腐防锈，经久耐用** |
+| **7** | **あり 🔴** | **恒流无可视频闪 / 节能护眼 / 手机显示器无直线横纹，无可视频闪，健康护眼 / 高亮度・高显色・寿命长** |
+| 8 | あり | 给生活一点情调 / 灯就像人生的伴侣… |
+| 9 | **なし** | 文字なし(グリーンの物撮り) |
+| 10 | あり | /做一个有格调的都市人，那就让它与你相伴而行/ |
+| 11 | あり | 设计灵感 / 光与影在空间中共舞… |
+| 12 | あり | 功能介绍 / 旋钮调光&可三色调光(色温 3000k/4000k/6000k は数字表記) |
+| 13 | あり | 产品展示 / 开灯效果 |
+| 14 | あり | 关灯效果 |
+| 15 | あり | 开灯效果 |
+| 16 | あり | 关灯效果 |
+| 17 | あり | 开灯效果 |
+| 18 | あり | 关灯效果 |
+| **19** | **あり 🔴** | **产品参数(仕様表)**: 品名 台灯 / 材质 铁艺+亚克力 / 尺寸 如图所示 / 光源 E27*1(5W) / 高46CM / 长27*宽23CM |
+| 20 | あり | 产品细节 / 高质感铁艺灯罩 / 光滑铁艺灯罩，外观富有质感… |
+| 21 | あり | 精工电镀底盘 / 优质铁艺电镀处理，表面光滑有质感 / 精益制造优良，经久耐用 |
+
+**特に問題が大きいのは2枚:**
+
+- **画像7** … 「**护眼**(目にやさしい)」「**节能护眼**」「**健康护眼**」。
+  **CLAUDE.md 絶対ルール15 がランプ画像の実例として名指しで禁じている表現。**
+  健康に関わる未検証の主張なので、**日本語化ではなく削除または差し替えが要る。**
+  「无可视频闪(ちらつきが見えない)」も同種の未検証主張。
+- **画像19** … **寸法・材質・光源の仕様表が中国語のまま。**
+  docs/11 §4 の「必須の日本語化」対象そのもの。
+
+画像・status・publication は**変更していない。**
+
+### MORU500 の失敗時文言を中立表現へ変更
+
+「クーポンは無効になっていないので別のご注文で使える」という**断定を削除**した。
+Shopify 側にコードの有効性を確かめる手段が無いため、断定できない。
+
+```
+コードは現在のカートに適用されませんでした。すでに適用中の割引が優先されている
+場合があります。コードの入力内容、ログイン状態、利用条件をご確認ください。
+```
+
+文言からコード名の差し込みが無くなったので、セクション側の `| t: code:` と
+JS の `.replace('%code%', code)` も併せて外した。
+
+**`MORU Frontend Dev` のみへ反映。**
+
+| ファイル | ローカル md5 | Dev の checksumMd5 | size |
+|---|---|---|---|
+| `sections/moru-main-cart.liquid` | `cce54ae670928bf6669118e9a4778833` | `cce54ae670928bf6669118e9a4778833` | 38,582 |
+| `locales/ja.default.json` | `4a9af23de4d9902c452720b402097e8d` | `4a9af23de4d9902c452720b402097e8d` | 12,001 |
+| `locales/en.json` | `91cbf55479b1ea580c23c7d6df71ae30` | `91cbf55479b1ea580c23c7d6df71ae30` | 9,666 |
+
+`shopify theme check` … 74ファイル / 0 offense。JS 構文通過。
+**MAIN は `updatedAt 2026-08-24T07:51:57Z` のまま未変更。**

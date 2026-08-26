@@ -167,7 +167,7 @@
       "coupon_working": "Checking…",
       "coupon_success": "Applied discount code {{ code }}.",
       "coupon_removed": "Removed the discount code.",
-      "coupon_not_applied": "The code {{ code }} wasn't applied to this cart. If a discount already on the cart saves you more, the code isn't used (it stays valid for another order). Please also check the code for typos, and make sure you're signed in if it's a member-only code.",
+      "coupon_not_applied": "The code was not applied to your current cart. A discount already on the cart may be taking priority. Please check the code you entered, your sign-in status, and the code's conditions.",
       "coupon_error": "Something went wrong. Please try again in a moment.",
       "upsell_add": "Add",
       "upsell_added": "Added",

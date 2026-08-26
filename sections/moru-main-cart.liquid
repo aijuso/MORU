@@ -156,7 +156,7 @@
                 "working": {{ 'moru.cart.coupon_working' | t | json }},
                 "success": {{ 'moru.cart.coupon_success' | t: code: '%code%' | json }},
                 "removed": {{ 'moru.cart.coupon_removed' | t | json }},
-                "notApplied": {{ 'moru.cart.coupon_not_applied' | t: code: '%code%' | json }},
+                "notApplied": {{ 'moru.cart.coupon_not_applied' | t | json }},
                 "error": {{ 'moru.cart.coupon_error' | t | json }}
               }
             {%- endcapture -%}
@@ -427,8 +427,8 @@
           this.queueStatus(this.strings.success.replace('%code%', code), 'success');
         } else {
           // 「コードが誤り」と「他の割引のほうが得」が混ざる。Shopify 側に
-          // 区別する手段が無いので、どちらでも正しい言い方にしてある。
-          this.queueStatus(this.strings.notApplied.replace('%code%', code), 'info');
+          // 区別する手段が無いので、どちらか一方に決めつけない言い方にしてある。
+          this.queueStatus(this.strings.notApplied, 'info');
         }
         await this.refresh();
       } catch (error) { this.showStatus(this.strings.error, 'error'); }
