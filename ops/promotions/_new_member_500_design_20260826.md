@@ -861,3 +861,68 @@ DRAFT 8商品: プラッシュ クッション / アブストラクト オブジ
   DRAFT にしたのでこのケースはもう実行できない。**Function 側の設定は変えていない**ので、
   ACTIVE に戻せばそのまま再現する
 - 商品構成: **ACTIVE 28 / DRAFT 8**(変更前 32 / 4)
+
+---
+
+## 23. 本番公開の readback(2026-08-26)
+
+### 公開されたテーマ
+
+| | |
+|---|---|
+| `OnlineStoreTheme/166459769072` | **MORU Release 2026-08-27** / **role: MAIN** / `updatedAt 2026-08-26T17:42:33Z` / processing false |
+| `OnlineStoreTheme/166203621616` | MORU LIVING (Skeleton構築) → **UNPUBLISHED**(切り戻し先として残っている) |
+| `OnlineStoreTheme/166341181680` | MORU Frontend Dev → UNPUBLISHED(フロント正本) |
+
+### クーポン差分が本番に載っているか — ✅ 全一致
+
+**新 MAIN と Frontend Dev の checksum が完全一致した。**
+
+| ファイル | checksum | size | Dev と一致 |
+|---|---|---|---|
+| `sections/moru-main-cart.liquid` | `cce54ae670928bf6669118e9a4778833` | 38,582 | ✅ |
+| `sections/moru-cart-drawer-v2.liquid` | `67452f9cb22d07fbe7809188a963f66d` | 18,492 | ✅ |
+| `locales/ja.default.json` | `4a9af23de4d9902c452720b402097e8d` | 12,001 | ✅ |
+| `locales/en.json` | `91cbf55479b1ea580c23c7d6df71ae30` | 9,666 | ✅ |
+
+`sections/header-group.json`(`9ee66ff4…`)も Dev と同じで、
+**cart_drawer は `moru-cart-drawer-v2` を指している。**
+= 本番で動いているドロワーは、こちらがクーポン導線を入れた v2 のほう。
+
+### 解消済みのローンチ阻害
+
+| 項目 | 状態 |
+|---|---|
+| 速達 ¥3,762 | **配送方法から消えた**(国内配送は 通常配送 ¥870 と 条件付き ¥0 の2件のみ) |
+| 国際配送 | `Standard ¥3,000` … `active: false` / `shipsToCountries: ["JP"]` |
+| **built-in policies** | **6種すべて登録された** — CONTACT_INFORMATION / **LEGAL_NOTICE** / PRIVACY_POLICY / **REFUND_POLICY** / **SHIPPING_POLICY** / **TERMS_OF_SERVICE** |
+| Discount | **2件**・両方 ACTIVE(統合 Automatic / MORU500)・`errorHistory: null` |
+| sale collection | 18商品(config と差分 0) |
+| 商品 | ACTIVE **28** / DRAFT **8** |
+
+**§20 で「同期できず停止」と報告した built-in policies は、Owner 側で解消済み。**
+⚠️ ただし**本文が各 Page と一字一句一致しているかはこちらでは検証していない**
+(同期を実施したのがこちらではないため)。必要なら突き合わせる。
+
+### 残っているローンチ阻害
+
+| # | 項目 | 状態 |
+|---|---|---|
+| 1 | **パスワード保護** | **有効のまま**(`passwordProtection.enabled: true`)。公開時に解除が要る |
+| 2 | **通常配送の transit time** | **未確認。** 速達が消えたので「1〜2営業日」の実例は無くなったが、
+通常配送側に「3〜5営業日」が残っているかは `/cart/shipping_rates.json` でしか見えず、
+**パスワード保護中は叩けない** |
+| 3 | **MORU500 の顧客への案内** | **未実装。** ストア側に
+`{% if customer != nil and customer.orders_count == 0 %}` のブロックが無く、
+**顧客がコードを知る手段が無い**(E2E がここで切れている) |
+| 4 | policy 本文と Page 本文の一致 | 未検証(上記) |
+
+### 本番 QA についてのこちらの制約
+
+**パスワード保護が有効な間、ストアフロントに到達できない。**
+したがって home / PDP / cart / drawer / coupon / PAIR / Multi-buy / checkout の
+**実機 QA はこちらからは実行できない。**
+
+解除されれば、`ops/promotions/storefront-tests/run.mjs` の **21ケースをそのまま再実行できる**
+(前回 21 PASS / 0 FAIL)。ただし **A-2(手編みコースター ×3)は当該商品を DRAFT にしたため
+現在は実行不可**。残り20ケースは有効。
