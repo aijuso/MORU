@@ -12,14 +12,21 @@
  *   2. Multi-buy  2点10% / 3点以上15% … 同一 Product 内の合計数量
  *   3. Sale       10%   … 対象商品に常時
  *
- * **加算しない。1商品につき採用する割引は1つだけ。**
+ * **加算しない。ただし単位は「商品」ではなく「購入1点(quantity)」(D-144)。**
  *
- * 勝者の決め方(この順で比較):
+ *   - **同じ1点に2つの割引を重ねない**(加算禁止)
+ *   - **同じ商品でも、別の1点になら別の施策を当ててよい**
+ *
+ * 各 1点について、この順で強い施策から先に取っていく:
  *   a. percentage が高い方
- *   b. 同率なら **割引が当たる数量が多い方**
- *      (PAIR は成立セット数までしか当たらないため、同率 15% なら
- *       全数量に当たる Multi-buy の方が顧客にとって得。ここで取りこぼさない)
- *   c. それも同じなら定義順 PAIR > Multi-buy > Sale
+ *   b. 同率なら定義順 PAIR > Multi-buy > Sale
+ *
+ * **強い割引が一部の点数にしか当たらないとき、残りの点数から弱い割引を奪わない。**
+ *
+ * 例: クラウド ×3 + マッシュルーム ×1(PAIR 15% / Sale 10%)
+ *   PAIR は1セットしか成立しないので クラウド1点 + マッシュルーム1点 に 15%。
+ *   **クラウドの残り2点には Sale 10% が当たる。**
+ *   旧ロジックでは PAIR が商品ごと勝ってしまい、残り2点の割引が消えていた(D-143)。
  *
  * ## 設定は全て Discount の app metafield から読む(config-driven)
  *
@@ -174,24 +181,16 @@ export function foldCartByProduct(lines) {
   return byProduct;
 }
 
-/** 先頭のラインから quantity 個ぶんを割り当てる(同じ Product の Variant 違いに按分)。 */
-function allocate(lines, limit) {
-  const targets = [];
-  let remaining = limit;
-  for (const line of lines) {
-    if (remaining <= 0) break;
-    const quantity = Math.min(line.quantity, remaining);
-    remaining -= quantity;
-    targets.push({ lineId: line.id, quantity });
-  }
-  return targets;
-}
-
 /**
- * Product ごとに候補となる割引案を全部作る。まだ勝者は決めない。
- * @returns {Map<string, {source: string, percentage: number, label: string, targets: {lineId:string,quantity:number}[], covered: number}[]>}
+ * Product ごとに「その商品に当たり得る施策」を列挙する。**まだ点数の割当はしない。**
+ *
+ * 各施策は次を持つ:
+ *   - `maxUnits`  … その施策が当てられる最大点数(PAIR は成立セット数。他は無制限)
+ *   - `lineOk`    … その施策を当ててよいラインか(Sale の Variant 除外に使う)
+ *
+ * @returns {Map<string, {source:string, percentage:number, label:string, maxUnits:number, lineOk:(l:object)=>boolean}[]>}
  */
-export function buildCandidates(config, byProduct) {
+export function buildPromotions(config, byProduct) {
   /** @type {Map<string, any[]>} */
   const candidates = new Map();
   const push = (productId, candidate) => {
@@ -213,15 +212,13 @@ export function buildCandidates(config, byProduct) {
     if (!ok || !Number.isFinite(setCount) || setCount <= 0) continue;
 
     for (const productId of pair.productIds) {
-      const entry = byProduct.get(productId);
-      const targets = allocate(entry.lines, setCount);
-      if (!targets.length) continue;
       push(productId, {
         source: 'pair',
         percentage: pair.percentage,
         label: pair.title ? `${pair.title} セット ${pair.percentage}%OFF` : `セット購入 ${pair.percentage}%OFF`,
-        targets,
-        covered: targets.reduce((n, t) => n + t.quantity, 0),
+        // PAIR は成立セット数ぶんしか当たらない。残りの点数は他の施策に回す。
+        maxUnits: setCount,
+        lineOk: () => true,
       });
     }
   }
@@ -238,14 +235,14 @@ export function buildCandidates(config, byProduct) {
     if (!entry.lines.some((l) => l.eligible)) continue;
     const percentage = percentageFor(entry.quantity, mbTiers);
     if (percentage <= 0) continue;
-    // まとめ買いは Product の全数量が対象。
-    const targets = entry.lines.map((l) => ({ lineId: l.id, quantity: l.quantity }));
+    // 率は **カート内のその商品の合計点数**で決まる(PAIR が何点使ったかに関係なく)。
+    // 当てる先は「まだ他の施策が取っていない点数」。割当は allocatePromotions が行う。
     push(productId, {
       source: 'multiBuy',
       percentage,
       label: `まとめ買い ${percentage}%OFF`,
-      targets,
-      covered: entry.quantity,
+      maxUnits: Infinity,
+      lineOk: () => true,
     });
   }
 
@@ -258,16 +255,14 @@ export function buildCandidates(config, byProduct) {
     for (const productId of saleIds) {
       const entry = byProduct.get(productId);
       if (!entry) continue;
-      // Variant 単位の除外(D-126: ハル 2脚セット)
-      const lines = entry.lines.filter((l) => !excluded.has(l.variantId));
-      if (!lines.length) continue;
-      const targets = lines.map((l) => ({ lineId: l.id, quantity: l.quantity }));
+      if (entry.lines.every((l) => excluded.has(l.variantId))) continue;
       push(productId, {
         source: 'sale',
         percentage: salePct,
         label: typeof sale.title === 'string' && sale.title ? `${sale.title} ${salePct}%OFF` : `SALE ${salePct}%OFF`,
-        targets,
-        covered: targets.reduce((n, t) => n + t.quantity, 0),
+        maxUnits: Infinity,
+        // Variant 単位の除外(D-126: ハル 2脚セット)。PAIR / まとめ買いには効かない。
+        lineOk: (l) => !excluded.has(l.variantId),
       });
     }
   }
@@ -276,29 +271,49 @@ export function buildCandidates(config, byProduct) {
 }
 
 /**
- * Product ごとに勝者を1つだけ決める。**加算しない。**
- * 率 → 当たる数量 → 定義順(PAIR > Multi-buy > Sale)の順で比較する。
+ * 施策を **1点(quantity)単位** で割り当てる(D-144)。
+ *
+ * 強い施策から順に、**まだ誰も取っていない点数**を取っていく。
+ * すでに割り当てられた点数には二度と当たらないので **加算は起きない。**
+ * 強い施策が一部の点数しか取れなくても、**残りは次に強い施策が取れる**。
+ *
+ * 比較順: ① percentage が高い方 → ② 同率なら定義順 PAIR > Multi-buy > Sale
+ *
+ * @returns {{percentage:number, label:string, source:string, targets:{lineId:string,quantity:number}[]}[]}
  */
-export function resolveWinners(candidates) {
-  /** @type {Map<string, any>} */
-  const winners = new Map();
-  for (const [productId, list] of candidates) {
-    let best = null;
-    for (const candidate of list) {
-      if (
-        best === null ||
-        candidate.percentage > best.percentage ||
-        (candidate.percentage === best.percentage && candidate.covered > best.covered) ||
-        (candidate.percentage === best.percentage &&
-          candidate.covered === best.covered &&
-          SOURCE_RANK[candidate.source] < SOURCE_RANK[best.source])
-      ) {
-        best = candidate;
+export function allocatePromotions(byProduct, promotionsByProduct) {
+  const allocations = [];
+
+  for (const [productId, promotions] of promotionsByProduct) {
+    const entry = byProduct.get(productId);
+    if (!entry) continue;
+
+    // 残り点数をライン単位で持つ。ここから引いていく。
+    const remaining = new Map(entry.lines.map((l) => [l.id, l.quantity]));
+
+    const ordered = [...promotions].sort((a, b) =>
+      b.percentage - a.percentage || SOURCE_RANK[a.source] - SOURCE_RANK[b.source]);
+
+    for (const promo of ordered) {
+      let budget = promo.maxUnits;
+      if (!(budget > 0)) continue;
+      const targets = [];
+      for (const line of entry.lines) {
+        if (budget <= 0) break;
+        if (!promo.lineOk(line)) continue;
+        const left = remaining.get(line.id) || 0;
+        const quantity = Math.min(left, budget);
+        if (quantity <= 0) continue;
+        remaining.set(line.id, left - quantity);
+        budget -= quantity;
+        targets.push({ lineId: line.id, quantity });
+      }
+      if (targets.length) {
+        allocations.push({ percentage: promo.percentage, label: promo.label, source: promo.source, targets });
       }
     }
-    if (best) winners.set(productId, best);
   }
-  return winners;
+  return allocations;
 }
 
 /**
@@ -309,7 +324,10 @@ export function resolveWinners(candidates) {
  * @returns {{operations: object[]}}
  */
 export function buildLinesResult(input, options = {}) {
-  const selectionStrategy = options.selectionStrategy || 'FIRST';
+  // **ALL でなければならない。**FIRST は「候補リストの最初の1つだけを適用する」ため、
+  // 商品が2つ以上あるカートで2つ目以降の割引が丸ごと消える(D-144)。
+  // 割当が点数単位で排他になっているので、ALL でも加算は起きない。
+  const selectionStrategy = options.selectionStrategy || 'ALL';
 
   const classes = (input && input.discount && input.discount.discountClasses) || [];
   if (!classes.some((c) => String(c).toUpperCase() === 'PRODUCT')) return { operations: [] };
@@ -320,21 +338,21 @@ export function buildLinesResult(input, options = {}) {
   const byProduct = foldCartByProduct((input.cart && input.cart.lines) || []);
   if (byProduct.size === 0) return { operations: [] };
 
-  const winners = resolveWinners(buildCandidates(config, byProduct));
-  if (winners.size === 0) return { operations: [] };
+  const allocations = allocatePromotions(byProduct, buildPromotions(config, byProduct));
+  if (allocations.length === 0) return { operations: [] };
 
-  // 同じ「率 + 表示名」の target はまとめて1 candidate にする
+  // 同じ「率 + 表示名」はまとめて1 candidate にする。
+  // 割当は点数単位で排他なので、candidate 同士の target は重ならない。
   /** @type {Map<string, {percentage: number, label: string, targets: object[]}>} */
   const buckets = new Map();
-  for (const [, winner] of winners) {
-    const key = `${winner.percentage}|${winner.label}`;
-    const bucket = buckets.get(key) || { percentage: winner.percentage, label: winner.label, targets: [] };
-    for (const t of winner.targets) {
+  for (const a of allocations) {
+    const key = `${a.percentage}|${a.label}`;
+    const bucket = buckets.get(key) || { percentage: a.percentage, label: a.label, targets: [] };
+    for (const t of a.targets) {
       bucket.targets.push({ cartLine: { id: t.lineId, quantity: t.quantity } });
     }
     buckets.set(key, bucket);
   }
-  if (buckets.size === 0) return { operations: [] };
 
   const candidates = [...buckets.values()]
     .sort((a, b) => b.percentage - a.percentage)

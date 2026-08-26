@@ -7,9 +7,8 @@
 import assert from 'node:assert/strict';
 import {
   normalizePairs, normalizeTiers, percentageFor, foldCartByProduct,
-  buildCandidates, resolveWinners, buildLinesResult,
+  buildPromotions, allocatePromotions, buildLinesResult, readConfig,
 } from '../src/promotions.js';
-import { readConfig } from '../src/promotions.js';
 import { preDiscountSubtotal, readThreshold, buildDeliveryResult } from '../src/shipping.js';
 
 let passed = 0, failed = 0;
@@ -65,6 +64,33 @@ function flatten(result) {
   }
   return out;
 }
+
+/** 割当を1点単位の一覧に開く。 */
+function alloc(result) {
+  const out = [];
+  for (const op of result.operations) {
+    for (const c of op.productDiscountsAdd.candidates) {
+      for (const t of c.targets) {
+        out.push({ line: t.cartLine.id, quantity: t.cartLine.quantity,
+                   pct: Number(c.value.percentage.value), message: c.message });
+      }
+    }
+  }
+  return out;
+}
+/** そのラインに割引が当たった合計点数。 */
+const units = (a, lineId) => a.filter((x) => x.line === lineId).reduce((n, x) => n + x.quantity, 0);
+/** 割引額の合計。lines の単価から計算する。 */
+function discountTotal(result, lines) {
+  let total = 0;
+  for (const x of alloc(result)) {
+    const l = lines.find((y) => y.id === x.line);
+    total += Number(l.cost.amountPerQuantity.amount) * x.quantity * x.pct / 100;
+  }
+  return Math.round(total);
+}
+const subtotal = (lines) =>
+  lines.reduce((n, l) => n + Number(l.cost.amountPerQuantity.amount) * l.quantity, 0);
 
 console.log('\n-- 設定の正規化 --');
 test('percentage が範囲外の PAIR は捨てる', () => {
@@ -230,11 +256,12 @@ test('片方だけなら PAIR は成立せず Sale 10% に落ちる', () => {
   const f = flatten(buildLinesResult(input([line(1, P(1), V(1), 1)], CONFIG)));
   assert.equal(f['gid://shopify/CartLine/1'].pct, 10);
 });
-test('セット数を超える分は PAIR の対象外', () => {
-  // P(1)×3 + P(2)×1 → 1セットのみ成立。P(1) は1個だけ 15%。
-  const f = flatten(buildLinesResult(input([line(1, P(1), V(1), 3), line(2, P(2), V(2), 1)], CONFIG)));
-  assert.equal(f['gid://shopify/CartLine/1'].quantity, 1);
-  assert.equal(f['gid://shopify/CartLine/1'].pct, 15);
+test('セット数を超える分は PAIR の対象外(残りは Sale が拾う)', () => {
+  // P(1)×3 + P(2)×1 → 1セットのみ成立。P(1) は1点だけ PAIR 15%、残り2点は Sale 10%。
+  const a = alloc(buildLinesResult(input([line(1, P(1), V(1), 3), line(2, P(2), V(2), 1)], CONFIG)));
+  const pair = a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.message.includes('ソファの脇'));
+  assert.equal(pair.reduce((n, x) => n + x.quantity, 0), 1);
+  assert.equal(pair[0].pct, 15);
 });
 
 console.log('\n-- 優先順位・加算禁止 --');
@@ -253,14 +280,18 @@ test('1商品につき candidate は1つ(加算されない)', () => {
   }
   assert.equal(hits.length, new Set(hits).size, '同じラインに複数の割引が当たっている');
 });
-test('同率 15% ならカバー数量が多い方(まとめ買い)が勝つ', () => {
-  // P(1)×3(まとめ買い対象にもする)+ P(2)×1 → PAIR は1個ぶんしか当たらない。
-  const f = flatten(buildLinesResult(input(
-    [line(1, P(1), V(1), 3, 1000, true), line(2, P(2), V(2), 1)], CONFIG)));
-  assert.equal(f['gid://shopify/CartLine/1'].pct, 15);
-  assert.equal(f['gid://shopify/CartLine/1'].quantity, 3, 'PAIR の1個ぶんだけになってしまった');
+test('D-5 同率 15% の PAIR とまとめ買いを同じ点数に重ねない・余りも失わない', () => {
+  // P(1)×3(まとめ買い対象)+ P(2)×1 → PAIR は1点、まとめ買いが残り2点。
+  const r = buildLinesResult(input(
+    [line(1, P(1), V(1), 3, 1000, true), line(2, P(2), V(2), 1)], CONFIG));
+  const a = alloc(r);
+  assert.equal(units(a, 'gid://shopify/CartLine/1'), 3, '3点すべてに割引が当たっていない');
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.message.includes('ソファの脇'))
+                .reduce((n, x) => n + x.quantity, 0), 1, 'PAIR は1点だけのはず');
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.message.includes('まとめ買い'))
+                .reduce((n, x) => n + x.quantity, 0), 2, '残り2点にまとめ買いが当たっていない');
 });
-test('率・数量が同じなら定義順で PAIR が勝つ', () => {
+test('率が同じで1点しかなければ定義順で PAIR が勝つ', () => {
   const cfg = { ...CONFIG, multiBuy: { tiers: [{ minQuantity: 1, percentage: 15 }] } };
   const f = flatten(buildLinesResult(input(
     [line(1, P(1), V(1), 1, 1000, true), line(2, P(2), V(2), 1)], cfg)));
@@ -329,6 +360,87 @@ test('手編みコースター 3点 ¥8,940 → 15%OFF ¥7,599 でも送料無�
   assert.equal(f['gid://shopify/CartLine/1'].pct, 15);
   assert.equal(Math.round(8940 * 0.85), 7599);
   assert.equal(buildDeliveryResult(input(lines, CONFIG, SHIP)).operations.length, 1);
+});
+
+console.log('\n-- D案: 1点(quantity)単位の割当 --');
+// 実データの価格。クラウド ¥11,980 / マッシュルーム ¥9,980。
+const CLOUD = P(1), MUSH = P(2);
+const cart = (cloudQty, mushQty) => [
+  ...(cloudQty ? [line(1, CLOUD, V(1), cloudQty, 11980)] : []),
+  ...(mushQty ? [line(2, MUSH, V(2), mushQty, 9980)] : []),
+];
+
+test('D-1 クラウド×3 + マッシュルーム×1 → 割引 ¥5,690 / 割引後 ¥40,230', () => {
+  const lines = cart(3, 1);
+  const r = buildLinesResult(input(lines, CONFIG));
+  const a = alloc(r);
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.pct === 15)
+                .reduce((n, x) => n + x.quantity, 0), 1, 'クラウドの PAIR は1点');
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.pct === 10)
+                .reduce((n, x) => n + x.quantity, 0), 2, 'クラウドの残り2点は Sale 10%');
+  assert.equal(units(a, 'gid://shopify/CartLine/2'), 1);
+  assert.equal(subtotal(lines), 45920);
+  assert.equal(discountTotal(r, lines), 5690);
+  assert.equal(subtotal(lines) - discountTotal(r, lines), 40230);
+});
+
+test('D-2 クラウド×1 + マッシュルーム×1 → 全点数 PAIR 15% / ¥18,666', () => {
+  const lines = cart(1, 1);
+  const r = buildLinesResult(input(lines, CONFIG));
+  assert.deepEqual(alloc(r).map((x) => x.pct), [15, 15]);
+  assert.equal(discountTotal(r, lines), 3294);
+  assert.equal(subtotal(lines) - discountTotal(r, lines), 18666);
+});
+
+test('D-3 クラウド×2 + マッシュルーム×1 → 1セット PAIR15% / クラウド残り1点 Sale10%', () => {
+  const lines = cart(2, 1);
+  const a = alloc(buildLinesResult(input(lines, CONFIG)));
+  const c15 = a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.pct === 15);
+  const c10 = a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.pct === 10);
+  assert.equal(c15.reduce((n, x) => n + x.quantity, 0), 1);
+  assert.equal(c10.reduce((n, x) => n + x.quantity, 0), 1);
+});
+
+test('D-4 PAIR が複数セット成立 → setCount まで PAIR', () => {
+  const lines = cart(3, 2);
+  const a = alloc(buildLinesResult(input(lines, CONFIG)));
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.pct === 15)
+                .reduce((n, x) => n + x.quantity, 0), 2, '2セット成立するので クラウド2点が PAIR');
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/2' && x.pct === 15)
+                .reduce((n, x) => n + x.quantity, 0), 2);
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.pct === 10)
+                .reduce((n, x) => n + x.quantity, 0), 1, 'クラウドの残り1点は Sale');
+});
+
+test('D-6 PAIR / まとめ買い / Sale が同時に候補でも 1点につき割引は1つ', () => {
+  const lines = [line(1, CLOUD, V(1), 4, 11980, true), line(2, MUSH, V(2), 1, 9980)];
+  const a = alloc(buildLinesResult(input(lines, CONFIG)));
+  assert.equal(units(a, 'gid://shopify/CartLine/1'), 4, '4点すべてに1つずつ当たること');
+  // PAIR 15% が1点、まとめ買い(4点なので15%)が残り3点。Sale 10% は出番なし。
+  assert.equal(a.filter((x) => x.line === 'gid://shopify/CartLine/1' && x.pct === 10).length, 0);
+});
+
+test('D-7 regression: 1点だけなら Sale のまま(挙動が変わっていない)', () => {
+  const lines = cart(1, 0);
+  const a = alloc(buildLinesResult(input(lines, CONFIG)));
+  assert.equal(a.length, 1);
+  assert.equal(a[0].pct, 10);
+});
+
+test('D-7 regression: 同じラインに同じ点数が二重に当たらない', () => {
+  for (const lines of [cart(1, 1), cart(2, 1), cart(3, 1), cart(3, 2),
+                       [line(1, CLOUD, V(1), 5, 11980, true), line(2, MUSH, V(2), 2, 9980)]]) {
+    const a = alloc(buildLinesResult(input(lines, CONFIG)));
+    for (const l of lines) {
+      assert.ok(units(a, l.id) <= l.quantity,
+        `${l.id}: 割引が当たった点数 ${units(a, l.id)} が購入点数 ${l.quantity} を超えた(加算されている)`);
+    }
+  }
+});
+
+test('selectionStrategy は ALL(FIRST だと2つ目以降の割引が消える)', () => {
+  const r = buildLinesResult(input(cart(3, 1), CONFIG));
+  assert.equal(r.operations[0].productDiscountsAdd.selectionStrategy, 'ALL');
 });
 
 console.log(`\n${passed} passed / ${failed} failed\n`);
