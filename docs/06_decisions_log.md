@@ -1187,3 +1187,65 @@ Claude が使っている MCP は別アプリ(`Shopify Claude Connector App`)な
 
 **両 mutation とも `validate_graphql_codeblocks` で検証済み。**
 `combinesWith` は3つとも false にして、加算禁止を Shopify 側でも二重に担保する。
+
+## D-139 新価格211 Variant と まとめ買い13商品を反映(2026-08-26・実行済み)
+
+ストアがパスワード保護中で MAIN も実質開発環境という Owner 判断により、
+Discount の完成を待たずに商品データを先に反映した。
+
+| 変更 | 件数 | 結果 |
+|---|---|---|
+| Product 価格 | **211 Variant / 31商品** | **不一致 0**(257 Variant 全件 readback) |
+| `custom.multi_buy_eligible = true` | **13商品** | **設定漏れ 0 / 誤設定 0** |
+
+- 実行前に**全件照合**(SKU 存在 / 現価格一致 / 商品名一致 / compare_at が null / ACTIVE のみ)を通し、
+  **エラー 0 で初めて実行**した。照合に失敗したら計画を出さずに落とすツールにしてある
+- **`compare_at_price` は1件も作っていない**(全 Variant で null のまま)
+- 除外5商品(ルナ / セル モジュール / プラッシュ / アブストラクト / ソラ)は
+  **価格も metafield も触っていない**
+- Product status / publication / MAIN テーマ は未変更
+
+ツール: `ops/tools/price_apply_plan.py` / `price_readback_verify.py`。
+記録: `_price_apply_plan_20260826.csv` / `_price_readback_20260826.csv`。
+
+## D-140 🔴 Discount 作成は Claude 側からは実行できない(2026-08-26・実測で確定)
+
+**2つの経路を試して、どちらも権限で通らないことを実測した。推測ではない。**
+
+### ① `shopify app execute` → **401**
+
+公式ドキュメント(Manage App Automation Tokens)に
+**「App Automation Token は `deploy` コマンドのために使う」**と明記があり、
+**ストアスコープの Admin API アクセスは含まれない。**
+`app execute` は組織 API でストアを解決しようとして 401 になる。
+対話式の `shopify auth login`(ブラウザ)が必要で、サンドボックスでは実行できない。
+
+### ② MCP から `discountAutomaticAppCreate` → **functionHandle が解決されない**
+
+```
+"Function moru-promotions-discount が見つかりません。
+ 現在のアプリ (341262598145) でリリースされており、…"
+```
+
+**`functionHandle` は「呼び出しているアプリ」の Function から解決される。**
+MCP は別アプリ(`Shopify Claude Connector App`)なので MORU Promotions の Function は見えない。
+
+> 副産物: `startsAt: null` は受け付けられない(「開始日時は空にできません」)。
+> **作成時に必ず開始日時を入れる。**
+
+### → 採用: shop metafield + 管理画面から作成(D-138 の fallback 経路)
+
+設定 JSON を **shop の `custom.moru_promotions_config`** に書き込み済み
+(`gid://shopify/Metafield/62541611335920`)。`jsonValue` として読めることを確認した。
+
+⚠️ **`custom` はマーチャント所有なので `$app` より分離性が弱い。**
+このストアの他アプリからも読み書きできる。秘密情報ではない(商品 GID と割引率だけ)が、
+**`$app` と同じ隔離性はない。**アプリ自身のトークンが用意できたら `$app` へ移し、
+shop 側は消してよい(Function は `$app` を優先して読む)。
+
+**Owner の1手順**: 管理画面 → 割引 → 自動割引 → MORU Promotions の
+`MORU 販促割引(統合)` を選び、**商品割引と配送割引の両方にチェック**、
+**組み合わせは3つとも OFF**、開始日時を入れて保存。
+設定 JSON は shop metafield から自動で読まれる。
+
+**21 の DEV テストは Discount が無いと1件も実行できないため未実施。**作成後にまとめて行う。

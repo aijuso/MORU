@@ -218,3 +218,102 @@ variables: `_shop_config_set_variables_20260826.json`
 
 Discount を管理画面から作る場合、**`discountClasses` に PRODUCT と SHIPPING の
 両方が付くかを作成後に確認する。**片方だけだとその機能が丸ごと動かない(fail-closed)。
+
+---
+
+## 7. 追補(2026-08-26 その2)— Discount 作成が Claude 側からはできない
+
+### `shopify app execute` は使えなかった
+
+```
+shopify app execute --store=rgy5ee-fv.myshopify.com -q 'query { shop { id } }'
+→ GraphQL Error (Code: 401) FetchStoreByDomain
+```
+
+**原因は権限。**公式ドキュメント(Manage App Automation Tokens)に
+「App Automation Token は **`deploy` コマンド**でアプリ設定と拡張をプログラム的に
+デプロイするために使う」と明記されている。**ストアスコープの Admin API アクセスは含まれない。**
+`app execute` はまず組織 API でストアを解決しようとするので、そこで 401 になる。
+
+対話式の `shopify auth login`(ブラウザ)が必要で、このサンドボックスでは実行できない。
+
+### `discountAutomaticAppCreate` も Claude 側からは通らない — 実測で確定
+
+```
+functionHandle: "moru-promotions-discount"
+→ userErrors: "Function moru-promotions-discount が見つかりません。
+   現在のアプリ (341262598145) でリリースされており、
+   そのアプリがインストールされていることを確認してください。"
+```
+
+**`functionHandle` は「呼び出しているアプリ」の Function の中から解決される。**
+Claude が使っている MCP は別アプリ(`Shopify Claude Connector App` / 341262598145)なので、
+MORU Promotions の Function は見えない。**推測ではなく実際に叩いて確認した。**
+
+> なお `startsAt: null` は受け付けられない(「開始日時は空にできません」)。
+> **作成時に必ず開始日時を入れる。**
+
+### → 採用した経路: **shop metafield + 管理画面から作成**
+
+**設定 JSON は書き込み済み。**
+
+| 項目 | 値 |
+|---|---|
+| Metafield GID | `gid://shopify/Metafield/62541611335920` |
+| owner | `gid://shopify/Shop/85743927536`(MORU LIVING) |
+| namespace / key | `custom` / `moru_promotions_config` |
+| type | `json` |
+| 読み出し確認 | **`jsonValue` として正しくパースされることを確認済み** |
+
+> ⚠️ **`custom` はマーチャント所有の名前空間で、`$app` より分離性が弱い。**
+> このストアにインストールされた他のアプリからも読み書きできる。
+> 秘密情報ではない(商品 GID と割引率だけ)が、**`$app` と同じ隔離性はない。**
+> アプリ自身のトークンが用意できたら `$app` へ移し、shop 側は消してよい
+> (Function は `$app` を優先して読む)。
+
+### Owner にやってもらう1手順 — 管理画面から Discount を作成
+
+1. Shopify 管理画面 → **割引** → **割引を作成** → **自動割引**
+2. アプリ **MORU Promotions** の **`MORU 販促割引(統合)`** を選ぶ
+3. **割引の種類で「商品割引」と「配送割引」の両方にチェックを入れる**
+   🔴 **片方だけだとその機能が丸ごと動かない(fail-closed)**
+4. **組み合わせ設定は3つとも OFF**(商品割引・注文割引・配送割引のいずれとも組み合わせない)
+5. 開始日時を入れて保存する
+
+**設定 JSON は shop metafield から自動で読まれる。**管理画面で JSON を入力する欄は無い
+(admin UI extension を作っていないため)。**作成した瞬間から有効になる。**
+
+### 作成後の readback(Claude 側で実行できる)
+
+```graphql
+query VerifyDiscount {
+  automaticDiscountNodes(first: 10) {
+    nodes {
+      id
+      automaticDiscount {
+        ... on DiscountAutomaticApp {
+          title status startsAt endsAt discountClasses
+          combinesWith { productDiscounts orderDiscounts shippingDiscounts }
+          appDiscountType { functionId title appKey }
+        }
+      }
+    }
+  }
+}
+```
+
+確認する項目:
+
+- Discount が **1件だけ**であること
+- `appDiscountType.functionId` が **`moru-promotions-discount`** の Function であること
+- `discountClasses` に **PRODUCT と SHIPPING の両方**が入っていること
+- `combinesWith` が **3つとも false** であること
+- `status` が `ACTIVE` であること
+
+### 21 の DEV テストはまだ実行していない
+
+**Discount が無いと1件も実行できない。**割引が存在しない状態でカートを作っても、
+Function は呼ばれない(= テストにならない)。**Discount 作成後にまとめて実施する。**
+
+**A-1(フェイクファー2点 ¥7,960 → ¥7,164 で送料無料が維持されるか)が最優先。**
+ここで `line.cost.amountPerQuantity` が商品割引の前か後かが実測で分かる。
