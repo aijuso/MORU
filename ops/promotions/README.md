@@ -375,3 +375,92 @@ Shopify 公式の「割引詳細ページ内で描画する拡張」を足すの
 6. 開始日時を入れて保存
 
 **保存した瞬間から有効になる。**設定 JSON は shop metafield から自動で読まれる。
+
+---
+
+## 9. 追補(2026-08-26 その4)— Example Domain がまだ開く件の実査(D-142)
+
+### 実査した結果:**配線は正しい。**
+
+`shopify app versions list`:
+
+| version | status |
+|---|---|
+| **`moru-promotions-8`** | **★ active**(実査時点の current release) |
+| 7 / 6 / 5 / 4 / 3 / 2 / 1 | inactive |
+
+deploy artifact(`.shopify/deploy-bundle/manifest.json`)の中身:
+
+```json
+{ "type": "function", "handle": "moru-promotions-discount",
+  "config": { "api_version": "2025-10",
+              "ui": { "ui_extension_handle": "moru-promotions-discount-ui" },
+              "enable_creation_ui": true } }
+
+{ "type": "ui_extension", "handle": "moru-promotions-discount-ui",
+  "target": "admin.discount-details.function-settings.render",
+  "config": { "extension_points": [
+    { "target": "admin.discount-details.function-settings.render",
+      "module": "./src/DiscountFunctionSettings.jsx" } ] } }
+```
+
+- ✅ **release artifact 内**に Function と UI 拡張の**両方**が入っている
+- ✅ Function → UI の関連付け(`ui.ui_extension_handle`)も **artifact 上で正しい**
+- ✅ handle の綴りは一致(typo なし)/ target 名も正 / type も `ui_extension`
+- ✅ `enable_creation_ui: true`
+
+**つまり「release されていない」「配線ミス」ではない。**
+
+### 唯一ドキュメントと食い違っていた点: **`api_version`**
+
+`[extensions.ui] handle` だけで Admin UI 拡張に関連付ける方式の**公式例はすべて
+`api_version = "2026-01"`**。こちらは **`2025-10`** だった。
+
+さらに changelog **「Enhanced Discount Function configuration with Admin UI extensions」
+(2026-01)** が、割引 Function と Admin UI 拡張の統合が 2026-01 で強化されたことを示している。
+
+**2025-10 で handle 単独の関連付けがサポートされているという記述は見つからなかった。**
+(`[extensions.ui.paths]` を併記する React Router 方式は 2025-04 の例がある。
+ こちらは App 側にルートを持つ方式なので、そもそも App Home が要る)
+
+→ **`moru-promotions-discount` と `moru-promotions-discount-ui` を `2026-01` に上げた。**
+
+| | 修正前 | 修正後 |
+|---|---|---|
+| `moru-promotions-discount` の api_version | 2025-10 | **2026-01** |
+| `moru-promotions-discount-ui` の api_version | 2025-10 | **2026-01** |
+| `@shopify/ui-extensions` | 2025.10.x | **2026.1.x** |
+
+**`moru-promotions-9` として deploy / release 済み。**
+Function テスト **49 passed / 0 failed**。artifact 上で関連付けも維持されていることを再確認した。
+
+> 旧2本(`multi-buy-discount` / `pair-set-discount`)は 2025-10 のまま。
+> 実機テスト後に削除する予定なので触っていない。
+
+### ⚠️ これは仮説にもとづく修正で、まだ実機で確認できていない
+
+**Claude 側から管理画面の画面遷移を確認する手段が無い。**
+`shopify app execute` も `generate extension` も組織 API で 401 になる(D-140)。
+Admin API では他アプリのインストール状態(`appInstallations`)が **access denied** で見えない。
+
+**したがって「直った」とは言えない。Owner の再テストが要る。**
+
+### 再インストールについて
+
+**公式ドキュメント上、「新しい Admin UI 拡張を追加したら再インストールが必要」という
+記述は見つからなかった。**アクセススコープは `read_products,write_discounts` のままで
+変えていないので、**再承認を求められる理由も無い。**
+
+**したがって今は再インストールしない。**もし再インストールすると失われ得るもの:
+
+| 対象 | 影響 |
+|---|---|
+| **app-owned metafield(`$app`)** | **消える可能性がある。**ただし現在 `$app` には何も入れていない(設定は shop 側) |
+| installation token | 再発行になる |
+| Function association | app version から再構築されるので基本は復元される |
+| **Discount resource** | **まだ 0件なので失うものが無い** |
+| `shop.custom.moru_promotions_config` | **merchant-owned なので保持される** |
+| Product 価格 / `custom.multi_buy_eligible` | **merchant-owned。保持される** |
+
+**いま再インストールしても実質的に失うものは無い**(Discount 0件・`$app` 未使用)が、
+**根拠が無いままやることではない**ので、まず api_version の修正を試す。

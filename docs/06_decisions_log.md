@@ -1284,3 +1284,43 @@ UI で再入力させると**同じ設定を2箇所で手管理する**ことに
 
 **app version `moru-promotions-8` を release。Function テスト 49 passed / 0 failed。
 Discount resource は 0件のまま。**
+
+## D-142 Example Domain 問題の実査と api_version 2026-01 への引き上げ(2026-08-26)
+
+### 実査結果: **配線・release は正しかった**
+
+- `moru-promotions-8` は **★ active**(current release)
+- deploy artifact に Function と UI 拡張の**両方**が含まれる
+- Function 側に **`ui.ui_extension_handle = "moru-promotions-discount-ui"`** が入っている
+- UI 拡張の target は **`admin.discount-details.function-settings.render`**
+- `enable_creation_ui: true` / handle の綴り一致 / type も `ui_extension`
+
+**「release されていない」「配線ミス」ではない。**
+
+### 唯一ドキュメントと違った点: `api_version`
+
+`[extensions.ui] handle` **だけ**で Admin UI 拡張に関連付ける公式例は
+**すべて `api_version = "2026-01"`**。こちらは `2025-10` だった。
+changelog「Enhanced Discount Function configuration with Admin UI extensions」も
+**2026-01** で統合が強化されたことを示している。
+**2025-10 で handle 単独の関連付けがサポートされている記述は見つからなかった。**
+
+→ `moru-promotions-discount` と `moru-promotions-discount-ui` を **2026-01** に上げ、
+`@shopify/ui-extensions` も `2026.1.x` にして **`moru-promotions-9` を release**。
+テスト 49 passed / 0 failed。artifact 上の関連付けも維持を確認。
+
+⚠️ **これは仮説にもとづく修正で、実機では未確認。**
+Claude 側から管理画面の遷移を見る手段が無い(`app execute` / `generate extension` は
+組織 API で 401 / `appInstallations` は access denied)。**Owner の再テストが要る。**
+
+### 再インストールはしない
+
+**「新しい Admin UI 拡張を追加したら再インストールが必要」という公式記述は見つからなかった。**
+アクセススコープも `read_products,write_discounts` のまま変えていないので再承認の理由も無い。
+
+失われ得るものの事前確認: `$app` metafield(**現在未使用**)/ installation token(再発行)/
+Function association(app version から復元)/ **Discount resource は 0件なので影響なし**。
+`shop.custom.moru_promotions_config` と Product 価格・`custom.multi_buy_eligible` は
+**merchant-owned なので保持される**。
+
+**実質的に失うものは無いが、根拠が無いままやることではない。**まず api_version 修正を試す。
