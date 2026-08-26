@@ -1496,3 +1496,66 @@ Checkout に出ていた **速達 ¥3,762 / 1〜2営業日** を**ローンチ�
 **Function の配送割引を実測するには Function を通る経路(Checkout / Storefront Cart API)が要る。**
 このサンドボックスからは `/checkout` が 403(bot 判定)、Chromium はプロキシを通れない。
 **Owner がブラウザで1カートだけ確認するのが最短。**
+
+---
+
+## D-147 旧 extension を削除し、国際配送ゾーンを無効化する
+
+**2026-08-26 / Owner 判断**
+
+### 送料無料の実機確認が PASS した
+
+Owner が Checkout で確認:
+
+フェイクファー 150×200 ×2 / 通常小計 ¥7,960 → まとめ買い 10%OFF 後 **¥7,164**
+→ **通常配送のみ表示 / 通常送料 ¥870 → 無料 / 速達は表示されない。**
+
+**D-146 で 🔴 未検証として残していた「割引後に ¥7,700 を割っても送料無料を維持する」が
+実機で確認できた。** 配送ターゲットが読む `amountPerQuantity` は
+**商品割引の適用前**の値だった(D-127 の懸念は空振り。足し戻し実装は不要)。
+
+これで **6項目すべて PASS**。
+
+### 旧 extension を削除した
+
+`multi-buy-discount`(`moru-multi-buy-discount`)と
+`pair-set-discount`(`moru-pair-set-discount`)を**リポジトリから削除**し、
+`shopify app deploy --allow-deletes` でリリースした。
+
+**残るのは統合版の `moru-promotions-discount` と、その設定 UI
+`moru-promotions-discount-ui` の2つだけ。**
+
+⚠️ **`--allow-deletes` が要る。** 付けないと
+「This deployment includes changes that require confirmation.」で止まる。
+非対話環境では確認プロンプトを出せないため。
+
+`package.json` の `test` も統合版だけを指すよう直した(削除したパスを叩いていた)。
+
+### 国際配送ゾーンを無効化した
+
+**ローンチ時は日本国内販売のみ。**
+国際ゾーン(27カ国)の `Standard ¥3,000`
+(`DeliveryMethodDefinition/925779460336`)を **`active: false`**。
+
+速達と同じく**削除ではなく無効化**。ゾーンと対象国のリストはそのまま残るので、
+海外展開するときに `active: true` に戻すだけでよい。
+
+### readback
+
+| 項目 | 結果 |
+|---|---|
+| 配送(日本・東京) | **`通常配送 ¥870` のみ** |
+| 配送(アメリカ CA) | **配送方法なし**(注文できない) |
+| 配送(シンガポール) | **配送方法なし** |
+| 速達 | `active: false` |
+| 国際 Standard | `active: false` |
+| Discount resource | **1件のみ** |
+| title | `MORU 販促割引(統合)` |
+| status | `ACTIVE` |
+| discountClasses | `PRODUCT` / `ORDER` / `SHIPPING` |
+| functionId | `01a03b6e-7661-7590-8dbf-d5b2e47e837d` |
+| errorHistory | **`null`** |
+| combinesWith | **全て `false`** |
+| storefront 21ケース | **21 PASS / 0 FAIL**(削除後に再実行) |
+
+app version は **`moru-promotions-12`**。

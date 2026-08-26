@@ -601,3 +601,50 @@ MAIN theme(`166203621616`)/ Frontend Dev theme(`166341181680`)/ Discount resourc
 **国際ゾーン(27カ国)の `Standard` ¥3,000 は有効なまま。**
 今回の指示は速達だけだったので触っていない。
 **国際配送の停止は既報のローンチ阻害項目で、Owner 判断待ち。**
+
+---
+
+## 13. 追補(2026-08-26 その6)— クリーンアップ完了(D-147)
+
+### 送料無料は実機 PASS
+
+Owner が Checkout で確認: 割引前 ¥7,960 → 割引後 ¥7,164 で **送料 ¥870 → 無料。**
+**配送ターゲットの `amountPerQuantity` は商品割引の適用前だった。**
+`shipping.js` に書いてあった「⚠️ 未検証の1点」は解消。**足し戻し実装は不要。**
+
+### 残っている extension
+
+```
+extensions/
+  moru-promotions-discount      # Function(商品割引 + 配送割引)
+  moru-promotions-discount-ui   # 割引詳細画面の読み取り専用サマリ
+```
+
+`multi-buy-discount` / `pair-set-discount` は削除済み。
+
+```bash
+npx shopify app deploy --allow-updates --allow-deletes -m "..."
+```
+
+⚠️ **`--allow-deletes` が必須。** 無いと確認プロンプトで止まる(非対話環境では応答できない)。
+
+### 配送設定の最終状態
+
+| ゾーン | 配送方法 | active |
+|---|---|---|
+| 国内配送(JP) | 通常配送 ¥870 | ✅ |
+| 国内配送(JP) | 通常配送 ¥0(割引前 ¥7,700 以上の条件) | ✅ |
+| 国内配送(JP) | 速達 ¥3,762 | ❌ **無効**(D-146) |
+| 国際(27カ国) | Standard ¥3,000 | ❌ **無効**(D-147) |
+
+**どちらも削除ではなく無効化。`active: true` に戻すだけで復活する。**
+
+実測(`/cart/shipping_rates.json`):
+
+```
+日本(東京)   → 通常配送 ¥870 のみ
+アメリカ(CA) → 配送方法なし
+シンガポール → 配送方法なし
+```
+
+**海外住所では配送方法が出ないので注文できない。** 意図どおり。

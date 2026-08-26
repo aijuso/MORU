@@ -5,7 +5,7 @@
   "description": "MORU LIVING の販促・割引用 Shopify Functions をまとめる内部アプリ",
   "license": "UNLICENSED",
   "scripts": {
-    "test": "node extensions/multi-buy-discount/tests/run_tests.mjs && node extensions/pair-set-discount/tests/run_tests.mjs",
+    "test": "node extensions/moru-promotions-discount/tests/run_tests.mjs",
     "build": "shopify app build",
     "deploy": "shopify app deploy --allow-updates"
   },
