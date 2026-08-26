@@ -1,0 +1,11 @@
+{
+  "name": "moru-promotions-discount-ui",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@shopify/ui-extensions": "2025.10.x",
+    "preact": "^10.26.4",
+    "@preact/signals": "^2.0.1"
+  }
+}

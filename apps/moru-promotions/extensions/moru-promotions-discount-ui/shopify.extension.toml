@@ -1,0 +1,23 @@
+api_version = "2025-10"
+
+[[extensions]]
+name = "MORU 販促割引(統合)"
+description = "Summer Sale / まとめ買い / PAIR / 送料無料を1つの Function で判定する。設定内容の確認用(読み取り専用)。"
+handle = "moru-promotions-discount-ui"
+uid = "99c831f1-55cc-09c2-25a9-91e598f2d3430a724769977b2ce6"
+type = "ui_extension"
+
+# Admin block 拡張はターゲットを1つしか持てない。
+# これを付けないと、管理画面の割引作成でアプリの App Home URL
+# (shopify.app.toml の application_url)へ飛ばされる。
+# application_url は https://example.com のままなので "Example Domain" が開いていた(D-141)。
+  [[extensions.targeting]]
+  module = "./src/DiscountFunctionSettings.jsx"
+  target = "admin.discount-details.function-settings.render"
+
+# Function が読む設定 metafield。宣言しておくと拡張から参照できる。
+# 実際の設定は shop の custom.moru_promotions_config にあり、
+# Function は $app → shop の順に読む(D-138)。
+  [[extensions.metafields]]
+  namespace = "$app"
+  key = "function-configuration"

@@ -20,6 +20,11 @@ description = "PAIR / まとめ買い / Summer Sale を1つの Function で判�
   input_query = "src/cart_delivery_options_discounts_generate_run.graphql"
   export = "cart-delivery-options-discounts-generate-run"
 
+  # 管理画面の割引詳細ページで開く UI 拡張。**これが無いと App Home URL
+  # (application_url = https://example.com)へ飛ばされて "Example Domain" が開く**(D-141)。
+  [extensions.ui]
+  handle = "moru-promotions-discount-ui"
+
   [extensions.build]
   # JS Function は Shopify CLI(Javy)が直接ビルドする。build command は空にする。
   # ここに "npm run build" を書くと package.json を呼び返して無限再帰する(D-100)。

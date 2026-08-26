@@ -1249,3 +1249,38 @@ shop 側は消してよい(Function は `$app` を優先して読む)。
 設定 JSON は shop metafield から自動で読まれる。
 
 **21 の DEV テストは Discount が無いと1件も実行できないため未実施。**作成後にまとめて行う。
+
+## D-141 管理画面で "Example Domain" へ飛ぶ問題を Admin UI 拡張で直す(2026-08-26)
+
+### 原因
+
+**Function に `[extensions.ui]` が無かった。**
+管理画面で「割引を作成 → アプリを選ぶ」と、Shopify は**そのアプリの App Home URL**
+(`shopify.app.toml` の `application_url`)を開く。MORU Promotions は Function だけの
+アプリで App Home を持たず、`application_url` が **`https://example.com`** のままだったため
+**"Example Domain"** が開いていた。`[extensions.ui.paths]` も Discount 用 UI 拡張も無し。
+
+### 直し方
+
+`application_url` を変えて App Home を用意するのではなく、
+**Shopify 公式の「割引詳細ページ内で描画する拡張」を足す。**
+
+- `extensions/moru-promotions-discount-ui/` を新設
+  (`type = "ui_extension"` / target `admin.discount-details.function-settings.render`)
+- Function 側に **`[extensions.ui] handle = "moru-promotions-discount-ui"`** を追加
+- `jsconfig.json` で `jsxImportSource: preact` を指定
+  (無いと JSX が `react/jsx-runtime` を探してビルドが落ちる)
+- `@preact/signals` が `@shopify/ui-extensions/preact` の依存として必要
+
+### UI は読み取り専用にした
+
+割引条件の実データは **すでに `shop.custom.moru_promotions_config` にある**(D-138)。
+UI で再入力させると**同じ設定を2箇所で手管理する**ことになり、どちらが正か分からなくなる。
+**入力欄は置かない。**設定を変えるときは
+`ops/promotions/_discount_config_20260826.json` を直して metafield へ入れ直す(git に履歴が残る)。
+
+⚠️ 画面の数値は **metafield の実値を読んでいるのではなく、リポジトリ側の正を転記したもの。**
+ズレたら metafield が実際の挙動を決める。**設定を変えたら JSX も一緒に直すこと。**
+
+**app version `moru-promotions-8` を release。Function テスト 49 passed / 0 failed。
+Discount resource は 0件のまま。**

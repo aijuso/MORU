@@ -317,3 +317,61 @@ Function は呼ばれない(= テストにならない)。**Discount 作成後�
 
 **A-1(フェイクファー2点 ¥7,960 → ¥7,164 で送料無料が維持されるか)が最優先。**
 ここで `line.cost.amountPerQuantity` が商品割引の前か後かが実測で分かる。
+
+---
+
+## 8. 追補(2026-08-26 その3)— 「Example Domain」へ飛ぶ問題の修正(D-141)
+
+### 原因
+
+**Function に `[extensions.ui]` が無かった。**
+
+管理画面で「割引を作成 → アプリを選ぶ」と、Shopify は
+**そのアプリの App Home URL(`shopify.app.toml` の `application_url`)** を開く。
+MORU Promotions は Function だけのアプリで App Home を持たず、
+`application_url` が **`https://example.com`** のままだったので **"Example Domain"** が開いた。
+
+確認したもの:
+
+| 項目 | 修正前 |
+|---|---|
+| `shopify.app.toml` の `application_url` | `https://example.com` |
+| `moru-promotions-discount` の `[extensions.ui]` | **無し** |
+| `[extensions.ui.paths]` | 無し |
+| Discount 用 Admin UI extension | **存在しなかった** |
+
+`application_url` は変えていない。**App Home を用意するのではなく、
+Shopify 公式の「割引詳細ページ内で描画する拡張」を足すのが正しい直し方。**
+
+### 修正内容
+
+| ファイル | 変更 |
+|---|---|
+| `extensions/moru-promotions-discount-ui/shopify.extension.toml` | **新規。**`type = "ui_extension"` / target `admin.discount-details.function-settings.render` |
+| `extensions/moru-promotions-discount-ui/src/DiscountFunctionSettings.jsx` | **新規。**読み取り専用のサマリー |
+| `extensions/moru-promotions-discount-ui/package.json` | **新規。**`@shopify/ui-extensions` / `preact` / `@preact/signals` |
+| `extensions/moru-promotions-discount-ui/jsconfig.json` | **新規。**`jsxImportSource: preact`(無いと JSX が `react/jsx-runtime` を探して失敗する) |
+| `extensions/moru-promotions-discount/shopify.extension.toml` | **`[extensions.ui] handle = "moru-promotions-discount-ui"` を追加** |
+
+### UI は読み取り専用
+
+割引条件の実データは **すでに `shop.custom.moru_promotions_config` にある**。
+ここで再入力させると**同じ設定を2箇所で手管理する**ことになるので、**入力欄は置いていない。**
+
+表示するのは Summer Sale 10% / まとめ買い 2点10%・3点以上15% / PAIR P-6 15% /
+送料無料 ¥7,700 / ハル2脚セット除外 / 設定の保存先、および適用ルール4点。
+
+> ⚠️ 画面の数値は **metafield の実値を読んでいるのではなく、リポジトリ側の正を転記したもの。**
+> **ズレたら metafield が実際の挙動を決める。**設定を変えたら JSX も一緒に直す。
+
+### Owner が次にクリックする手順
+
+1. Shopify 管理画面 → **割引** → **割引を作成** → **自動割引**
+2. アプリ **MORU Promotions** の **`MORU 販促割引(統合)`** を選ぶ
+3. → **管理画面の中で割引詳細ページが開く**(Example Domain には飛ばない)
+4. 🔴 **割引の種類で「商品割引」と「配送割引」の両方にチェック**
+   片方だけだとその機能が丸ごと動かない(fail-closed)
+5. **組み合わせ設定は3つとも OFF**
+6. 開始日時を入れて保存
+
+**保存した瞬間から有効になる。**設定 JSON は shop metafield から自動で読まれる。
