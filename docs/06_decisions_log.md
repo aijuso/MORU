@@ -1855,3 +1855,58 @@ repo が本番と一致していれば、次に事故る余地がその分減る
 
 `class="moru-product__price moru-product__price--sale"` になる。
 `class="moru-product__price--sale"` で引っかけようとすると**全件ハズレる**。
+
+---
+
+## D-153 商品ページの「特徴」をタイトル→説明→画像の順にした(2026-08-27)
+
+**Owner 指示。** それまでは「画像 → 01 → タイトル → 説明」で、画像が先に来ていた。
+**「タイトルと説明があって画像」を全ブロックで繰り返す**形に変えた。
+
+### やり方: CSS の order ではなく DOM を並べ替えた
+
+`sections/moru-product-features.liquid` の `__body` を `__media` より前に出した。
+CSS の `order` で見た目だけ入れ替えるとスクリーンリーダーの読み上げ順が画像のままズレるため。
+metafield 分岐(`product.metafields.custom.features`)と block 分岐の**両方**を直した。
+実際に描画されるのは metafield 分岐(`templates/product.json` に features の block が無い)。
+
+### 🔴 落とし穴: `assets/moru-frontend-polish.css` がセクションCSSを `!important` で上書きしている
+
+**「PC は2カラムで左右交互(ジグザグ)」は事実ではない。** Owner の指摘で判明した。
+
+polish.css が全ビューポートを1カラムに固定している:
+
+```
+.moru-features__row, .moru-features__row--text-only {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+.moru-features__row--flip .moru-features__media { order: 0 !important; }
+```
+
+説明画像(日本語化した寸法図・仕様表)を切らないための意図的な設計なので**戻さない**。
+
+このため、セクション側で `order` を触ると**壊れる**:
+
+| 行 | セクションの `order:-1` | polish の `order:0 !important` | 結果 |
+|---|---|---|---|
+| 非 flip 行(01/03/05) | 効く | 無い | **画像が先に戻る** ❌ |
+| flip 行(02/04) | 負ける | 効く | テキストが先 ✅ |
+
+→ **奇数行だけ画像が先**という食い違いになる。一度この状態で本番に出してしまった。
+セクション側は `order:0`(並べ替えない)に統一し、**並び順は DOM だけで決める**ことにした。
+
+**教訓: `.moru-features__*` を触るときは必ず `assets/moru-frontend-polish.css` を先に見る。**
+セクションの `{% stylesheet %}` は `compiled_assets/styles.css` に、
+polish.css は独立した asset に出るので、**両方を突き合わせないと実際の効き方が分からない。**
+
+### 検証(https://moruliving.com/products/moru-flower-lounge)
+
+- DOM 順: 全5行(flip / 非 flip とも)`body → media` ✅
+- 配信 CSS: polish.css = 1カラム固定 / styles.css = 全行 `order:0` → **DOM 順に一致** ✅
+- `theme check` 100 files / 0 offenses、Dev と MAIN の両方へ反映
+
+### 検証時の注意
+
+ストアフロントの `<link href>` は **プロトコル相対(`//moruliving.com/...`)**。
+`'https://moruliving.com' + href` で組み立てると URL が壊れて全件取得失敗し、
+**「CSS に宣言が無い」と誤読する**(実際に一度踏んだ)。`//` なら `https:` を前置する。

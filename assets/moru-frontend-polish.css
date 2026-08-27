@@ -115,7 +115,8 @@
   box-shadow: inset 0 0 0 2px var(--color-accent-blue) !important;
 }
 
-/* PDP features — image-first editorial stack on every viewport; never crop source imagery. */
+/* PDP features — text-first editorial stack on every viewport; never crop source imagery.
+   並び順は section 側の DOM 順(タイトル → 説明 → 画像)に従う。ここでは order を作らない。 */
 .moru-features__rows {
   gap: clamp(2.75rem, 6vw, 5.5rem) !important;
 }
