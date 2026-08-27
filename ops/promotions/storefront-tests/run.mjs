@@ -11,8 +11,10 @@
 // (このサンドボックスの Chromium は外向きプロキシを通れなかった。
 //  fetch は通るので、そちらで実機のカートを作る)
 
-// shop.url の正規ドメイン。rgy5ee-fv は 301 でここへ飛ぶ。
-const STORE = process.env.MORU_STORE_URL || 'https://moruliving.myshopify.com';
+// 正規ドメイン。2026-08-27 に `moruliving.com` へ切り替わった。
+// `rgy5ee-fv.myshopify.com` も `moruliving.myshopify.com` も 301 でここへ飛ぶ。
+// fetch は `redirect: 'manual'` で叩くので、**旧ドメインを既定にすると 301 で止まる。**
+const STORE = process.env.MORU_STORE_URL || 'https://moruliving.com';
 
 // 実データの Variant GID → 数値 ID(cart/add.js が使うのは数値 ID)
 const V = {

@@ -1559,3 +1559,42 @@ Owner が Checkout で確認:
 | storefront 21ケース | **21 PASS / 0 FAIL**(削除後に再実行) |
 
 app version は **`moru-promotions-12`**。
+
+---
+
+## D-148 パスワード解除後の実測。ローンチ阻害は MORU500 案内の1件だけになった(2026-08-27)
+
+引き継ぎ時点の「ローンチ阻害3件」を実測で洗い直した。**2件はすでに解消していた。**
+
+| # | 項目 | 実測 |
+|---|---|---|
+| 1 | パスワード保護 | ✅ `onlineStore.passwordProtection.enabled: false` |
+| 2 | 通常配送の transit time | ✅ `/cart/shipping_rates.json` が `delivery_days: []` / `delivery_range: null`。¥870(しきい値未満)・¥0(しきい値以上)の両ケースで確認 |
+| 3 | MORU500 の顧客への案内 | 🔴 未解消 |
+
+### 正規ドメインが `moruliving.com` に切り替わっていた
+
+`moruliving.myshopify.com` / `rgy5ee-fv.myshopify.com` はどちらも **301**。
+`run.mjs` は `redirect: 'manual'` で叩くため、**旧ドメインを既定にしていると
+301 を「パスワード保護がまだ有効」と誤検知して停止する。**
+既定値を `https://moruliving.com` に変更した。
+
+### #3 は「未実装」ではなく「約束して届けていない」
+
+コード `MORU500` は `/` `/cart` `/account/register` `/account/login` `/pages/faq` の
+**どこにも出ていない。** 一方でアナウンスバーは全ページで
+「新規会員登録で¥500OFFクーポンプレゼント」と言い、
+FAQ は「**対象のお客様のカートに表示される**¥500OFFクーポンをご利用ください」と明言している。
+
+**表示ブロックが存在しないので、FAQ の記述が事実に反している。**
+新規会員がコードを知る手段はゼロ。
+
+**決定: 実装先は `MORU Frontend Dev`(166341181680)だが、docs/06 §2 の分業ルールにより
+Owner の明示指示があるまで Claude は着手しない。**
+先送りする場合でも、**FAQ の「カートに表示される」という記述は先に直す**
+(いま顧客向け文面が事実と食い違っているため)。
+
+### storefront-tests の有効ケース数を訂正
+
+**21ケース中 19ケースが有効。** A-2 と E-2 が手編みコースター(DRAFT 化済み)を使っており、
+`cart/add.js` が **422** を返す。前の申し送りの「20ケース」は **E-2 を数え漏らしていた。**
