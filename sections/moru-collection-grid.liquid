@@ -59,44 +59,50 @@
       </div>
     </div>
 
-    <ul class="moru-collection__grid" role="list" data-grid-items>
-      {% for product in collection.products %}
-        <li>
-          {% render 'moru-product-card',
-            product: product,
-            show_swatches: section.settings.show_swatches,
-            swatch_option_names: section.settings.swatch_option_names,
-            show_subtitle: section.settings.show_subtitle
-          %}
-        </li>
-      {% else %}
-        {% for i in (1..8) %}
-          <li>
-            {% render 'moru-product-card',
-              ph_index: forloop.index,
-              show_swatches: section.settings.show_swatches,
-              show_subtitle: section.settings.show_subtitle
-            %}
-          </li>
-        {% endfor %}
-      {% endfor %}
-    </ul>
+    {% if collection.products.size > 0 or request.design_mode %}
+      <ul class="moru-collection__grid" role="list" data-grid-items>
+        {% if collection.products.size > 0 %}
+          {% for product in collection.products %}
+            <li>
+              {% render 'moru-product-card',
+                product: product,
+                show_swatches: section.settings.show_swatches,
+                swatch_option_names: section.settings.swatch_option_names,
+                show_subtitle: section.settings.show_subtitle
+              %}
+            </li>
+          {% endfor %}
+        {% elsif request.design_mode %}
+          {% for i in (1..8) %}
+            <li>
+              {% render 'moru-product-card',
+                ph_index: forloop.index,
+                show_swatches: section.settings.show_swatches,
+                show_subtitle: section.settings.show_subtitle
+              %}
+            </li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+    {% endif %}
 
-    <div class="moru-collection__footer">
-      <p class="moru-collection__shown" data-shown-text>
-        {{ 'moru.collection.shown' | t: shown: shown, total: paginate.items }}
-      </p>
+    {% if paginate.items > 0 %}
+      <div class="moru-collection__footer">
+        <p class="moru-collection__shown" data-shown-text>
+          {{ 'moru.collection.shown' | t: shown: shown, total: paginate.items }}
+        </p>
 
-      {% if paginate.next %}
-        <a class="moru-collection__more" href="{{ paginate.next.url }}" data-load-more>
-          {{ 'moru.collection.load_more' | t }}
-        </a>
-      {% elsif collection.products.size > 0 %}
-        <p class="moru-collection__all-shown">{{ 'moru.collection.all_shown' | t }}</p>
-      {% endif %}
-    </div>
+        {% if paginate.next %}
+          <a class="moru-collection__more" href="{{ paginate.next.url }}" data-load-more>
+            {{ 'moru.collection.load_more' | t }}
+          </a>
+        {% elsif collection.products.size > 0 %}
+          <p class="moru-collection__all-shown">{{ 'moru.collection.all_shown' | t }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
 
-    {% if collection != blank and collection.products.size == 0 %}
+    {% if collection != blank and collection.products.size == 0 and request.design_mode == false %}
       <p class="moru-collection__empty">{{ 'moru.collection.empty' | t }}</p>
     {% endif %}
   </div>
@@ -295,7 +301,7 @@
 
     async loadMore() {
       const url = this.button.getAttribute('href');
-      if (!url) return;
+      if (!url || !this.items) return;
 
       const original = this.button.textContent;
       this.button.setAttribute('aria-disabled', 'true');

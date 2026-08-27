@@ -1,0 +1,61 @@
+{% liquid
+  assign sale_rate = section.settings.sale_rate
+  assign pair_rate = section.settings.pair_rate
+  assign sale_collection = collections['sale']
+  assign show_sale = false
+  if sale_collection != blank and sale_collection.products_count > 0
+    assign show_sale = true
+  endif
+%}
+
+<section class="moru-promo-hub" aria-labelledby="MoruPromoHub-{{ section.id }}">
+  <div class="moru-promo-hub__inner">
+    <div class="moru-promo-hub__head">
+      <div>
+        <p class="moru-promo-hub__eyebrow">WAYS TO SAVE</p>
+        <h2 id="MoruPromoHub-{{ section.id }}" class="moru-promo-hub__title">選び方で、少しお得に。</h2>
+      </div>
+    </div>
+
+    <div class="moru-promo-hub__grid{% unless show_sale %} is-single{% endunless %}">
+      {% if show_sale %}
+        <a class="moru-promo-hub__card moru-promo-hub__card--sale" href="{{ sale_collection.url }}#promo">
+          <span class="moru-promo-hub__number">01</span>
+          <div><p class="moru-promo-hub__label">SEASONAL SALE</p><p class="moru-promo-hub__rate">{{ sale_rate }}% OFF</p><p class="moru-promo-hub__copy">対象アイテムは{{ sale_rate }}% OFF。チェックアウトで自動適用されます。</p></div>
+          <span class="moru-promo-hub__arrow" aria-hidden="true">→</span>
+        </a>
+      {% endif %}
+      <a class="moru-promo-hub__card moru-promo-hub__card--pair" href="/products/cloud-side-table">
+        <span class="moru-promo-hub__number">{% if show_sale %}02{% else %}01{% endif %}</span>
+        <div><p class="moru-promo-hub__label">PAIR IT YOUR WAY</p><p class="moru-promo-hub__rate">対象2点で {{ pair_rate }}% OFF</p><p class="moru-promo-hub__copy">クラウド サイドテーブルとマッシュルーム コードレステーブルランプを一緒に選ぶとPAIR対象です。</p></div>
+        <span class="moru-promo-hub__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+    <p class="moru-promo-hub__note">まとめ買いは対象の商品ページで選べます。同じ1点への割引は重複せず、条件が重なる場合は対象数量ごとによりお得な割引が適用されます。</p>
+  </div>
+</section>
+
+{% stylesheet %}
+  .moru-promo-hub{padding:clamp(44px,7vw,84px) var(--page-margin);background:var(--color-bg)}
+  .moru-promo-hub__inner{max-width:var(--page-width);margin:0 auto}
+  .moru-promo-hub__head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:24px}
+  .moru-promo-hub__eyebrow,.moru-promo-hub__label{margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.16em}
+  .moru-promo-hub__eyebrow{color:var(--color-accent-blue)}
+  .moru-promo-hub__title{margin:0;font-size:clamp(28px,4vw,46px);line-height:1.35}
+  .moru-promo-hub__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border)}
+  .moru-promo-hub__grid.is-single{grid-template-columns:1fr}
+  .moru-promo-hub__card{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:18px;min-height:220px;padding:28px 24px;border-right:1px solid var(--color-border);color:var(--color-text);text-decoration:none;transition:background-color 180ms ease}
+  .moru-promo-hub__grid.is-single .moru-promo-hub__card{border-right:0}.moru-promo-hub__card:last-child{border-right:0}.moru-promo-hub__card--sale:hover{background:#fff4ef}.moru-promo-hub__card--pair:hover{background:#f1f6fa}
+  .moru-promo-hub__number{font-size:11px;color:var(--color-muted)}
+  .moru-promo-hub__card--sale .moru-promo-hub__label{color:var(--color-accent-terracotta)}.moru-promo-hub__card--pair .moru-promo-hub__label{color:var(--color-accent-blue)}
+  .moru-promo-hub__rate{margin:22px 0 10px;font-size:clamp(24px,2.4vw,34px);line-height:1.2;font-weight:650}
+  .moru-promo-hub__copy{margin:0;color:var(--color-muted);font-size:var(--font-size-sm);line-height:1.8}
+  .moru-promo-hub__arrow{align-self:end;font-size:20px;transition:transform 180ms ease}.moru-promo-hub__card:hover .moru-promo-hub__arrow{transform:translateX(4px)}
+  .moru-promo-hub__note{margin:14px 0 0;color:var(--color-muted);font-size:11px;line-height:1.7}
+  @media(max-width:749px){.moru-promo-hub__head{align-items:start;flex-direction:column}.moru-promo-hub__grid{grid-template-columns:1fr}.moru-promo-hub__card{min-height:0;border-right:0;border-bottom:1px solid var(--color-border)}.moru-promo-hub__card:last-child{border-bottom:0}}
+  @media(prefers-reduced-motion:reduce){.moru-promo-hub__card,.moru-promo-hub__arrow{transition:none}}
+{% endstylesheet %}
+
+{% schema %}
+{"name":"MORU 割引の選び方","tag":"section","settings":[{"type":"range","id":"sale_rate","label":"SALE","min":0,"max":30,"step":5,"unit":"%","default":10},{"type":"range","id":"pair_rate","label":"PAIR割引","min":0,"max":30,"step":5,"unit":"%","default":15},{"type":"checkbox","id":"preview_mode","label":"互換用DEVプレビュー","default":false}],"presets":[{"name":"MORU 割引の選び方"}]}
+{% endschema %}

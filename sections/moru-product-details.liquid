@@ -1,497 +1,81 @@
 {% liquid
-  assign review_blocks = section.blocks | where: 'type', 'review'
-  assign app_blocks = section.blocks | where: 'type', '@app'
   assign accordion_blocks = section.blocks | where: 'type', 'accordion'
-
-  assign review_total = review_blocks.size
-  assign star_sum = 0
-  assign c5 = 0
-  assign c4 = 0
-  assign c3 = 0
-  assign c2 = 0
-  assign c1 = 0
-
-  for block in review_blocks
-    assign stars = block.settings.stars | plus: 0
-    assign star_sum = star_sum | plus: stars
-    case stars
-      when 5
-        assign c5 = c5 | plus: 1
-      when 4
-        assign c4 = c4 | plus: 1
-      when 3
-        assign c3 = c3 | plus: 1
-      when 2
-        assign c2 = c2 | plus: 1
-      else
-        assign c1 = c1 | plus: 1
-    endcase
-  endfor
-
-  assign metafield_rating = product.metafields.reviews.rating.value
-  assign metafield_count = product.metafields.reviews.rating_count.value | default: 0
-
-  assign score = 0
-  assign score_count = 0
-  if metafield_rating != blank
-    assign score = metafield_rating.rating
-    assign score_count = metafield_count
-  elsif review_total > 0
-    assign score = star_sum | times: 1.0 | divided_by: review_total | round: 1
-    assign score_count = review_total
-  endif
-
-  assign score_rounded = score | round
-  assign has_score = false
-  if score_count > 0
-    assign has_score = true
-  endif
 %}
 
-<div class="moru-details">
-  <div class="moru-details__reviews">
-    <h2 class="moru-details__heading">{{ section.settings.reviews_title }}</h2>
-
-    <div class="moru-details__score">
-      <div class="moru-details__score-big">
-        <span class="moru-details__score-num">
-          {%- if has_score -%}{{ score }}{%- else -%}&mdash;{%- endif -%}
-        </span>
-        <span class="moru-rating-stars{% unless has_score %} moru-rating-stars--empty{% endunless %}" aria-hidden="true">
-          {%- for i in (1..5) -%}
-            {%- if has_score and i <= score_rounded -%}★{%- else -%}☆{%- endif -%}
-          {%- endfor -%}
-        </span>
-        <span class="moru-details__score-count">
-          {%- if has_score -%}
-            {{ 'moru.product.review_count' | t: count: score_count }}
-          {%- else -%}
-            {{ 'moru.product.rating_pending' | t }}
-          {%- endif -%}
-        </span>
-      </div>
-
-      <ul class="moru-details__bars" role="list">
+{% if accordion_blocks.size > 0 %}
+  <div class="moru-details">
+    <div class="moru-details__accordions">
+      {% for block in accordion_blocks %}
         {% liquid
-          assign counts = c5 | append: ',' | append: c4 | append: ',' | append: c3 | append: ',' | append: c2 | append: ',' | append: c1
-          assign counts_array = counts | split: ','
+          assign hide_accordion = false
+          if block.settings.use_specs_metafield and product.metafields.custom.specs == blank
+            assign hide_accordion = true
+          endif
         %}
-        {% for count in counts_array %}
-          {% liquid
-            assign star_label = 5 | minus: forloop.index0
-            assign pct = 0
-            if review_total > 0
-              assign pct = count | times: 100 | divided_by: review_total
-            endif
-          %}
-          <li class="moru-details__bar-row">
-            <span class="moru-details__bar-star">{{ star_label }} ★</span>
-            <span class="moru-details__bar-track">
-              <span class="moru-details__bar-fill" style="width: {{ pct }}%"></span>
-            </span>
-            <span class="moru-details__bar-pct">{{ pct }}%</span>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-
-    {% if section.settings.reviews_note != blank %}
-      <p class="moru-details__note">{{ section.settings.reviews_note }}</p>
-    {% endif %}
-
-    <ul class="moru-details__cards" role="list">
-      {% for block in review_blocks %}
-        {% assign stars = block.settings.stars | plus: 0 %}
-        <li class="moru-details__card" {{ block.shopify_attributes }}>
-          <div class="moru-details__card-head">
-            <span class="moru-rating-stars" aria-hidden="true">
-              {%- for i in (1..5) -%}
-                {%- if i <= stars -%}★{%- else -%}☆{%- endif -%}
-              {%- endfor -%}
-            </span>
-            {% if block.settings.badge != blank %}
-              <span class="moru-details__card-badge">{{ block.settings.badge }}</span>
-            {% endif %}
-          </div>
-          {% if block.settings.title != blank %}
-            <p class="moru-details__card-title">{{ block.settings.title }}</p>
-          {% endif %}
-          {% if block.settings.body != blank %}
-            <p class="moru-details__card-body">{{ block.settings.body }}</p>
-          {% endif %}
-          <p class="moru-details__card-meta">
-            {% if block.settings.date != blank %}<span>{{ block.settings.date }}</span>{% endif %}
-            {% if block.settings.variant_note != blank %}<span>{{ block.settings.variant_note }}</span>{% endif %}
-          </p>
-        </li>
-      {% else %}
-        {% for i in (1..3) %}
-          <li class="moru-details__card moru-details__card--placeholder">
-            <div class="moru-details__card-head">
-              <span class="moru-rating-stars moru-rating-stars--empty" aria-hidden="true">☆☆☆☆☆</span>
-              <span class="moru-details__card-badge">{{ 'moru.product.review_badge' | t }}</span>
+        {% unless hide_accordion %}
+          <details class="moru-accordion" {% if block.settings.open_by_default %}open{% endif %} {{ block.shopify_attributes }}>
+            <summary class="moru-accordion__summary">
+              <span>{{ block.settings.heading }}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="moru-accordion__content">
+              {% if block.settings.use_description and product.description != blank %}
+                {{ product.description }}
+              {% elsif block.settings.use_specs_metafield and product.metafields.custom.specs != blank %}
+                {{ product.metafields.custom.specs | metafield_tag }}
+              {% else %}
+                {{ block.settings.content }}
+              {% endif %}
             </div>
-            <p class="moru-details__card-title">{{ 'moru.placeholder.review_title' | t }}</p>
-            <p class="moru-details__card-body">{{ 'moru.placeholder.review_body' | t }}</p>
-            <p class="moru-details__card-meta">
-              <span>{{ 'moru.placeholder.article_date' | t }}</span>
-            </p>
-          </li>
-        {% endfor %}
+          </details>
+        {% endunless %}
       {% endfor %}
-    </ul>
-
-    {% for block in app_blocks %}
-      <div class="moru-details__app" {{ block.shopify_attributes }}>
-        {% render block %}
-      </div>
-    {% endfor %}
+    </div>
   </div>
-
-  <div class="moru-details__accordions">
-    {% for block in accordion_blocks %}
-      <details
-        class="moru-accordion"
-        {% if block.settings.open_by_default %}open{% endif %}
-        {{ block.shopify_attributes }}
-      >
-        <summary class="moru-accordion__summary">
-          <span>{{ block.settings.heading }}</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-        <div class="moru-accordion__content">
-          {% if block.settings.use_description and product.description != blank %}
-            {{ product.description }}
-          {% elsif block.settings.use_specs_metafield and product.metafields.custom.specs != blank %}
-            {{ product.metafields.custom.specs | metafield_tag }}
-          {% else %}
-            {{ block.settings.content }}
-          {% endif %}
-        </div>
-      </details>
-    {% endfor %}
-  </div>
-</div>
+{% endif %}
 
 {% stylesheet %}
-  .moru-details {
-    display: grid;
-    grid-template-columns: 0.95fr 1.05fr;
-    gap: var(--space-3xl);
-    padding-block: var(--space-2xl);
-  }
-
-  .moru-details__heading {
-    margin: 0 0 var(--space-lg);
-    font-family: var(--font-body--family);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-  }
-
-  .moru-details__score {
-    display: flex;
-    align-items: center;
-    gap: var(--space-lg);
-    margin-block-end: var(--space-lg);
-  }
-
-  .moru-details__score-big {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 6.875rem;
-  }
-
-  .moru-details__score-num {
-    font-size: 3.25rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-
-  .moru-details__score-big .moru-rating-stars {
-    margin-block: var(--space-2xs);
-    font-size: var(--font-size-sm);
-  }
-
-  .moru-details__score-count {
-    font-size: var(--font-size-xs);
-    color: var(--color-muted);
-    text-align: center;
-  }
-
-  .moru-details__bars {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .moru-details__bar-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font-size: var(--font-size-xs);
-    color: var(--color-muted);
-  }
-
-  .moru-details__bar-track {
-    flex: 1;
-    height: 5px;
-    overflow: hidden;
-    border-radius: 10px;
-    background-color: var(--color-bg-alt);
-  }
-
-  .moru-details__bar-fill {
-    display: block;
-    height: 100%;
-    border-radius: 10px;
-    background-color: var(--color-text);
-  }
-
-  .moru-details__bar-pct {
-    width: 2rem;
-    text-align: right;
-  }
-
-  .moru-details__note {
-    margin: 0 0 var(--space-md);
-    font-size: var(--font-size-xs);
-    color: var(--color-muted);
-  }
-
-  .moru-details__cards {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .moru-details__card {
-    padding: var(--space-md);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    background-color: var(--color-bg-alt);
-  }
-
-  .moru-details__card--placeholder {
-    border-style: dashed;
-    background-color: transparent;
-  }
-
-  .moru-details__card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-sm);
-    margin-block-end: var(--space-xs);
-  }
-
-  .moru-details__card-badge {
-    padding: 2px var(--space-xs);
-    border-radius: 10px;
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    font-size: var(--font-size-xs);
-    color: var(--color-muted);
-  }
-
-  .moru-details__card-title {
-    margin: 0 0 var(--space-2xs);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-  }
-
-  .moru-details__card-body {
-    margin: 0 0 var(--space-xs);
-    font-size: var(--font-size-xs);
-    line-height: 1.7;
-  }
-
-  .moru-details__card-meta {
-    display: flex;
-    gap: var(--space-sm);
-    margin: 0;
-    font-size: var(--font-size-xs);
-    color: var(--color-muted);
-  }
-
-  .moru-details__app {
-    margin-block-start: var(--space-md);
-  }
-
-  .moru-details__accordions {
-    display: flex;
-    flex-direction: column;
-    border-block-start: 1px solid var(--color-border);
-  }
-
-  /* .moru-accordion is shared with the FAQ page section — it lives in assets/base.css */
-
-  @media (max-width: 989px) {
-    .moru-details {
-      grid-template-columns: 1fr;
-      gap: var(--space-xl);
-    }
+  .moru-details { width: 100%; max-width: 64rem; margin-inline: auto; padding-block: var(--space-2xl); }
+  .moru-details__accordions, .moru-details .moru-accordion { width: 100%; }
+  .moru-details__accordions { display: flex; flex-direction: column; border-block-start: 1px solid var(--color-border); }
+  .moru-details .moru-accordion__summary { width: 100%; box-sizing: border-box; padding-inline: 0; text-align: left; }
+  .moru-details .moru-accordion__summary > span { flex: 1 1 auto; min-width: 0; text-align: left; }
+  .moru-details .moru-accordion__content { width: 100%; box-sizing: border-box; padding-inline: 0; text-align: left; }
+  .moru-details .moru-accordion__content p { margin: 0; }
+  .moru-details .moru-accordion__content p + p { margin-block-start: 1em; }
+  .moru-details .moru-accordion__content p:empty { display: block; min-height: 1em; }
+  .moru-details .moru-accordion__content :is(ul, ol) { margin-block: 0.85em; padding-inline-start: 1.4em; }
+  .moru-details .moru-accordion__content li + li { margin-block-start: 0.35em; }
+  .moru-details .moru-accordion__content :is(h2, h3, h4) { margin-block: 1.2em 0.55em; line-height: 1.5; }
+  .moru-details .moru-accordion__content > :first-child { margin-block-start: 0; }
+  .moru-details .moru-accordion__content > :last-child { margin-block-end: 0; }
+  @media (max-width: 749px) {
+    .moru-details { padding-block: var(--space-xl); }
+    .moru-details .moru-accordion__summary { min-height: 52px; padding-block: 0.9rem; }
+    .moru-details .moru-accordion__content { padding-block-end: 1.1rem; }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:moru.product_details.name",
-  "settings": [
-    {
-      "type": "text",
-      "id": "reviews_title",
-      "label": "t:moru.product_details.reviews_title_label",
-      "default": "t:moru.product_details.reviews_title_default"
-    },
-    {
-      "type": "textarea",
-      "id": "reviews_note",
-      "label": "t:moru.product_details.reviews_note_label",
-      "info": "t:moru.product_details.reviews_note_info"
-    }
-  ],
+  "name": "商品詳細アコーディオン",
   "blocks": [
-    {
-      "type": "review",
-      "name": "t:moru.product_details.block_review_name",
-      "settings": [
-        {
-          "type": "select",
-          "id": "stars",
-          "label": "t:moru.product_details.block_stars_label",
-          "options": [
-            {
-              "value": "5",
-              "label": "5"
-            },
-            {
-              "value": "4",
-              "label": "4"
-            },
-            {
-              "value": "3",
-              "label": "3"
-            },
-            {
-              "value": "2",
-              "label": "2"
-            },
-            {
-              "value": "1",
-              "label": "1"
-            }
-          ],
-          "default": "5"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "t:moru.common.title"
-        },
-        {
-          "type": "textarea",
-          "id": "body",
-          "label": "t:moru.product_details.block_body_label"
-        },
-        {
-          "type": "text",
-          "id": "badge",
-          "label": "t:moru.product_details.block_badge_label",
-          "default": "t:moru.product_details.block_badge_default"
-        },
-        {
-          "type": "text",
-          "id": "date",
-          "label": "t:moru.product_details.block_date_label"
-        },
-        {
-          "type": "text",
-          "id": "variant_note",
-          "label": "t:moru.product_details.block_variant_note_label"
-        }
-      ]
-    },
     {
       "type": "accordion",
       "name": "t:moru.product_details.block_accordion_name",
       "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "t:moru.common.title",
-          "default": "t:moru.product_details.block_heading_default"
-        },
-        {
-          "type": "richtext",
-          "id": "content",
-          "label": "t:moru.product_details.block_content_label"
-        },
-        {
-          "type": "checkbox",
-          "id": "use_description",
-          "label": "t:moru.product_details.block_use_description_label",
-          "info": "t:moru.product_details.block_use_description_info",
-          "default": false
-        },
-        {
-          "type": "checkbox",
-          "id": "use_specs_metafield",
-          "label": "t:moru.product_details.block_use_specs_label",
-          "info": "t:moru.product_details.block_use_specs_info",
-          "default": false
-        },
-        {
-          "type": "checkbox",
-          "id": "open_by_default",
-          "label": "t:moru.product_details.block_open_label",
-          "default": false
-        }
+        { "type": "text", "id": "heading", "label": "t:moru.common.title", "default": "t:moru.product_details.block_heading_default" },
+        { "type": "richtext", "id": "content", "label": "t:moru.product_details.block_content_label" },
+        { "type": "checkbox", "id": "use_description", "label": "t:moru.product_details.block_use_description_label", "info": "t:moru.product_details.block_use_description_info", "default": false },
+        { "type": "checkbox", "id": "use_specs_metafield", "label": "t:moru.product_details.block_use_specs_label", "info": "t:moru.product_details.block_use_specs_info", "default": false },
+        { "type": "checkbox", "id": "open_by_default", "label": "t:moru.product_details.block_open_label", "default": false }
       ]
-    },
-    {
-      "type": "@app"
     }
   ],
-  "disabled_on": {
-    "groups": ["header", "footer"]
-  },
-  "presets": [
-    {
-      "name": "t:moru.product_details.name",
-      "blocks": [
-        {
-          "type": "accordion",
-          "settings": {
-            "use_description": true,
-            "open_by_default": true
-          }
-        },
-        {
-          "type": "accordion"
-        },
-        {
-          "type": "accordion"
-        },
-        {
-          "type": "accordion"
-        },
-        {
-          "type": "accordion"
-        }
-      ]
-    }
-  ]
+  "disabled_on": { "groups": ["header", "footer"] },
+  "presets": [{ "name": "商品詳細アコーディオン", "blocks": [
+    { "type": "accordion", "settings": { "use_description": true, "open_by_default": true } },
+    { "type": "accordion" }, { "type": "accordion" }, { "type": "accordion" }, { "type": "accordion" }
+  ] }]
 }
 {% endschema %}

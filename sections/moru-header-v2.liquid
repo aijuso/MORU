@@ -1,0 +1,71 @@
+{% liquid
+  assign wordmark = section.settings.wordmark | default: shop.name
+  assign new_url = collections['new-arrivals'].url | default: '/collections/new-arrivals'
+  assign pet_url = collections['pet'].url | default: '/collections/pet'
+  assign interior_url = collections['interior'].url | default: '/collections/interior'
+  assign chair_url = collections['chair-stool'].url | default: '/collections/chair-stool'
+  assign table_url = collections['table'].url | default: '/collections/table'
+  assign lighting_url = collections['lighting'].url | default: '/collections/lighting'
+  assign fabric_url = collections['fabric'].url | default: '/collections/fabric'
+  assign goods_url = collections['goods'].url | default: '/collections/goods'
+  assign storage_url = collections['storage'].url | default: '/collections/storage'
+  assign sale_collection = collections['sale']
+  assign show_sale = false
+  if sale_collection != blank and sale_collection.products_count > 0
+    assign show_sale = true
+  endif
+  assign journal_blog = blogs['news']
+  assign show_journal = false
+  if journal_blog != blank and journal_blog.articles_count > 0
+    assign show_journal = true
+  endif
+  assign about_page = pages['about']
+  assign faq_page = pages['faq']
+  assign contact_page = pages['contact']
+%}
+
+<moru-header-v2 class="moru-header-v2 full-width">
+  <div class="moru-header-v2__inner">
+    <button class="moru-header-v2__menu-toggle" type="button" data-menu-open aria-label="メニューを開く"><svg class="moru-header-v2__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="17" x2="21" y2="17"></line></svg></button>
+
+    <nav class="moru-header-v2__nav" aria-label="メインメニュー"><ul class="moru-header-v2__nav-list" role="list">
+      <li><a class="moru-header-v2__nav-link" href="{{ new_url }}">新着</a></li>
+      <li><a class="moru-header-v2__nav-link" href="{{ pet_url }}">ペット</a></li>
+      <li class="moru-header-v2__dropdown"><details><summary class="moru-header-v2__nav-link moru-header-v2__summary">インテリア<svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5"/></svg></summary><div class="moru-header-v2__dropdown-panel"><a href="{{ interior_url }}" class="moru-header-v2__dropdown-all">インテリアをすべて見る</a><a href="{{ chair_url }}">チェア・スツール</a><a href="{{ table_url }}">テーブル</a><a href="{{ lighting_url }}">照明</a><a href="{{ fabric_url }}">ファブリック</a><a href="{{ goods_url }}">雑貨</a><a href="{{ storage_url }}">収納</a></div></details></li>
+      {% if show_journal %}<li><a class="moru-header-v2__nav-link" href="{{ journal_blog.url }}">読みもの</a></li>{% endif %}
+      {% if show_sale %}<li><a class="moru-header-v2__nav-link moru-header-v2__nav-link--sale" href="{{ sale_collection.url }}">セール</a></li>{% endif %}
+    </ul></nav>
+
+    <div class="moru-header-v2__logo"><a class="moru-header-v2__logo-link" href="{{ routes.root_url }}" style="--logo-width: {{ section.settings.logo_width }}px">{% if section.settings.logo %}{{ section.settings.logo | image_url: width: 480 | image_tag: alt: shop.name, widths: '240, 480' }}{% else %}{{ wordmark }}{% endif %}</a></div>
+
+    <div class="moru-header-v2__actions">
+      <a class="moru-header-v2__action" href="{{ routes.search_url }}" data-search-toggle aria-label="検索"><span class="moru-header-v2__action-text">検索</span><svg class="moru-header-v2__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="7.5"></circle><line x1="16" y1="16" x2="22" y2="22"></line></svg></a>
+      {% if section.settings.show_login %}<a class="moru-header-v2__action" href="{{ routes.account_login_url }}" aria-label="ログイン"><span class="moru-header-v2__action-text">ログイン</span><svg class="moru-header-v2__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>{% endif %}
+      <a class="moru-header-v2__action moru-header-v2__cart" href="{{ routes.cart_url }}" data-cart-drawer-toggle aria-label="カート"><svg class="moru-header-v2__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="20" r="1.2"></circle><circle cx="18" cy="20" r="1.2"></circle><path d="M1 2.5h3.5l2.2 11.5a1.8 1.8 0 0 0 1.8 1.5h10.2a1.8 1.8 0 0 0 1.8-1.4l1.6-8.1H5.2"></path></svg><span class="moru-header-v2__cart-badge" data-cart-count>{{ cart.item_count }}</span></a>
+    </div>
+  </div>
+
+  <div class="moru-header-v2__backdrop" data-nav-backdrop></div>
+  <aside class="moru-header-v2__drawer" data-nav-drawer aria-hidden="true" aria-label="モバイルメニュー">
+    <div class="moru-header-v2__drawer-head"><span class="moru-header-v2__drawer-wordmark">MORU</span><button class="moru-header-v2__drawer-close" type="button" data-menu-close aria-label="メニューを閉じる"><svg class="moru-header-v2__icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg></button></div>
+    <nav aria-label="モバイルメニュー"><ul class="moru-header-v2__drawer-list" role="list">
+      <li><a href="{{ new_url }}">新着</a></li><li><a href="{{ pet_url }}">ペット</a></li>
+      <li><details class="moru-header-v2__mobile-accordion"><summary>インテリア <span aria-hidden="true">＋</span></summary><div class="moru-header-v2__mobile-subnav"><a href="{{ interior_url }}">すべて見る</a><a href="{{ chair_url }}">チェア・スツール</a><a href="{{ table_url }}">テーブル</a><a href="{{ lighting_url }}">照明</a><a href="{{ fabric_url }}">ファブリック</a><a href="{{ goods_url }}">雑貨</a><a href="{{ storage_url }}">収納</a></div></details></li>
+      {% if show_journal %}<li><a href="{{ journal_blog.url }}">読みもの</a></li>{% endif %}
+      {% if show_sale %}<li><a class="moru-header-v2__drawer-sale" href="{{ sale_collection.url }}">セール</a></li>{% endif %}
+    </ul></nav>
+    <div class="moru-header-v2__drawer-trust">{% if about_page != blank %}<a href="{{ about_page.url }}">MORUについて</a>{% endif %}{% if faq_page != blank %}<a href="{{ faq_page.url }}">ご利用ガイド</a>{% endif %}{% if contact_page != blank %}<a href="{{ contact_page.url }}">お問い合わせ</a>{% endif %}</div>
+  </aside>
+</moru-header-v2>
+
+{% javascript %}
+  class MoruHeaderV2 extends HTMLElement { connectedCallback(){this.drawer=this.querySelector('[data-nav-drawer]');this.backdrop=this.querySelector('[data-nav-backdrop]');this.opener=this.querySelector('[data-menu-open]');this.querySelector('[data-menu-open]')?.addEventListener('click',()=>this.openMenu());this.querySelector('[data-menu-close]')?.addEventListener('click',()=>this.closeMenu());this.backdrop?.addEventListener('click',()=>this.closeMenu());document.addEventListener('keydown',(event)=>{if(event.key==='Escape')this.closeMenu();});} openMenu(){this.drawer?.classList.add('is-open');this.drawer?.setAttribute('aria-hidden','false');this.backdrop?.classList.add('is-open');document.body.style.overflow='hidden';window.setTimeout(()=>this.querySelector('[data-menu-close]')?.focus(),100);} closeMenu(){if(!this.drawer?.classList.contains('is-open'))return;this.drawer.classList.remove('is-open');this.drawer.setAttribute('aria-hidden','true');this.backdrop?.classList.remove('is-open');document.body.style.overflow='';this.opener?.focus();} } if(!customElements.get('moru-header-v2'))customElements.define('moru-header-v2',MoruHeaderV2);
+{% endjavascript %}
+
+{% stylesheet %}
+  .moru-header-section{position:sticky;top:0;z-index:100;background-color:var(--color-bg);box-shadow:0 1px 0 rgb(0 0 0 / .05)}.moru-header-v2{display:block}.moru-header-v2__inner{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;max-width:1440px;height:84px;margin:0 auto;padding:0 40px}.moru-header-v2__nav-list{display:flex;align-items:center;gap:28px;margin:0;padding:0;list-style:none}.moru-header-v2__nav-link{display:inline-flex;align-items:center;gap:6px;padding:8px 0;border:0;background:transparent;color:var(--color-text);font:inherit;font-size:13.5px;font-weight:400;letter-spacing:.08em;text-decoration:none;white-space:nowrap;cursor:pointer}.moru-header-v2__nav-link:hover{color:var(--color-accent-blue)}.moru-header-v2__nav-link--sale{color:var(--color-accent-terracotta);font-weight:600}.moru-header-v2__summary{list-style:none}.moru-header-v2__summary::-webkit-details-marker{display:none}.moru-header-v2__summary svg{width:10px;height:7px;fill:none;stroke:currentcolor;stroke-width:1.4}.moru-header-v2__dropdown{position:relative}.moru-header-v2__dropdown details[open] .moru-header-v2__summary svg{transform:rotate(180deg)}.moru-header-v2__dropdown-panel{position:absolute;top:calc(100% + 12px);left:-22px;z-index:10;display:grid;min-width:230px;padding:14px;border:1px solid var(--color-border);border-radius:var(--radius-card);background:var(--color-bg);box-shadow:var(--shadow-lift)}.moru-header-v2__dropdown-panel a{padding:9px 10px;color:var(--color-text);font-size:13px;text-decoration:none}.moru-header-v2__dropdown-panel a:hover{background:var(--color-bg-alt);color:var(--color-accent-blue)}.moru-header-v2__dropdown-all{margin-bottom:6px;border-bottom:1px solid var(--color-border);font-weight:600}.moru-header-v2__logo{display:flex;justify-content:center}.moru-header-v2__logo-link{display:inline-block;color:var(--color-logo);font-family:var(--font-display--family);font-size:38px;line-height:1;letter-spacing:.22em;text-decoration:none;text-transform:uppercase}.moru-header-v2__logo-link img{display:block;width:var(--logo-width);height:auto}.moru-header-v2__actions{display:flex;align-items:center;justify-content:flex-end;gap:24px}.moru-header-v2__action{display:flex;align-items:center;gap:8px;padding:6px 4px;color:var(--color-text);font-size:13.5px;letter-spacing:.05em;text-decoration:none}.moru-header-v2__action:hover{color:var(--color-accent-blue)}.moru-header-v2__icon{width:19px;height:19px;fill:none;stroke:currentcolor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round}.moru-header-v2__cart{position:relative}.moru-header-v2__cart-badge{position:absolute;top:-1px;right:-6px;display:flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 2px;border-radius:50%;background:var(--color-accent-terracotta);color:var(--color-bg);font-size:10px}.moru-header-v2__menu-toggle{display:none;padding:6px;border:0;background:none;color:var(--color-text);cursor:pointer}.moru-header-v2__backdrop{position:fixed;inset:0;z-index:998;background:rgb(0 0 0 / .3);opacity:0;visibility:hidden;transition:opacity 250ms ease,visibility 250ms ease}.moru-header-v2__backdrop.is-open{opacity:1;visibility:visible}.moru-header-v2__drawer{position:fixed;top:0;left:0;z-index:999;display:flex;flex-direction:column;width:min(86vw,360px);height:100vh;height:100dvh;padding:24px;background:var(--color-bg);transform:translateX(-100%);transition:transform 320ms cubic-bezier(.16,1,.3,1);overflow-y:auto}.moru-header-v2__drawer.is-open{transform:translateX(0)}.moru-header-v2__drawer-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:22px;border-bottom:1px solid var(--color-border)}.moru-header-v2__drawer-wordmark{font-family:var(--font-display--family);font-size:24px;letter-spacing:.18em;color:var(--color-text)}.moru-header-v2__drawer-close{padding:6px;border:0;background:none;color:var(--color-text);cursor:pointer}.moru-header-v2__drawer-list{margin:18px 0 0;padding:0;list-style:none}.moru-header-v2__drawer-list>li{border-bottom:1px solid var(--color-border)}.moru-header-v2__drawer-list>li>a,.moru-header-v2__mobile-accordion>summary{display:flex;align-items:center;justify-content:space-between;width:100%;padding:15px 2px;color:var(--color-text);font-size:15px;letter-spacing:.06em;text-decoration:none;cursor:pointer;list-style:none}.moru-header-v2__mobile-accordion>summary::-webkit-details-marker{display:none}.moru-header-v2__mobile-accordion[open]>summary span{transform:rotate(45deg)}.moru-header-v2__drawer-sale{color:var(--color-accent-terracotta)!important;font-weight:600}.moru-header-v2__mobile-subnav{display:grid;padding:0 0 14px 14px}.moru-header-v2__mobile-subnav a{padding:9px 0;color:var(--color-muted);font-size:13px;text-decoration:none}.moru-header-v2__drawer-trust{display:grid;gap:12px;margin-top:auto;padding-top:28px}.moru-header-v2__drawer-trust a{color:var(--color-muted);font-size:12px;text-decoration:none}@media(max-width:1100px){.moru-header-v2__nav-list{gap:18px}.moru-header-v2__actions{gap:16px}}@media(max-width:860px){.moru-header-v2__inner{grid-template-columns:auto 1fr auto;height:72px;padding:0 18px}.moru-header-v2__nav{display:none}.moru-header-v2__menu-toggle{display:flex;align-items:center;justify-content:center}.moru-header-v2__action-text{display:none}.moru-header-v2__logo-link img{width:min(var(--logo-width),120px)}.moru-header-v2__actions{gap:12px}}
+{% endstylesheet %}
+
+{% schema %}
+{"name":"MORU Header v2","class":"moru-header-section","settings":[{"type":"image_picker","id":"logo","label":"ロゴ"},{"type":"range","id":"logo_width","min":80,"max":240,"step":10,"unit":"px","label":"ロゴ幅","default":140},{"type":"text","id":"wordmark","label":"ワードマーク","default":"MORU"},{"type":"link_list","id":"menu","label":"互換用メニュー","default":"main-menu"},{"type":"text","id":"sale_link_title","label":"互換用セール名","default":"セール"},{"type":"checkbox","id":"show_login","label":"ログインを表示","default":true}],"enabled_on":{"groups":["header"]},"presets":[{"name":"MORU Header v2"}]}
+{% endschema %}

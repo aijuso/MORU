@@ -1,0 +1,468 @@
+{% liquid
+  assign offer_eligible = false
+  if product.metafields.custom.multi_buy_eligible.value == true
+    assign offer_eligible = true
+  endif
+
+  assign show_offer = false
+  if section.settings.offer_scope != 'hidden' and offer_eligible
+    assign show_offer = true
+  endif
+
+  assign current_variant = product.selected_or_first_available_variant
+  assign base_price = current_variant.price | default: product.price
+  assign two_original = base_price | times: 2
+  assign two_saving = two_original | times: section.settings.two_discount | divided_by: 100
+  assign two_final = two_original | minus: two_saving
+  assign three_original = base_price | times: 3
+  assign three_saving = three_original | times: section.settings.three_discount | divided_by: 100
+  assign three_final = three_original | minus: three_saving
+%}
+
+{% if show_offer %}
+  <moru-quantity-offers
+    class="moru-quantity-offers"
+    data-two-discount="{{ section.settings.two_discount }}"
+    data-three-discount="{{ section.settings.three_discount }}"
+    data-currency="{{ cart.currency.iso_code | default: shop.currency | escape }}"
+  >
+    <div class="moru-quantity-offers__head">
+      <div>
+        <p class="moru-quantity-offers__eyebrow">BUY MORE, SAVE MORE</p>
+        <h3 class="moru-quantity-offers__title">{{ section.settings.heading }}</h3>
+      </div>
+      {% if section.settings.preview_mode %}<span class="moru-quantity-offers__preview">DEV PREVIEW</span>{% endif %}
+    </div>
+
+    <div class="moru-quantity-offers__choices" role="group" aria-label="{{ section.settings.heading | escape }}">
+      <button class="moru-quantity-offers__choice is-selected" type="button" data-quantity-choice="1" aria-pressed="true">
+        <span class="moru-quantity-offers__choice-main"><strong>1点</strong><small>通常購入</small></span>
+        <span class="moru-quantity-offers__price"><strong data-offer-final-total="1">{{ base_price | money }}</strong><small>単品で購入</small></span>
+      </button>
+
+      <button class="moru-quantity-offers__choice" type="button" data-quantity-choice="2" aria-pressed="false">
+        <span class="moru-quantity-offers__choice-main"><strong>2点</strong><small class="moru-quantity-offers__discount">{{ section.settings.two_discount }}% OFF</small></span>
+        <span class="moru-quantity-offers__price">
+          <s data-offer-original-total="2">{{ two_original | money }}</s>
+          <strong class="moru-quantity-offers__discounted-price" data-offer-final-total="2">{{ two_final | money }}</strong>
+          <small class="moru-quantity-offers__saving" data-offer-savings="2">{{ two_saving | money }} お得</small>
+        </span>
+      </button>
+
+      <button class="moru-quantity-offers__choice" type="button" data-quantity-choice="3" aria-pressed="false">
+        {% if section.settings.highlight_three %}<span class="moru-quantity-offers__badge">おすすめ</span>{% endif %}
+        <span class="moru-quantity-offers__choice-main"><strong>3点以上</strong><small class="moru-quantity-offers__discount">{{ section.settings.three_discount }}% OFF</small></span>
+        <span class="moru-quantity-offers__price">
+          <s data-offer-original-total="3">{{ three_original | money }}</s>
+          <strong class="moru-quantity-offers__discounted-price" data-offer-final-total="3">{{ three_final | money }}</strong>
+          <small class="moru-quantity-offers__saving" data-offer-savings="3">{{ three_saving | money }} お得</small>
+          <small data-offer-three-count>3点合計</small>
+        </span>
+      </button>
+    </div>
+
+    {% if product.has_only_default_variant == false and product.variants.size > 1 %}
+      <div class="moru-quantity-offers__mix" data-offer-mix hidden>
+        <div class="moru-quantity-offers__mix-head">
+          <strong>種類・カラーを1点ずつ選ぶ</strong>
+          <small>同じ種類を複数選ぶこともできます</small>
+        </div>
+        <div class="moru-quantity-offers__slots" data-offer-slots></div>
+        <div class="moru-quantity-offers__quantity-actions" data-offer-three-actions hidden>
+          <button type="button" data-offer-remove-one>− 1点減らす</button>
+          <span data-offer-active-count>3点</span>
+          <button type="button" data-offer-add-one>＋ 1点追加</button>
+        </div>
+        <div class="moru-quantity-offers__mix-summary">
+          <span data-mix-label>選択中</span>
+          <span class="moru-quantity-offers__mix-totals">
+            <s data-mix-original></s>
+            <strong data-mix-final></strong>
+            <small data-mix-saving></small>
+          </span>
+        </div>
+      </div>
+
+      <template data-offer-slot-template>
+        <label class="moru-quantity-offers__slot" data-offer-slot>
+          <span class="moru-quantity-offers__slot-number" data-offer-slot-number></span>
+          <span class="moru-quantity-offers__slot-control">
+            <select data-offer-variant-select>
+              {% for variant in product.variants %}
+                <option value="{{ variant.id }}" data-price="{{ variant.price }}" {% unless variant.available %}disabled{% endunless %}>
+                  {{ variant.title }}{% unless variant.available %}（売り切れ）{% endunless %}
+                </option>
+              {% endfor %}
+            </select>
+            <span data-offer-slot-price></span>
+          </span>
+        </label>
+      </template>
+    {% else %}
+      <div class="moru-quantity-offers__single-multi" data-offer-single-multi hidden>
+        <span>購入点数</span>
+        <div class="moru-quantity-offers__quantity-actions" data-offer-three-actions hidden>
+          <button type="button" data-offer-remove-one>− 1点減らす</button>
+          <strong data-offer-active-count>3点</strong>
+          <button type="button" data-offer-add-one>＋ 1点追加</button>
+        </div>
+        <strong data-offer-fixed-count>2点</strong>
+      </div>
+    {% endif %}
+
+    <p class="moru-quantity-offers__status" data-offer-status aria-live="polite"></p>
+    <p class="moru-quantity-offers__note">同じ商品のカラー・種類違いも合算対象です。4点以上も15%OFF。別の商品との合算は対象外です。</p>
+    {% if section.settings.preview_mode %}
+      <p class="moru-quantity-offers__note">割引後価格はDEV上の参考表示です。実際のカート・チェックアウト価格はShopify側で数量割引が有効になった時だけ値引きされます。</p>
+    {% endif %}
+    <script type="application/json" data-offer-variants>{{ product.variants | json }}</script>
+  </moru-quantity-offers>
+{% endif %}
+
+{% stylesheet %}
+  .moru-quantity-offers { display:block; margin:0 0 var(--space-md); padding:16px; border:1px solid var(--color-border); border-radius:4px; background:var(--color-bg-alt); }
+  .moru-quantity-offers__head { display:flex; align-items:end; justify-content:space-between; gap:12px; margin-bottom:12px; }
+  .moru-quantity-offers__eyebrow { margin:0 0 4px; color:var(--color-accent-blue); font-size:9px; font-weight:700; letter-spacing:.14em; }
+  .moru-quantity-offers__title { margin:0; font-size:var(--font-size-sm); font-weight:600; letter-spacing:.03em; }
+  .moru-quantity-offers__preview { flex-shrink:0; color:var(--color-muted); font-size:8px; letter-spacing:.08em; }
+  .moru-quantity-offers__choices { display:grid; gap:8px; }
+  .moru-quantity-offers__choice { position:relative; display:grid; grid-template-columns:minmax(7rem,.7fr) 1.3fr; align-items:center; gap:12px; width:100%; min-height:72px; padding:11px 12px; border:1px solid var(--color-border); border-radius:3px; background:var(--color-surface); color:var(--color-text); font:inherit; text-align:left; cursor:pointer; transition:border-color 160ms ease,box-shadow 160ms ease,background-color 160ms ease; }
+  .moru-quantity-offers__choice:hover { border-color:var(--color-muted); }
+  .moru-quantity-offers__choice.is-selected { border-color:var(--color-accent-blue); box-shadow:inset 0 0 0 1px var(--color-accent-blue); background:var(--color-bg); }
+  .moru-quantity-offers__choice:focus-visible,.moru-quantity-offers__quantity-actions button:focus-visible,.moru-quantity-offers__slot select:focus-visible { outline:2px solid var(--color-accent-terracotta); outline-offset:2px; }
+  .moru-quantity-offers__choice-main,.moru-quantity-offers__price { display:flex; flex-direction:column; gap:2px; }
+  .moru-quantity-offers__choice-main strong { font-size:var(--font-size-sm); }
+  .moru-quantity-offers__choice-main small,.moru-quantity-offers__price small { color:var(--color-muted); font-size:10px; line-height:1.4; }
+  .moru-quantity-offers__discount,.moru-quantity-offers__saving { color:var(--color-accent-terracotta)!important; font-weight:700; }
+  .moru-quantity-offers__price { align-items:flex-end; text-align:right; }
+  .moru-quantity-offers__price > strong { font-size:12px; font-weight:650; }
+  .moru-quantity-offers__price s { color:var(--color-muted); font-size:10px; }
+  .moru-quantity-offers__discounted-price { color:var(--color-accent-terracotta); font-size:14px!important; }
+  .moru-quantity-offers__badge { position:absolute; top:-8px; right:10px; padding:2px 7px; border-radius:999px; background:var(--color-accent-terracotta); color:#fff; font-size:8px; font-weight:700; letter-spacing:.04em; }
+  .moru-quantity-offers__mix,.moru-quantity-offers__single-multi { margin-top:12px; padding:14px; border:1px solid var(--color-accent-blue); border-radius:3px; background:var(--color-surface); }
+  .moru-quantity-offers__mix-head { display:flex; flex-direction:column; gap:2px; margin-bottom:10px; }
+  .moru-quantity-offers__mix-head strong { font-size:12px; }
+  .moru-quantity-offers__mix-head small { color:var(--color-muted); font-size:9px; }
+  .moru-quantity-offers__slots { display:grid; gap:8px; }
+  .moru-quantity-offers__slot { display:grid; grid-template-columns:4rem 1fr; align-items:center; gap:10px; }
+  .moru-quantity-offers__slot-number { font-size:11px; font-weight:600; }
+  .moru-quantity-offers__slot-control { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px; min-width:0; }
+  .moru-quantity-offers__slot select { min-width:0; width:100%; min-height:38px; padding:8px 30px 8px 10px; border:1px solid var(--color-border); border-radius:2px; background:var(--color-bg); color:var(--color-text); font:inherit; font-size:11px; }
+  .moru-quantity-offers__slot-control > span { color:var(--color-muted); font-size:10px; white-space:nowrap; }
+  .moru-quantity-offers__quantity-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:10px; }
+  .moru-quantity-offers__quantity-actions button { min-height:32px; padding:6px 10px; border:1px solid var(--color-border); border-radius:3px; background:var(--color-bg); color:var(--color-text); font:inherit; font-size:10px; cursor:pointer; }
+  .moru-quantity-offers__quantity-actions button:hover { border-color:var(--color-accent-blue); color:var(--color-accent-blue); }
+  .moru-quantity-offers__quantity-actions [data-offer-remove-one][disabled] { opacity:.35; cursor:not-allowed; }
+  .moru-quantity-offers__quantity-actions [data-offer-active-count] { min-width:3.5rem; font-size:11px; font-weight:700; text-align:center; }
+  .moru-quantity-offers__single-multi { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:11px; }
+  .moru-quantity-offers__single-multi > .moru-quantity-offers__quantity-actions { margin:0; }
+  .moru-quantity-offers__mix-summary { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding-top:10px; border-top:1px solid var(--color-border); font-size:10px; }
+  .moru-quantity-offers__mix-totals { display:flex; align-items:baseline; flex-wrap:wrap; justify-content:flex-end; gap:6px; text-align:right; }
+  .moru-quantity-offers__mix-totals s { color:var(--color-muted); }
+  .moru-quantity-offers__mix-totals strong { color:var(--color-accent-terracotta); font-size:14px; }
+  .moru-quantity-offers__mix-totals small { color:var(--color-accent-terracotta); font-weight:700; }
+  .moru-quantity-offers__status { margin:8px 0 0; color:var(--color-accent-terracotta); font-size:10px; line-height:1.5; }
+  .moru-quantity-offers__status:empty { display:none; }
+  .moru-quantity-offers__note { margin:8px 0 0; color:var(--color-muted); font-size:9px; line-height:1.6; }
+  .moru-product.moru-has-quantity-offers .moru-product__qty-row { display:none; }
+  @media (max-width:420px) {
+    .moru-quantity-offers { padding:14px; }
+    .moru-quantity-offers__choice { grid-template-columns:.68fr 1.32fr; gap:8px; padding-inline:10px; }
+    .moru-quantity-offers__slot { grid-template-columns:3.5rem 1fr; gap:7px; }
+    .moru-quantity-offers__slot-control { grid-template-columns:1fr; gap:3px; }
+    .moru-quantity-offers__slot-control > span { text-align:right; }
+    .moru-quantity-offers__mix-summary { align-items:flex-start; flex-direction:column; }
+    .moru-quantity-offers__mix-totals { justify-content:flex-start; text-align:left; }
+    .moru-quantity-offers__quantity-actions { justify-content:space-between; }
+    .moru-quantity-offers__single-multi { align-items:flex-start; flex-direction:column; }
+  }
+  @media (prefers-reduced-motion:reduce) { .moru-quantity-offers__choice { transition:none; } }
+{% endstylesheet %}
+
+{% javascript %}
+  class MoruQuantityOffers extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.initialized === 'true') return;
+      this.dataset.initialized = 'true';
+      this.product = document.querySelector('[data-moru-product]');
+      if (!this.product) return;
+      this.form = this.product.querySelector('.moru-product__form');
+      this.quantityInput = this.product.querySelector('[data-qty-input]');
+      this.variantInput = this.product.querySelector('[data-moru-variant-id]');
+      this.addLabel = this.product.querySelector('[data-moru-add-label]');
+      this.addButton = this.product.querySelector('[data-moru-add-button]');
+      this.variants = this.parseVariants();
+      this.twoDiscount = Number(this.dataset.twoDiscount) || 0;
+      this.threeDiscount = Number(this.dataset.threeDiscount) || 0;
+      this.currency = this.dataset.currency || 'JPY';
+      this.selectedQuantity = 1;
+      this.originalAddLabel = this.addLabel ? this.addLabel.textContent.trim() : 'カートに追加';
+      this.mix = this.querySelector('[data-offer-mix]');
+      this.singleMulti = this.querySelector('[data-offer-single-multi]');
+      this.slotsContainer = this.querySelector('[data-offer-slots]');
+      this.slotTemplate = this.querySelector('[data-offer-slot-template]');
+      this.status = this.querySelector('[data-offer-status]');
+      this.hasVariantMix = Boolean(this.slotTemplate && this.slotsContainer);
+
+      const quantityRow = this.product.querySelector('.moru-product__qty-row');
+      if (quantityRow && quantityRow.parentNode && this.parentNode !== quantityRow.parentNode) quantityRow.parentNode.insertBefore(this, quantityRow);
+      this.product.classList.add('moru-has-quantity-offers');
+
+      this.addEventListener('click', (event) => {
+        const choice = event.target.closest('[data-quantity-choice]');
+        if (choice) {
+          const requested = Number(choice.dataset.quantityChoice) || 1;
+          this.setQuantity(requested >= 3 ? 3 : requested, true);
+          return;
+        }
+        if (event.target.closest('[data-offer-add-one]')) {
+          this.setQuantity(Math.max(3, this.selectedQuantity + 1), false);
+          return;
+        }
+        if (event.target.closest('[data-offer-remove-one]') && this.selectedQuantity > 3) {
+          this.setQuantity(this.selectedQuantity - 1, false);
+        }
+      });
+
+      document.addEventListener('change', (event) => {
+        const select = event.target.closest('[data-offer-variant-select]');
+        if (select && this.contains(select)) {
+          select.dataset.touched = 'true';
+          this.updateSlotPrice(select);
+          this.refreshPrices();
+          return;
+        }
+        if (!event.target.closest('moru-variant-picker')) return;
+        requestAnimationFrame(() => {
+          this.syncFirstSlotToMainVariant();
+          this.refreshPrices();
+        });
+      });
+
+      if (this.form) this.form.addEventListener('submit', (event) => this.onSubmit(event), true);
+      this.setQuantity(1, true);
+    }
+
+    parseVariants() {
+      const node = this.querySelector('[data-offer-variants]');
+      if (!node) return [];
+      try { return JSON.parse(node.textContent); } catch (error) { return []; }
+    }
+
+    availableVariants() { return this.variants.filter((variant) => variant.available); }
+
+    selectedVariant() {
+      const id = Number(this.variantInput && this.variantInput.value);
+      return this.variants.find((variant) => Number(variant.id) === id) || this.availableVariants()[0] || this.variants[0];
+    }
+
+    discountFor(quantity) { return quantity >= 3 ? this.threeDiscount : quantity === 2 ? this.twoDiscount : 0; }
+
+    formatMoney(cents) {
+      try { return new Intl.NumberFormat('ja-JP', { style:'currency', currency:this.currency, maximumFractionDigits:0 }).format(cents / 100); }
+      catch (error) { return '¥' + Math.round(cents / 100).toLocaleString('ja-JP'); }
+    }
+
+    setQuantity(quantity, resetToTier) {
+      this.selectedQuantity = Math.max(1, Number(quantity) || 1);
+      if (resetToTier && this.selectedQuantity >= 3) this.selectedQuantity = 3;
+
+      if (this.hasVariantMix) {
+        if (this.selectedQuantity > 1) this.ensureSlots(this.selectedQuantity);
+        else this.ensureSlots(0);
+        if (this.mix) this.mix.hidden = this.selectedQuantity <= 1;
+        if (this.quantityInput) this.quantityInput.value = 1;
+      } else {
+        if (this.singleMulti) this.singleMulti.hidden = this.selectedQuantity <= 1;
+        if (this.quantityInput) this.quantityInput.value = this.selectedQuantity;
+      }
+
+      this.querySelectorAll('[data-quantity-choice]').forEach((choice) => {
+        const tier = Number(choice.dataset.quantityChoice);
+        const selected = tier === 3 ? this.selectedQuantity >= 3 : tier === this.selectedQuantity;
+        choice.classList.toggle('is-selected', selected);
+        choice.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+
+      this.querySelectorAll('[data-offer-three-actions]').forEach((actions) => { actions.hidden = this.selectedQuantity < 3; });
+      this.querySelectorAll('[data-offer-active-count]').forEach((node) => { node.textContent = this.selectedQuantity + '点'; });
+      this.querySelectorAll('[data-offer-remove-one]').forEach((button) => { button.disabled = this.selectedQuantity <= 3; });
+      this.querySelectorAll('[data-offer-fixed-count]').forEach((node) => { node.hidden = this.selectedQuantity >= 3; node.textContent = this.selectedQuantity + '点'; });
+
+      if (this.addLabel) this.addLabel.textContent = this.selectedQuantity > 1 ? `選んだ${this.selectedQuantity}点をカートに追加` : this.originalAddLabel;
+      if (this.status) this.status.textContent = '';
+      this.refreshPrices();
+    }
+
+    ensureSlots(count) {
+      if (!this.hasVariantMix) return;
+      while (this.slotsContainer.children.length > count) this.slotsContainer.lastElementChild.remove();
+      while (this.slotsContainer.children.length < count) {
+        const index = this.slotsContainer.children.length;
+        const fragment = this.slotTemplate.content.cloneNode(true);
+        const slot = fragment.querySelector('[data-offer-slot]');
+        const number = slot.querySelector('[data-offer-slot-number]');
+        const select = slot.querySelector('[data-offer-variant-select]');
+        number.textContent = `${index + 1}点目`;
+        select.setAttribute('aria-label', `${index + 1}点目の種類・カラー`);
+        this.prefillSelect(select, index);
+        this.slotsContainer.appendChild(fragment);
+        this.updateSlotPrice(this.slotsContainer.lastElementChild.querySelector('[data-offer-variant-select]'));
+      }
+    }
+
+    prefillSelect(select, index) {
+      const available = this.availableVariants();
+      if (!available.length) return;
+      const current = this.selectedVariant() || available[0];
+      const currentIndex = Math.max(0, available.findIndex((variant) => Number(variant.id) === Number(current.id)));
+      const candidate = index === 0 ? current : (available[(currentIndex + index) % available.length] || current);
+      select.value = String(candidate.id);
+    }
+
+    slotSelects() { return this.hasVariantMix ? Array.from(this.slotsContainer.querySelectorAll('[data-offer-variant-select]')) : []; }
+
+    syncFirstSlotToMainVariant() {
+      const first = this.slotSelects()[0];
+      const current = this.selectedVariant();
+      if (!first || !current) return;
+      first.value = String(current.id);
+      this.updateSlotPrice(first);
+    }
+
+    updateSlotPrice(select) {
+      if (!select) return;
+      const option = select.options[select.selectedIndex];
+      const price = Number(option && option.dataset.price) || 0;
+      const priceEl = select.closest('[data-offer-slot]')?.querySelector('[data-offer-slot-price]');
+      if (priceEl) priceEl.textContent = this.formatMoney(price);
+    }
+
+    selectedItems(quantity = this.selectedQuantity) {
+      const current = this.selectedVariant();
+      if (!current) return [];
+      if (!this.hasVariantMix || quantity <= 1) return Array.from({ length: quantity }, () => current);
+      return this.slotSelects().slice(0, quantity).map((select) => {
+        const id = Number(select.value);
+        return this.variants.find((variant) => Number(variant.id) === id);
+      }).filter(Boolean);
+    }
+
+    totalsFor(quantity, useSelection) {
+      const current = this.selectedVariant();
+      let items = [];
+      if (useSelection && quantity > 1) items = this.selectedItems(quantity);
+      else if (current) items = Array.from({ length: quantity }, () => current);
+      const original = items.reduce((sum, variant) => sum + (Number(variant.price) || 0), 0);
+      const discount = this.discountFor(quantity);
+      const saving = Math.round(original * discount / 100);
+      return { original, saving, final: original - saving };
+    }
+
+    refreshPrices() {
+      const one = this.totalsFor(1, false);
+      const two = this.totalsFor(2, this.selectedQuantity === 2);
+      const threeQuantity = this.selectedQuantity >= 3 ? this.selectedQuantity : 3;
+      const three = this.totalsFor(threeQuantity, this.selectedQuantity >= 3);
+
+      const oneFinal = this.querySelector('[data-offer-final-total="1"]');
+      if (oneFinal) oneFinal.textContent = this.formatMoney(one.final);
+      this.setTierPrice(2, two);
+      this.setTierPrice(3, three);
+      const countLabel = this.querySelector('[data-offer-three-count]');
+      if (countLabel) countLabel.textContent = `${threeQuantity}点合計`;
+
+      if (this.selectedQuantity > 1 && this.hasVariantMix) {
+        const totals = this.totalsFor(this.selectedQuantity, true);
+        const label = this.querySelector('[data-mix-label]');
+        const original = this.querySelector('[data-mix-original]');
+        const final = this.querySelector('[data-mix-final]');
+        const saving = this.querySelector('[data-mix-saving]');
+        if (label) label.textContent = `選択中：${this.selectedQuantity}点`;
+        if (original) original.textContent = this.formatMoney(totals.original);
+        if (final) final.textContent = this.formatMoney(totals.final);
+        if (saving) saving.textContent = this.formatMoney(totals.saving) + ' お得';
+      }
+    }
+
+    setTierPrice(tier, totals) {
+      const original = this.querySelector(`[data-offer-original-total="${tier}"]`);
+      const final = this.querySelector(`[data-offer-final-total="${tier}"]`);
+      const saving = this.querySelector(`[data-offer-savings="${tier}"]`);
+      if (original) original.textContent = this.formatMoney(totals.original);
+      if (final) final.textContent = this.formatMoney(totals.final);
+      if (saving) saving.textContent = this.formatMoney(totals.saving) + ' お得';
+    }
+
+    async onSubmit(event) {
+      if (this.selectedQuantity <= 1) {
+        if (this.quantityInput) this.quantityInput.value = 1;
+        return;
+      }
+
+      if (!this.hasVariantMix) {
+        if (this.quantityInput) this.quantityInput.value = this.selectedQuantity;
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      const items = this.selectedItems();
+      if (items.length !== this.selectedQuantity) {
+        if (this.status) this.status.textContent = '種類・カラーを選択してください。';
+        return;
+      }
+
+      const grouped = new Map();
+      items.forEach((variant) => {
+        const id = Number(variant.id);
+        grouped.set(id, (grouped.get(id) || 0) + 1);
+      });
+      const payload = { items: Array.from(grouped, ([id, quantity]) => ({ id, quantity })) };
+      const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+      if (this.addButton) this.addButton.disabled = true;
+      if (this.status) this.status.textContent = '';
+
+      try {
+        const response = await fetch(root + 'cart/add.js', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json', Accept:'application/json' },
+          body:JSON.stringify(payload)
+        });
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new Error(error.description || '追加できませんでした');
+        }
+        const drawer = document.querySelector('[data-cart-drawer]');
+        if (drawer && typeof drawer.refresh === 'function') {
+          await drawer.refresh();
+          if (typeof drawer.open === 'function') drawer.open();
+        } else {
+          document.dispatchEvent(new CustomEvent('moru:cart:updated'));
+        }
+      } catch (error) {
+        if (this.status) this.status.textContent = error.message || 'カートへの追加に失敗しました。';
+      } finally {
+        if (this.addButton) this.addButton.disabled = false;
+      }
+    }
+  }
+
+  if (!customElements.get('moru-quantity-offers')) customElements.define('moru-quantity-offers', MoruQuantityOffers);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name":"商品：数量まとめ買い",
+  "tag":"section",
+  "settings":[
+    {"type":"select","id":"offer_scope","label":"表示対象","options":[{"value":"all","label":"全商品（DEV確認用）"},{"value":"eligible","label":"まとめ買い候補のみ"},{"value":"hidden","label":"非表示"}],"default":"eligible"},
+    {"type":"text","id":"heading","label":"見出し","default":"まとめて買うとお得"},
+    {"type":"range","id":"two_discount","label":"2点購入の割引率","min":0,"max":30,"step":5,"unit":"%","default":10},
+    {"type":"range","id":"three_discount","label":"3点以上購入の割引率","min":0,"max":30,"step":5,"unit":"%","default":15},
+    {"type":"checkbox","id":"highlight_three","label":"3点以上を「おすすめ」表示","default":true},
+    {"type":"checkbox","id":"preview_mode","label":"DEVプレビュー注記を表示","default":true}
+  ],
+  "presets":[{"name":"商品：数量まとめ買い"}]
+}
+{% endschema %}

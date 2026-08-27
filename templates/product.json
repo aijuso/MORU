@@ -12,170 +12,43 @@
     "main": {
       "type": "moru-main-product",
       "blocks": {
-        "trust_shipping": {
-          "type": "trust",
-          "settings": {
-            "icon": "truck",
-            "title": "送料無料",
-            "text": "¥15,000以上のご注文で\n全国送料無料"
-          }
-        },
-        "trust_return": {
-          "type": "trust",
-          "settings": {
-            "icon": "return",
-            "title": "30日返品対応",
-            "text": "イメージ違いでも安心の\n30日返品保証"
-          }
-        },
-        "trust_payment": {
-          "type": "trust",
-          "settings": {
-            "icon": "lock",
-            "title": "安全な決済",
-            "text": "クレジット・後払いなど\n安心の決済システム"
-          }
-        },
-        "trust_tracking": {
-          "type": "trust",
-          "settings": {
-            "icon": "box",
-            "title": "追跡配送で安心",
-            "text": "ご注文後、追跡番号を\nメールでご案内"
-          }
-        }
+        "trust_shipping": { "type": "trust", "settings": { "icon": "truck", "title": "送料無料", "text": "¥7,700以上のご注文で\n全国送料無料" } },
+        "trust_return": { "type": "trust", "settings": { "icon": "return", "title": "30日間安心保証", "text": "ご満足いただけない場合は\n返金いたします" } },
+        "trust_payment": { "type": "trust", "settings": { "icon": "lock", "title": "安全な決済", "text": "チェックアウトで選べる\n安全な決済方法" } },
+        "trust_tracking": { "type": "trust", "settings": { "icon": "box", "title": "配送状況を確認", "text": "追跡情報がある場合は\nメール等でご案内" } }
       },
-      "block_order": [
-        "trust_shipping",
-        "trust_return",
-        "trust_payment",
-        "trust_tracking"
-      ],
+      "block_order": ["trust_shipping","trust_return","trust_payment","trust_tracking"],
       "settings": {
+        "show_rating": false,
         "stock_display": "inventory",
-        "low_stock_threshold": 20
+        "low_stock_threshold": 20,
+        "badge_text": "",
+        "subtitle": "",
+        "short_description": "",
+        "show_sample_options": false,
+        "show_wishlist": false,
+        "zip_label": ""
       }
     },
-    "bundle": {
-      "type": "moru-product-bundle",
-      "settings": {
-        "discount_percent": 5
-      }
-    },
+    "quantity_offers": { "type": "moru-quantity-offers", "settings": { "offer_scope": "eligible", "heading": "まとめて買うとお得", "two_discount": 10, "three_discount": 15, "highlight_three": true, "preview_mode": false } },
+    "features": { "type": "moru-product-features", "settings": { "heading": "この商品の特徴" } },
+    "promotions": { "type": "moru-product-promotions", "settings": { "sale_rate": 10, "pair_rate": 15, "preview_mode": false } },
     "details": {
       "type": "moru-product-details",
       "blocks": {
-        "acc_description": {
-          "type": "accordion",
-          "settings": {
-            "heading": "商品説明",
-            "use_description": true,
-            "open_by_default": true
-          }
-        },
-        "acc_spec": {
-          "type": "accordion",
-          "settings": {
-            "heading": "素材・サイズ",
-            "content": "<p>商品編集画面のメタフィールド「素材・サイズ」に入力すると、ここに表示されます。未確認の仕様は記載しないでください。</p>",
-            "use_specs_metafield": true
-          }
-        },
-        "acc_shipping": {
-          "type": "accordion",
-          "settings": {
-            "heading": "配送について",
-            "content": "<p>海外の提携先より、ご注文後に手配いたします。お届け目安はご注文から約2〜3週間です。在庫状況・国際輸送・通関・天候等により4週間以上かかる場合があります。土日祝日・休業日は営業日に含みません。到着日の確約はいたしかねます。</p>"
-          }
-        },
-        "acc_variance": {
-          "type": "accordion",
-          "settings": {
-            "heading": "海外製品の個体差について",
-            "content": "<p>木目・節・色合いの違い、積層部分の見え方、サイズの軽微な誤差、使用に支障のない小さな擦れ、パッケージの傷やへこみが生じる場合があります。なお、破損や機能不良は個体差には含みません。</p>"
-          }
-        },
-        "acc_returns": {
-          "type": "accordion",
-          "settings": {
-            "heading": "キャンセル・返品について",
-            "content": "<p>ご注文後すぐに手配へ入るため、手配開始後のお客様都合によるキャンセル・変更は原則承れません(手配前であれば対応できる場合があります)。不良・誤配送の場合は、商品到着後7日以内にご連絡ください。交換または返金にて対応いたします。</p>"
-          }
-        }
+        "acc_description": { "type": "accordion", "settings": { "heading": "商品説明", "use_description": true, "open_by_default": true } },
+        "acc_spec": { "type": "accordion", "settings": { "heading": "素材・サイズ", "content": "", "use_specs_metafield": true } },
+        "acc_shipping": { "type": "accordion", "settings": { "heading": "配送について", "content": "<p>海外の提携先より、ご注文後に手配いたします。お届け目安はご注文から約2〜3週間です。在庫状況・国際輸送・通関・天候等により4週間以上かかる場合があります。土日祝日・休業日は営業日に含みません。到着日の確約はいたしかねます。</p>" } },
+        "acc_variance": { "type": "accordion", "settings": { "heading": "海外製品の個体差について", "content": "<p>木目・節・色合いの違い、積層部分の見え方、サイズの軽微な誤差、使用に支障のない小さな擦れ、パッケージの傷やへこみが生じる場合があります。なお、破損や機能不良は個体差には含みません。</p>" } },
+        "acc_returns": { "type": "accordion", "settings": { "heading": "30日間安心保証について", "content": "<p>ご注文後すぐに手配へ入るため、発送前のキャンセル・変更は手配状況により承れない場合があります。商品到着後30日以内にご連絡いただければ、ご満足いただけない場合は返金にて対応いたします。返送前に必ずご連絡ください。商品の状態を確認したうえで、返送が必要かどうかと返送方法をご案内します。当店が返送をお願いする場合の返送料は当店が負担します。返金手続きが完了するまでは商品および梱包材を保管してください。状態確認のため、写真や動画のご提供をお願いする場合があります。保証の不正利用や過度な繰り返し利用については、対応をお断りする場合があります。</p>" } }
       },
-      "block_order": [
-        "acc_description",
-        "acc_spec",
-        "acc_shipping",
-        "acc_variance",
-        "acc_returns"
-      ],
+      "block_order": ["acc_description","acc_spec","acc_shipping","acc_variance","acc_returns"],
       "settings": {}
     },
-    "styling": {
-      "type": "moru-product-styling",
-      "blocks": {
-        "style_1": {
-          "type": "image",
-          "settings": {}
-        },
-        "style_2": {
-          "type": "image",
-          "settings": {}
-        },
-        "style_3": {
-          "type": "image",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "style_1",
-        "style_2",
-        "style_3"
-      ],
-      "settings": {}
-    },
-    "bought_together": {
-      "type": "moru-product-grid",
-      "settings": {
-        "title": "よく一緒に購入されています",
-        "products_to_show": 3,
-        "columns": "3",
-        "show_view_all": false,
-        "show_subtitle": true,
-        "collection": "cat-life"
-      }
-    },
-    "related": {
-      "type": "moru-product-grid",
-      "settings": {
-        "title": "あわせて楽しむアイテム",
-        "products_to_show": 3,
-        "columns": "3",
-        "show_view_all": false,
-        "show_subtitle": true,
-        "collection": "new-arrivals"
-      }
-    },
-    "recently_viewed": {
-      "type": "moru-recently-viewed",
-      "settings": {}
-    },
-    "features": {
-      "type": "moru-product-features",
-      "settings": {
-        "heading": "この商品の特徴"
-      }
-    }
+    "styling": { "type": "moru-product-styling", "blocks": { "style_1": { "type": "image", "settings": {} }, "style_2": { "type": "image", "settings": {} }, "style_3": { "type": "image", "settings": {} } }, "block_order": ["style_1","style_2","style_3"], "settings": {} },
+    "bought_together": { "type": "moru-product-grid", "settings": { "title": "猫との暮らしにおすすめ", "collection": "cat-life", "products_to_show": 3, "columns": "3", "show_view_all": false, "show_subtitle": true } },
+    "related": { "type": "moru-product-grid", "settings": { "title": "あわせて楽しむアイテム", "collection": "new-arrivals", "products_to_show": 3, "columns": "3", "show_view_all": false, "show_subtitle": true } },
+    "recently_viewed": { "type": "moru-recently-viewed", "settings": {} }
   },
-  "order": [
-    "main",
-    "bundle",
-    "details",
-    "features",
-    "styling",
-    "bought_together",
-    "related",
-    "recently_viewed"
-  ]
+  "order": ["main","quantity_offers","features","promotions","details","styling","bought_together","related","recently_viewed"]
 }

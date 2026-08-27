@@ -4,53 +4,67 @@
     assign has_header = true
   endif
 
-  comment
-    新着アイテム用。0 より大きいと「公開から N 日以内の商品だけ」を出す(D-058)。
-    タグ運用と違って付け外しが要らないので、掲載期間が勝手に切れる。
-  endcomment
-  assign new_days = section.settings.new_within_days | default: 0
-  assign new_window = new_days | times: 86400
-  assign now_s = 'now' | date: '%s' | times: 1
+  assign current_product_id = blank
+  if product != blank
+    assign current_product_id = product.id
+  endif
+
+  assign available_product_count = 0
+  if section.settings.collection != blank
+    for grid_product in section.settings.collection.products
+      unless current_product_id != blank and grid_product.id == current_product_id
+        assign available_product_count = available_product_count | plus: 1
+      endunless
+    endfor
+  endif
 %}
 
-<div class="moru-product-grid" style="--grid-columns: {{ section.settings.columns }}">
-  {% if has_header %}
-    <div class="moru-section-header">
-      <h2>{{ section.settings.title }}</h2>
-      {% if section.settings.show_view_all and section.settings.collection != blank %}
-        <a class="moru-section-header__link" href="{{ section.settings.collection.url }}">{{ section.settings.view_all_label }} &rarr;</a>
-      {% endif %}
-    </div>
-  {% endif %}
+{% if available_product_count > 0 %}
+  <div class="moru-product-grid" style="--grid-columns: {{ section.settings.columns }}">
+    {% if has_header %}
+      <div class="moru-section-header">
+        <h2>{{ section.settings.title }}</h2>
+        {% if section.settings.show_view_all and section.settings.collection != blank %}
+          <a class="moru-section-header__link" href="{{ section.settings.collection.url }}">{{ section.settings.view_all_label }} &rarr;</a>
+        {% endif %}
+      </div>
+    {% endif %}
 
-  <ul class="moru-product-grid__grid" role="list">
-    {% if section.settings.collection != blank %}
-      {% assign shown = 0 %}
-      {% for product in section.settings.collection.products %}
-        {%- if shown >= section.settings.products_to_show -%}
-          {%- break -%}
-        {%- endif -%}
-        {%- if new_window > 0 -%}
-          {%- assign published_s = product.published_at | date: '%s' | times: 1 -%}
-          {%- assign age = now_s | minus: published_s -%}
-          {%- if age >= new_window -%}
-            {%- continue -%}
-          {%- endif -%}
-        {%- endif -%}
-        {%- assign shown = shown | plus: 1 -%}
-        <li>
-          {% render 'moru-product-card',
-            product: product,
-            show_new_badge: section.settings.show_new_badge,
-            new_within_days: new_days,
-            show_subtitle: section.settings.show_subtitle
-          %}
-        </li>
+    <ul class="moru-product-grid__grid" role="list">
+      {% assign rendered_products = 0 %}
+      {% for grid_product in section.settings.collection.products %}
+        {% unless current_product_id != blank and grid_product.id == current_product_id %}
+          <li>
+            {% render 'moru-product-card',
+              product: grid_product,
+              show_new_badge: section.settings.show_new_badge,
+              show_subtitle: section.settings.show_subtitle
+            %}
+          </li>
+          {% assign rendered_products = rendered_products | plus: 1 %}
+          {% if rendered_products >= section.settings.products_to_show %}
+            {% break %}
+          {% endif %}
+        {% endunless %}
       {% endfor %}
-      {%- if new_window > 0 and shown == 0 -%}
-        <li class="moru-product-grid__empty">{{ 'moru.product_grid.no_new_items' | t }}</li>
-      {%- endif -%}
-    {% else %}
+    </ul>
+
+    {% if section.settings.bottom_button_label != blank %}
+      <div class="moru-product-grid__footer">
+        <a class="moru-button moru-button--outline moru-product-grid__button" href="{{ section.settings.collection.url }}">
+          {{ section.settings.bottom_button_label }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% elsif request.design_mode %}
+  <div class="moru-product-grid" style="--grid-columns: {{ section.settings.columns }}">
+    {% if has_header %}
+      <div class="moru-section-header">
+        <h2>{{ section.settings.title }}</h2>
+      </div>
+    {% endif %}
+    <ul class="moru-product-grid__grid" role="list">
       {% for i in (1..section.settings.products_to_show) %}
         <li>
           {% render 'moru-product-card',
@@ -60,27 +74,10 @@
           %}
         </li>
       {% endfor %}
-    {% endif %}
-  </ul>
-
-  {% if section.settings.bottom_button_label != blank %}
-    <div class="moru-product-grid__footer">
-      {% liquid
-        assign bottom_url = routes.all_products_collection_url
-        if section.settings.collection != blank
-          assign bottom_url = section.settings.collection.url
-        endif
-      %}
-      <a class="moru-button moru-button--outline moru-product-grid__button" href="{{ bottom_url }}">
-        {{ section.settings.bottom_button_label }}
-      </a>
-    </div>
-  {% endif %}
-
-  {% if section.settings.collection == blank %}
+    </ul>
     <p class="moru-product-grid__hint">{{ 'moru.placeholder.select_collection' | t }}</p>
-  {% endif %}
-</div>
+  </div>
+{% endif %}
 
 {% stylesheet %}
   .moru-product-grid {
@@ -104,14 +101,6 @@
 
   .moru-product-grid__button {
     padding-inline: var(--space-2xl);
-  }
-
-  .moru-product-grid__empty {
-    grid-column: 1 / -1;
-    padding-block: var(--space-lg);
-    color: var(--color-muted);
-    font-size: var(--font-size-sm);
-    text-align: center;
   }
 
   .moru-product-grid__hint {
@@ -154,7 +143,7 @@
       "type": "range",
       "id": "products_to_show",
       "min": 3,
-      "max": 24,
+      "max": 12,
       "step": 1,
       "label": "t:moru.product_grid.products_to_show_label",
       "default": 8
@@ -186,17 +175,6 @@
       "id": "view_all_label",
       "label": "t:moru.common.view_all_label",
       "default": "t:moru.common.view_all_default"
-    },
-    {
-      "type": "range",
-      "id": "new_within_days",
-      "min": 0,
-      "max": 120,
-      "step": 15,
-      "unit": "t:moru.product_grid.new_within_days_unit",
-      "label": "t:moru.product_grid.new_within_days_label",
-      "info": "t:moru.product_grid.new_within_days_info",
-      "default": 0
     },
     {
       "type": "checkbox",

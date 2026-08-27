@@ -1,3 +1,8 @@
+{% liquid
+  assign sale_collection = collections['sale']
+  assign news_blog = blogs['news']
+%}
+
 <footer class="moru-footer full-width" role="contentinfo">
   <div class="moru-footer__inner">
     <div class="moru-footer__grid">
@@ -9,94 +14,65 @@
             {{ section.settings.wordmark | default: shop.name }}
           {% endif %}
         </a>
-        {% if section.settings.brand_text != blank %}
-          <div class="moru-footer__brand-text">{{ section.settings.brand_text | newline_to_br }}</div>
-        {% endif %}
+        {% if section.settings.brand_text != blank %}<div class="moru-footer__brand-text">{{ section.settings.brand_text | newline_to_br }}</div>{% endif %}
       </div>
 
       {% for block in section.blocks %}
-        <nav class="moru-footer__col" aria-label="{{ block.settings.heading }}" {{ block.shopify_attributes }}>
-          <h2 class="moru-footer__heading">{{ block.settings.heading }}</h2>
+        {% capture menu_items_markup %}
           {% if block.settings.menu != blank %}
-            <ul class="moru-footer__list" role="list">
-              {% for link in block.settings.menu.links %}
-                <li><a class="moru-footer__link" href="{{ link.url }}">{{ link.title }}</a></li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="moru-footer__hint">{{ 'moru.footer.select_menu' | t }}</p>
+            {% for link in block.settings.menu.links %}
+              {% liquid
+                assign show_footer_link = true
+                if link.url contains '/pages/'
+                  assign page_handle = link.url | split: '/pages/' | last | split: '?' | first | split: '#' | first
+                  if pages[page_handle] == blank
+                    assign show_footer_link = false
+                  endif
+                elsif link.url contains '/blogs/news'
+                  if news_blog == blank or news_blog.articles_count == 0
+                    assign show_footer_link = false
+                  endif
+                elsif link.url contains '/collections/sale'
+                  if sale_collection == blank or sale_collection.products_count == 0
+                    assign show_footer_link = false
+                  endif
+                endif
+              %}
+              {% if show_footer_link %}<li><a class="moru-footer__link" href="{{ link.url }}">{{ link.title }}</a></li>{% endif %}
+            {% endfor %}
           {% endif %}
-        </nav>
+        {% endcapture %}
+        {% assign menu_items_markup = menu_items_markup | strip %}
+        {% if menu_items_markup != blank %}
+          <nav class="moru-footer__col" aria-label="{{ block.settings.heading }}" {{ block.shopify_attributes }}>
+            <h2 class="moru-footer__heading">{{ block.settings.heading }}</h2>
+            <ul class="moru-footer__list" role="list">{{ menu_items_markup }}</ul>
+          </nav>
+        {% endif %}
       {% endfor %}
 
       {% if section.settings.show_newsletter %}
         <div class="moru-footer__newsletter">
           <h2 class="moru-footer__heading">{{ section.settings.newsletter_heading }}</h2>
-          {% if section.settings.newsletter_text != blank %}
-            <p class="moru-footer__newsletter-text">{{ section.settings.newsletter_text }}</p>
-          {% endif %}
-
+          {% if section.settings.newsletter_text != blank %}<p class="moru-footer__newsletter-text">{{ section.settings.newsletter_text }}</p>{% endif %}
           {% form 'customer', class: 'moru-footer__form' %}
             <input type="hidden" name="contact[tags]" value="newsletter">
             <div class="moru-footer__field">
-              <input
-                class="moru-footer__input"
-                type="email"
-                name="contact[email]"
-                required
-                placeholder="{{ 'moru.footer.newsletter_placeholder' | t }}"
-                aria-label="{{ 'moru.footer.newsletter_placeholder' | t }}"
-              >
-              <button class="moru-footer__submit" type="submit">
-                <span>{{ 'moru.footer.newsletter_submit' | t }}</span>
-              </button>
+              <input class="moru-footer__input" type="email" name="contact[email]" required placeholder="{{ 'moru.footer.newsletter_placeholder' | t }}" aria-label="{{ 'moru.footer.newsletter_placeholder' | t }}">
+              <button class="moru-footer__submit" type="submit"><span>{{ 'moru.footer.newsletter_submit' | t }}</span></button>
             </div>
-            {% if form.posted_successfully? %}
-              <p class="moru-footer__message moru-footer__message--success">{{ 'moru.footer.newsletter_success' | t }}</p>
-            {% elsif form.errors %}
-              <p class="moru-footer__message moru-footer__message--error">{{ 'moru.footer.newsletter_error' | t }}</p>
-            {% endif %}
+            {% if form.posted_successfully? %}<p class="moru-footer__message moru-footer__message--success">{{ 'moru.footer.newsletter_success' | t }}</p>{% elsif form.errors %}<p class="moru-footer__message moru-footer__message--error">{{ 'moru.footer.newsletter_error' | t }}</p>{% endif %}
           {% endform %}
 
           <div class="moru-footer__social">
             {% if section.settings.instagram_url != blank %}
-              <a
-                class="moru-footer__social-btn"
-                href="{{ section.settings.instagram_url }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-              </a>
+              <a class="moru-footer__social-btn" href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
             {% endif %}
             {% if section.settings.pinterest_url != blank %}
-              <a
-                class="moru-footer__social-btn"
-                href="{{ section.settings.pinterest_url }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Pinterest"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.334 1.372-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
-                </svg>
-              </a>
+              <a class="moru-footer__social-btn" href="{{ section.settings.pinterest_url }}" target="_blank" rel="noopener noreferrer" aria-label="Pinterest"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.334 1.372-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg></a>
             {% endif %}
             {% if section.settings.line_url != blank %}
-              <a
-                class="moru-footer__social-btn"
-                href="{{ section.settings.line_url }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LINE"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.035 9.608.391.084.922.258 1.057.592.122.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.573-3.844 2.573-5.992zm-14.739 2.59h-2.143c-.328 0-.594-.265-.594-.594v-3.992c0-.329.266-.594.594-.594.329 0 .594.265.594.594v3.398h1.549c.328 0 .594.266.594.594 0 .329-.266.594-.594.594zm3.018-.594c0 .329-.266.594-.594.594s-.594-.265-.594-.594v-3.992c0-.329.266-.594.594-.594s.594.265.594.594v3.992zm4.331 0c0 .245-.149.464-.378.552-.07.027-.145.042-.217.042-.164 0-.325-.07-.438-.198l-2.073-2.732v2.336c0 .329-.266.594-.594.594s-.594-.265-.594-.594v-3.992c0-.244.15-.465.378-.553.07-.027.145-.041.217-.041.164 0 .325.07.438.198l2.073 2.733v-2.338c0-.329.266-.594.594-.594.329 0 .594.265.594.594v3.992zm3.83-2.196c.329 0 .594.266.594.594 0 .329-.265.594-.594.594h-2.143c-.329 0-.594-.265-.594-.594v-3.992c0-.329.265-.594.594-.594h2.143c.329 0 .594.265.594.594 0 .328-.265.594-.594.594h-1.549v.804h1.549c.329 0 .594.266.594.594 0 .329-.265.594-.594.594h-1.549v.81h1.549z"/>
-                </svg>
-              </a>
+              <a class="moru-footer__social-btn" href="{{ section.settings.line_url }}" target="_blank" rel="noopener noreferrer" aria-label="LINE"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.035 9.608.391.084.922.258 1.057.592.122.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.573-3.844 2.573-5.992zm-14.739 2.59h-2.143c-.328 0-.594-.265-.594-.594v-3.992c0-.329.266-.594.594-.594.329 0 .594.265.594.594v3.398h1.549c.328 0 .594.266.594.594 0 .329-.266.594-.594.594zm3.018-.594c0 .329-.266.594-.594.594s-.594-.265-.594-.594v-3.992c0-.329.266-.594.594-.594s.594.265.594.594v3.992zm4.331 0c0 .245-.149.464-.378.552-.07.027-.145.042-.217.042-.164 0-.325-.07-.438-.198l-2.073-2.732v2.336c0 .329-.266.594-.594.594s-.594-.265-.594-.594v-3.992c0-.244.15-.465.378-.553.07-.027.145-.041.217-.041.164 0 .325.07.438.198l2.073 2.733v-2.338c0-.329.266-.594.594-.594.329 0 .594.265.594.594v3.992zm3.83-2.196c.329 0 .594.266.594.594 0 .329-.265.594-.594.594h-2.143c-.329 0-.594-.265-.594-.594v-3.992c0-.329.265-.594.594-.594h2.143c.329 0 .594.265.594.594 0 .328-.265.594-.594.594h-1.549v.804h1.549c.329 0 .594.266.594.594 0 .329-.265.594-.594.594h-1.549v.81h1.549z"/></svg></a>
             {% endif %}
           </div>
         </div>
@@ -104,486 +80,78 @@
     </div>
 
     <div class="moru-footer__bottom">
-      <p class="moru-footer__copyright">
-        &copy; {{ 'now' | date: '%Y' }} {{ section.settings.wordmark | default: shop.name }}
-        {{ 'moru.footer.rights' | t }}
-      </p>
+      <p class="moru-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ section.settings.wordmark | default: shop.name }} {{ 'moru.footer.rights' | t }}</p>
 
-      <ul class="moru-footer__legal" role="list">
+      {% capture legal_markup %}
         {% if section.settings.legal_menu != blank %}
           {% for link in section.settings.legal_menu.links %}
-            <li class="moru-footer__legal-item">
-              <a class="moru-footer__legal-link" href="{{ link.url }}">{{ link.title }}</a>
-            </li>
+            {% liquid
+              assign show_legal_link = true
+              if link.url contains '/pages/'
+                assign legal_page_handle = link.url | split: '/pages/' | last | split: '?' | first | split: '#' | first
+                if pages[legal_page_handle] == blank
+                  assign show_legal_link = false
+                endif
+              endif
+            %}
+            {% if show_legal_link %}<li class="moru-footer__legal-item"><a class="moru-footer__legal-link" href="{{ link.url }}">{{ link.title }}</a></li>{% endif %}
           {% endfor %}
         {% else %}
-          <li class="moru-footer__legal-item">
-            <a class="moru-footer__legal-link" href="{{ routes.root_url }}pages/tokushoho">
-              {{- 'moru.footer.legal_tokushoho' | t -}}
-            </a>
-          </li>
-          <li class="moru-footer__legal-item">
-            <a class="moru-footer__legal-link" href="{{ routes.root_url }}pages/privacy">
-              {{- 'moru.footer.legal_privacy' | t -}}
-            </a>
-          </li>
-          <li class="moru-footer__legal-item">
-            <a class="moru-footer__legal-link" href="{{ routes.root_url }}pages/terms">
-              {{- 'moru.footer.legal_terms' | t -}}
-            </a>
-          </li>
+          {% if pages['tokushoho'] != blank %}<li class="moru-footer__legal-item"><a class="moru-footer__legal-link" href="{{ pages['tokushoho'].url }}">{{ 'moru.footer.legal_tokushoho' | t }}</a></li>{% endif %}
+          {% if pages['privacy'] != blank %}<li class="moru-footer__legal-item"><a class="moru-footer__legal-link" href="{{ pages['privacy'].url }}">{{ 'moru.footer.legal_privacy' | t }}</a></li>{% endif %}
+          {% if pages['terms'] != blank %}<li class="moru-footer__legal-item"><a class="moru-footer__legal-link" href="{{ pages['terms'].url }}">{{ 'moru.footer.legal_terms' | t }}</a></li>{% endif %}
         {% endif %}
-      </ul>
+      {% endcapture %}
+      {% assign legal_markup = legal_markup | strip %}
+      {% if legal_markup != blank %}<ul class="moru-footer__legal" role="list">{{ legal_markup }}</ul>{% endif %}
     </div>
   </div>
 </footer>
 
 {% stylesheet %}
-  .moru-footer {
-    position: relative;
-    overflow: hidden;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    border-block-start: 1px solid var(--color-border);
-  }
-
-  /* Mid-century grid accent, kept faint on the light surface */
-  .moru-footer::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(to right, color-mix(in srgb, var(--color-wood) 14%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in srgb, var(--color-wood) 14%, transparent) 1px, transparent 1px);
-    background-size: 80px 80px;
-    pointer-events: none;
-  }
-
-  .moru-footer__inner {
-    position: relative;
-    z-index: 1;
-    max-width: 1360px;
-    margin: 0 auto;
-    padding: 4.5rem 2.5rem 3rem;
-  }
-
-  .moru-footer__grid {
-    display: grid;
-    grid-template-columns: 2.2fr 1fr 1.2fr 1.1fr 2.1fr;
-    gap: 3.5rem 2rem;
-    align-items: start;
-  }
-
-  .moru-footer__brand {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-    padding-right: 1.5rem;
-  }
-
-  .moru-footer__logo {
-    display: inline-block;
-    color: var(--color-logo);
-    font-family: var(--font-display--family);
-    font-size: 2.35rem;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: color 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__logo:hover {
-    color: var(--color-wood);
-  }
-
-  .moru-footer__logo img {
-    width: 160px;
-    height: auto;
-  }
-
-  .moru-footer__brand-text {
-    color: var(--color-muted);
-    font-size: 0.815rem;
-    font-weight: 300;
-    line-height: 1.95;
-    letter-spacing: 0.03em;
-  }
-
-  .moru-footer__col {
-    display: flex;
-    flex-direction: column;
-    gap: 1.4rem;
-  }
-
-  .moru-footer__heading {
-    display: inline-block;
-    margin: 0;
-    color: var(--color-text);
-    font-family: var(--font-body--family);
-    font-size: 0.76rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-  }
-
-  .moru-footer__list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.95rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .moru-footer__link {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    color: var(--color-muted);
-    font-size: 0.82rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    transition: color 0.28s cubic-bezier(0.25, 1, 0.5, 1), transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__link::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background-color: var(--color-wood);
-    transition: width 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__link:hover {
-    color: var(--color-text);
-    transform: translateX(2px);
-  }
-
-  .moru-footer__link:hover::after {
-    width: 100%;
-  }
-
-  .moru-footer__hint {
-    margin: 0;
-    color: var(--color-muted);
-    font-size: 0.75rem;
-    opacity: 0.7;
-  }
-
-  .moru-footer__newsletter {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .moru-footer__newsletter-text {
-    margin: 0;
-    color: var(--color-muted);
-    font-size: 0.815rem;
-    font-weight: 300;
-    line-height: 1.5;
-    letter-spacing: 0.02em;
-  }
-
-  .moru-footer__form {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .moru-footer__field {
-    position: relative;
-    display: flex;
-    width: 100%;
-  }
-
-  .moru-footer__input {
-    flex: 1;
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--color-border);
-    border-right: none;
-    border-radius: 0;
-    outline: none;
-    background-color: var(--color-bg-alt);
-    color: var(--color-text);
-    font-family: var(--font-body--family);
-    font-size: 0.815rem;
-    transition: border-color 0.28s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__input::placeholder {
-    color: var(--color-muted);
-    font-weight: 300;
-  }
-
-  .moru-footer__input:focus {
-    border-color: var(--color-wood);
-    background-color: var(--color-bg);
-  }
-
-  .moru-footer__submit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 1.35rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0;
-    background-color: var(--color-bg-alt);
-    color: var(--color-text);
-    font-family: var(--font-body--family);
-    font-size: 0.815rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__submit:hover {
-    background-color: var(--color-wood);
-    border-color: var(--color-wood);
-    color: var(--color-bg);
-    font-weight: 500;
-  }
-
-  .moru-footer__submit:active {
-    transform: scale(0.98);
-  }
-
-  .moru-footer__message {
-    margin: 0.4rem 0 0;
-    min-height: 1.1rem;
-    font-size: 0.75rem;
-  }
-
-  .moru-footer__message--success {
-    color: var(--color-accent-olive);
-  }
-
-  .moru-footer__message--error {
-    color: var(--color-sale);
-  }
-
-  .moru-footer__social {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    margin-top: 0.6rem;
-  }
-
-  .moru-footer__social-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border: 1px solid transparent;
-    border-radius: 50%;
-    background-color: var(--color-bg-alt);
-    color: var(--color-muted);
-    text-decoration: none;
-    transition: all 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__social-btn svg {
-    width: 17px;
-    height: 17px;
-    fill: currentcolor;
-    transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__social-btn:hover {
-    color: var(--color-wood);
-    border-color: color-mix(in srgb, var(--color-wood) 45%, transparent);
-    background-color: color-mix(in srgb, var(--color-wood) 12%, transparent);
-    transform: translateY(-2px);
-  }
-
-  .moru-footer__social-btn:hover svg {
-    transform: scale(1.1);
-  }
-
-  .moru-footer__bottom {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.25rem;
-    margin-top: 4.5rem;
-    padding-top: 1.75rem;
-    border-top: 1px solid var(--color-border);
-  }
-
-  .moru-footer__copyright {
-    margin: 0;
-    color: var(--color-muted);
-    font-size: 0.74rem;
-    letter-spacing: 0.04em;
-  }
-
-  .moru-footer__legal {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .moru-footer__legal-item {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .moru-footer__legal-item:not(:last-child)::after {
-    content: '|';
-    color: var(--color-border);
-    font-size: 0.72rem;
-    font-weight: 300;
-  }
-
-  .moru-footer__legal-link {
-    color: var(--color-muted);
-    font-size: 0.74rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    transition: color 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .moru-footer__legal-link:hover {
-    color: var(--color-text);
-  }
-
-  @media (max-width: 1080px) {
-    .moru-footer__grid {
-      grid-template-columns: 1.8fr 1fr 1.2fr 1fr;
-    }
-
-    .moru-footer__newsletter {
-      grid-column: span 4;
-      max-width: 480px;
-      margin-top: 1rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .moru-footer__inner {
-      padding: 3.5rem 1.5rem 2.5rem;
-    }
-
-    .moru-footer__grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 2.5rem 1.5rem;
-    }
-
-    .moru-footer__brand {
-      grid-column: span 2;
-      padding-right: 0;
-    }
-
-    .moru-footer__newsletter {
-      grid-column: span 2;
-      max-width: 100%;
-    }
-
-    .moru-footer__bottom {
-      flex-direction: column-reverse;
-      align-items: flex-start;
-      gap: 1.2rem;
-      margin-top: 3.5rem;
-    }
-
-    .moru-footer__legal {
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .moru-footer__legal-item {
-      gap: 1rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .moru-footer__grid {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .moru-footer__brand,
-    .moru-footer__newsletter {
-      grid-column: span 1;
-    }
-  }
+  .moru-footer { position:relative; overflow:hidden; background-color:var(--color-bg); color:var(--color-text); border-block-start:1px solid var(--color-border); }
+  .moru-footer::before { content:''; position:absolute; inset:0; background-image:linear-gradient(to right,color-mix(in srgb,var(--color-wood) 14%,transparent) 1px,transparent 1px),linear-gradient(to bottom,color-mix(in srgb,var(--color-wood) 14%,transparent) 1px,transparent 1px); background-size:80px 80px; pointer-events:none; }
+  .moru-footer__inner { position:relative; z-index:1; max-width:1360px; margin:0 auto; padding:4.5rem 2.5rem 3rem; }
+  .moru-footer__grid { display:grid; grid-template-columns:2.2fr 1fr 1.2fr 1.1fr 2.1fr; gap:3.5rem 2rem; align-items:start; }
+  .moru-footer__brand { display:flex; flex-direction:column; gap:1.75rem; padding-right:1.5rem; }
+  .moru-footer__logo { display:inline-block; color:var(--color-logo); font-family:var(--font-display--family); font-size:2.35rem; font-weight:500; line-height:1; letter-spacing:.18em; text-transform:uppercase; text-decoration:none; transition:color .28s cubic-bezier(.25,1,.5,1); }
+  .moru-footer__logo:hover { color:var(--color-wood); }.moru-footer__logo img { width:160px; height:auto; }
+  .moru-footer__brand-text { color:var(--color-muted); font-size:.815rem; font-weight:300; line-height:1.95; letter-spacing:.03em; }
+  .moru-footer__col { display:flex; flex-direction:column; gap:1.4rem; }
+  .moru-footer__heading { display:inline-block; margin:0; color:var(--color-text); font-family:var(--font-body--family); font-size:.76rem; font-weight:600; letter-spacing:.14em; }
+  .moru-footer__list { display:flex; flex-direction:column; gap:.95rem; margin:0; padding:0; list-style:none; }
+  .moru-footer__link { position:relative; display:inline-flex; align-items:center; color:var(--color-muted); font-size:.82rem; font-weight:300; letter-spacing:.02em; text-decoration:none; transition:color .28s cubic-bezier(.25,1,.5,1),transform .28s cubic-bezier(.25,1,.5,1); }
+  .moru-footer__link::after { content:''; position:absolute; bottom:-2px; left:0; width:0; height:1px; background-color:var(--color-wood); transition:width .28s cubic-bezier(.25,1,.5,1); }
+  .moru-footer__link:hover { color:var(--color-text); transform:translateX(2px); }.moru-footer__link:hover::after { width:100%; }
+  .moru-footer__newsletter { display:flex; flex-direction:column; gap:1.25rem; }
+  .moru-footer__newsletter-text { margin:0; color:var(--color-muted); font-size:.815rem; font-weight:300; line-height:1.5; letter-spacing:.02em; }
+  .moru-footer__form { display:flex; flex-direction:column; width:100%; }.moru-footer__field { position:relative; display:flex; width:100%; }
+  .moru-footer__input { flex:1; padding:.8rem 1rem; border:1px solid var(--color-border); border-right:none; border-radius:0; outline:none; background-color:var(--color-bg-alt); color:var(--color-text); font-family:var(--font-body--family); font-size:.815rem; transition:border-color .28s cubic-bezier(.25,1,.5,1),background-color .28s cubic-bezier(.25,1,.5,1); }
+  .moru-footer__input::placeholder { color:var(--color-muted); font-weight:300; }.moru-footer__input:focus { border-color:var(--color-wood); background-color:var(--color-bg); }
+  .moru-footer__submit { display:flex; align-items:center; justify-content:center; padding:0 1.35rem; border:1px solid var(--color-border); border-radius:0; background-color:var(--color-bg-alt); color:var(--color-text); font-family:var(--font-body--family); font-size:.815rem; font-weight:400; letter-spacing:.04em; white-space:nowrap; cursor:pointer; transition:all .28s cubic-bezier(.25,1,.5,1); }
+  .moru-footer__submit:hover { background-color:var(--color-wood); border-color:var(--color-wood); color:var(--color-bg); font-weight:500; }.moru-footer__submit:active { transform:scale(.98); }
+  .moru-footer__message { margin:.4rem 0 0; min-height:1.1rem; font-size:.75rem; }.moru-footer__message--success { color:var(--color-accent-olive); }.moru-footer__message--error { color:var(--color-sale); }
+  .moru-footer__social { display:flex; align-items:center; gap:1.25rem; margin-top:.6rem; }.moru-footer__social-btn { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border:1px solid transparent; border-radius:50%; background-color:var(--color-bg-alt); color:var(--color-muted); text-decoration:none; transition:all .28s cubic-bezier(.25,1,.5,1); }.moru-footer__social-btn svg { width:17px; height:17px; fill:currentcolor; transition:transform .28s cubic-bezier(.25,1,.5,1); }.moru-footer__social-btn:hover { color:var(--color-wood); border-color:color-mix(in srgb,var(--color-wood) 45%,transparent); background-color:color-mix(in srgb,var(--color-wood) 12%,transparent); transform:translateY(-2px); }.moru-footer__social-btn:hover svg { transform:scale(1.1); }
+  .moru-footer__bottom { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.25rem; margin-top:4.5rem; padding-top:1.75rem; border-top:1px solid var(--color-border); }.moru-footer__copyright { margin:0; color:var(--color-muted); font-size:.74rem; letter-spacing:.04em; }.moru-footer__legal { display:flex; align-items:center; gap:1.5rem; margin:0; padding:0; list-style:none; }.moru-footer__legal-item { display:flex; align-items:center; gap:1.5rem; }.moru-footer__legal-item:not(:last-child)::after { content:'|'; color:var(--color-border); font-size:.72rem; font-weight:300; }.moru-footer__legal-link { color:var(--color-muted); font-size:.74rem; font-weight:300; letter-spacing:.02em; text-decoration:none; transition:color .28s cubic-bezier(.25,1,.5,1); }.moru-footer__legal-link:hover { color:var(--color-text); }
+  @media(max-width:1080px){.moru-footer__grid{grid-template-columns:1.8fr 1fr 1.2fr 1fr}.moru-footer__newsletter{grid-column:span 4;max-width:480px;margin-top:1rem}}
+  @media(max-width:768px){.moru-footer__inner{padding:3.5rem 1.5rem 2.5rem}.moru-footer__grid{grid-template-columns:1fr 1fr;gap:2.5rem 1.5rem}.moru-footer__brand{grid-column:span 2;padding-right:0}.moru-footer__newsletter{grid-column:span 2;max-width:100%}.moru-footer__bottom{flex-direction:column-reverse;align-items:flex-start;gap:1.2rem;margin-top:3.5rem}.moru-footer__legal{flex-wrap:wrap;gap:1rem}.moru-footer__legal-item{gap:1rem}}
+  @media(max-width:480px){.moru-footer__grid{grid-template-columns:1fr;gap:2rem}.moru-footer__brand,.moru-footer__newsletter{grid-column:span 1}}
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:moru.footer.name",
   "settings": [
-    {
-      "type": "image_picker",
-      "id": "logo",
-      "label": "t:moru.footer.logo_label"
-    },
-    {
-      "type": "text",
-      "id": "wordmark",
-      "label": "t:moru.header.wordmark_label",
-      "info": "t:moru.header.wordmark_info",
-      "default": "t:moru.header.wordmark_default"
-    },
-    {
-      "type": "textarea",
-      "id": "brand_text",
-      "label": "t:moru.footer.brand_text_label",
-      "default": "t:moru.footer.brand_text_default"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_newsletter",
-      "label": "t:moru.footer.show_newsletter_label",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "newsletter_heading",
-      "label": "t:moru.footer.newsletter_heading_label",
-      "default": "t:moru.footer.newsletter_heading_default"
-    },
-    {
-      "type": "text",
-      "id": "newsletter_text",
-      "label": "t:moru.footer.newsletter_text_label",
-      "default": "t:moru.footer.newsletter_text_default"
-    },
-    {
-      "type": "url",
-      "id": "instagram_url",
-      "label": "t:moru.footer.instagram_url_label"
-    },
-    {
-      "type": "url",
-      "id": "pinterest_url",
-      "label": "t:moru.footer.pinterest_url_label"
-    },
-    {
-      "type": "url",
-      "id": "line_url",
-      "label": "t:moru.footer.line_url_label"
-    },
-    {
-      "type": "link_list",
-      "id": "legal_menu",
-      "label": "t:moru.footer.legal_menu_label",
-      "info": "t:moru.footer.legal_menu_info"
-    }
+    { "type": "image_picker", "id": "logo", "label": "t:moru.footer.logo_label" },
+    { "type": "text", "id": "wordmark", "label": "t:moru.header.wordmark_label", "info": "t:moru.header.wordmark_info", "default": "t:moru.header.wordmark_default" },
+    { "type": "textarea", "id": "brand_text", "label": "t:moru.footer.brand_text_label", "default": "t:moru.footer.brand_text_default" },
+    { "type": "checkbox", "id": "show_newsletter", "label": "t:moru.footer.show_newsletter_label", "default": true },
+    { "type": "text", "id": "newsletter_heading", "label": "t:moru.footer.newsletter_heading_label", "default": "t:moru.footer.newsletter_heading_default" },
+    { "type": "text", "id": "newsletter_text", "label": "t:moru.footer.newsletter_text_label", "default": "t:moru.footer.newsletter_text_default" },
+    { "type": "url", "id": "instagram_url", "label": "t:moru.footer.instagram_url_label" },
+    { "type": "url", "id": "pinterest_url", "label": "t:moru.footer.pinterest_url_label" },
+    { "type": "url", "id": "line_url", "label": "t:moru.footer.line_url_label" },
+    { "type": "link_list", "id": "legal_menu", "label": "t:moru.footer.legal_menu_label", "info": "t:moru.footer.legal_menu_info" }
   ],
   "blocks": [
     {
@@ -591,48 +159,19 @@
       "name": "t:moru.footer.block_menu_name",
       "limit": 3,
       "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "t:moru.footer.block_heading_label",
-          "default": "t:moru.footer.block_heading_default"
-        },
-        {
-          "type": "link_list",
-          "id": "menu",
-          "label": "t:labels.menu"
-        }
+        { "type": "text", "id": "heading", "label": "t:moru.footer.block_heading_label", "default": "t:moru.footer.block_heading_default" },
+        { "type": "link_list", "id": "menu", "label": "t:labels.menu" }
       ]
     }
   ],
   "max_blocks": 3,
-  "enabled_on": {
-    "groups": ["footer"]
-  },
+  "enabled_on": { "groups": ["footer"] },
   "presets": [
-    {
-      "name": "t:moru.footer.name",
-      "blocks": [
-        {
-          "type": "menu",
-          "settings": {
-            "heading": "t:moru.footer.preset_shop"
-          }
-        },
-        {
-          "type": "menu",
-          "settings": {
-            "heading": "t:moru.footer.preset_support"
-          }
-        },
-        {
-          "type": "menu",
-          "settings": {
-            "heading": "t:moru.footer.preset_about"
-          }
-        }
-      ]
-    }
+    { "name": "t:moru.footer.name", "blocks": [
+      { "type": "menu", "settings": { "heading": "t:moru.footer.preset_shop" } },
+      { "type": "menu", "settings": { "heading": "t:moru.footer.preset_support" } },
+      { "type": "menu", "settings": { "heading": "t:moru.footer.preset_about" } }
+    ] }
   ]
 }
 {% endschema %}

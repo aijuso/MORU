@@ -53,9 +53,14 @@
         "line_url": "",
         "legal_menu": ""
       }
+    },
+    "policy_links": {
+      "type": "moru-policy-links",
+      "settings": {}
     }
   },
   "order": [
-    "footer"
+    "footer",
+    "policy_links"
   ]
 }

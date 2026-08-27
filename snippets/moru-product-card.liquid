@@ -5,7 +5,6 @@
   @param {product} [product] - The product to render
   @param {number} [ph_index] - Placeholder variation 1-6 when product is empty
   @param {boolean} [show_new_badge] - Show a NEW badge on recently published products
-  @param {number} [new_within_days] - How many days a product counts as new (default 30)
   @param {boolean} [show_subtitle] - Show the product type as a muted subtitle
   @param {boolean} [show_swatches] - Show colour swatches that swap the card image
   @param {string} [swatch_option_names] - Comma separated option names treated as colour
@@ -22,12 +21,10 @@
   assign is_new = false
   if show_new_badge
     if product != blank
-      assign new_days = new_within_days | default: 30
-      assign new_window = new_days | times: 86400
       assign now_s = 'now' | date: '%s' | times: 1
       assign published_s = product.published_at | date: '%s' | times: 1
       assign age = now_s | minus: published_s
-      if age < new_window
+      if age < 2592000
         assign is_new = true
       endif
     elsif ph_index <= 2
@@ -47,6 +44,57 @@
         endif
       endfor
     endfor
+  endif
+
+  assign has_display_sale = false
+  assign regular_card_price = 0
+  assign discounted_card_price = 0
+
+  if product != blank
+    assign regular_card_price = product.price
+    assign discounted_card_price = product.price
+    assign promotion_config = shop.metafields.custom.moru_promotions_config.value
+    assign sale_rate = 0
+    assign sale_product_ids = blank
+    assign sale_excluded_variant_ids = blank
+
+    if promotion_config != blank and promotion_config.sale != blank
+      assign sale_rate = promotion_config.sale.percentage | default: 0 | plus: 0
+      assign sale_product_ids = promotion_config.sale.productIds
+      assign sale_excluded_variant_ids = promotion_config.sale.excludedVariantIds
+    endif
+
+    assign product_gid = 'gid://shopify/Product/' | append: product.id
+    assign function_sale_base_price = 0
+
+    if sale_rate > 0 and sale_product_ids != blank and sale_product_ids contains product_gid
+      for variant in product.variants
+        assign variant_gid = 'gid://shopify/ProductVariant/' | append: variant.id
+        assign variant_is_excluded = false
+        if sale_excluded_variant_ids != blank and sale_excluded_variant_ids contains variant_gid
+          assign variant_is_excluded = true
+        endif
+        unless variant_is_excluded
+          if function_sale_base_price == 0 or variant.price < function_sale_base_price
+            assign function_sale_base_price = variant.price
+          endif
+        endunless
+      endfor
+    endif
+
+    if function_sale_base_price > 0
+      assign regular_card_price = function_sale_base_price
+      assign sale_multiplier = 100 | minus: sale_rate
+      assign discounted_card_price = function_sale_base_price | times: sale_multiplier | divided_by: 100
+      assign has_display_sale = true
+    else
+      assign card_variant = product.selected_or_first_available_variant
+      if card_variant != blank and card_variant.compare_at_price != blank and card_variant.compare_at_price > card_variant.price
+        assign regular_card_price = card_variant.compare_at_price
+        assign discounted_card_price = card_variant.price
+        assign has_display_sale = true
+      endif
+    endif
   endif
 %}
 
@@ -104,7 +152,15 @@
     {% if show_subtitle and product.type != blank %}
       <p class="moru-product-card__subtitle">{{ product.type }}</p>
     {% endif %}
-    <p class="moru-product-card__price">{{ product.price | money }}</p>
+
+    {% if has_display_sale %}
+      <p class="moru-product-card__price moru-product-card__price--sale">
+        <s class="moru-product-card__price-regular">{{ regular_card_price | money }}</s>
+        <span class="moru-product-card__price-current">{{ discounted_card_price | money }}</span>
+      </p>
+    {% else %}
+      <p class="moru-product-card__price">{{ product.price | money }}</p>
+    {% endif %}
   </div>
 {% else %}
   <div class="moru-product-card">
@@ -134,148 +190,44 @@
 {% endif %}
 
 {% stylesheet %}
-  .moru-product-card {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .moru-product-card__link {
-    display: block;
-    text-decoration: none;
-    color: var(--color-text);
-  }
-
-  .moru-product-card__media {
-    position: relative;
-    display: block;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    border-radius: 2px;
-    background-color: var(--color-bg-alt);
-  }
-
-  .moru-product-card__media img,
-  .moru-product-card__media > svg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  a.moru-product-card__link:hover .moru-product-card__media img {
-    transform: scale(1.04);
-  }
+  .moru-product-card { display: flex; flex-direction: column; }
+  .moru-product-card__link { display: block; text-decoration: none; color: var(--color-text); }
+  .moru-product-card__media { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 2px; background-color: var(--color-bg-alt); }
+  .moru-product-card__media img, .moru-product-card__media > svg { width: 100%; height: 100%; object-fit: cover; transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1); }
+  a.moru-product-card__link:hover .moru-product-card__media img { transform: scale(1.04); }
 
   .moru-product-card__badge {
     position: absolute;
     top: var(--space-xs);
     left: var(--space-xs);
     z-index: 2;
-    padding: 2px var(--space-xs);
+    padding: 3px 8px;
+    border: 1px solid var(--color-accent-blue, #1e5b8f);
     border-radius: 2px;
-    background-color: color-mix(in srgb, var(--color-surface) 92%, transparent);
-    color: var(--color-text);
+    background-color: var(--color-accent-blue, #1e5b8f);
+    color: #fff;
     font-size: 0.625rem;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: var(--letter-spacing-wide);
   }
 
-  .moru-product-card__fav {
-    position: absolute;
-    top: var(--space-xs);
-    right: var(--space-xs);
-    z-index: 2;
-    display: grid;
-    place-items: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 50%;
-    background-color: color-mix(in srgb, var(--color-surface) 85%, transparent);
-    color: var(--color-muted);
-    opacity: 0;
-    transform: translateY(4px);
-    transition: opacity 200ms ease, transform 200ms ease;
-  }
-
-  .moru-product-card__fav svg {
-    width: 0.875rem;
-    height: 0.875rem;
-  }
-
-  .moru-product-card:hover .moru-product-card__fav {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .moru-product-card__title {
-    display: block;
-    margin-block-start: var(--space-sm);
-    font-size: var(--font-size-xs);
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  a.moru-product-card__link:hover .moru-product-card__title {
-    color: var(--color-accent-terracotta);
-  }
-
-  .moru-product-card__swatches {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 1rem;
-    margin-block-start: var(--space-xs);
-  }
-
-  .moru-product-card__swatch {
-    position: relative;
-    display: block;
-    width: 14px;
-    height: 14px;
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid rgb(0 0 0 / 0.15);
-    border-radius: 50%;
-    background-color: var(--swatch-color, var(--color-bg-alt));
-    cursor: pointer;
-    transition: box-shadow 200ms ease;
-  }
-
-  .moru-product-card__swatch img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .moru-product-card__swatch.is-active {
-    box-shadow: 0 0 0 1px var(--color-bg), 0 0 0 2px var(--color-text);
-  }
-
-  .moru-product-card__swatch--ph1 {
-    background-color: var(--color-bg-alt);
-  }
-
-  .moru-product-card__swatch--ph2 {
-    background-color: var(--color-wood);
-  }
-
-  .moru-product-card__swatch--ph3 {
-    background-color: var(--color-accent-olive);
-  }
-
-  .moru-product-card__subtitle {
-    margin: var(--space-2xs) 0 0;
-    font-size: var(--font-size-xs);
-    color: var(--color-muted);
-  }
-
-  .moru-product-card__price {
-    margin: var(--space-xs) 0 0;
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-  }
+  .moru-product-card__fav { position: absolute; top: var(--space-xs); right: var(--space-xs); z-index: 2; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; background-color: color-mix(in srgb, var(--color-surface) 85%, transparent); color: var(--color-muted); opacity: 0; transform: translateY(4px); transition: opacity 200ms ease, transform 200ms ease; }
+  .moru-product-card__fav svg { width: 0.875rem; height: 0.875rem; }
+  .moru-product-card:hover .moru-product-card__fav { opacity: 1; transform: translateY(0); }
+  .moru-product-card__title { display: block; margin-block-start: var(--space-sm); font-size: var(--font-size-xs); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  a.moru-product-card__link:hover .moru-product-card__title { color: var(--color-accent-terracotta); }
+  .moru-product-card__swatches { display: flex; align-items: center; gap: 6px; min-height: 1rem; margin-block-start: var(--space-xs); }
+  .moru-product-card__swatch { position: relative; display: block; width: 14px; height: 14px; padding: 0; overflow: hidden; border: 1px solid rgb(0 0 0 / 0.15); border-radius: 50%; background-color: var(--swatch-color, var(--color-bg-alt)); cursor: pointer; transition: box-shadow 200ms ease; }
+  .moru-product-card__swatch img { width: 100%; height: 100%; object-fit: cover; }
+  .moru-product-card__swatch.is-active { box-shadow: 0 0 0 1px var(--color-bg), 0 0 0 2px var(--color-text); }
+  .moru-product-card__swatch--ph1 { background-color: var(--color-bg-alt); }
+  .moru-product-card__swatch--ph2 { background-color: var(--color-wood); }
+  .moru-product-card__swatch--ph3 { background-color: var(--color-accent-olive); }
+  .moru-product-card__subtitle { margin: var(--space-2xs) 0 0; font-size: var(--font-size-xs); color: var(--color-muted); }
+  .moru-product-card__price { margin: var(--space-xs) 0 0; font-size: var(--font-size-xs); font-weight: 500; }
+  .moru-product-card__price--sale { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; }
+  .moru-product-card__price-regular { color: var(--color-muted); font-size: 0.75rem; font-weight: 400; text-decoration-thickness: 1px; text-decoration-color: currentcolor; }
+  .moru-product-card__price-current { color: var(--color-sale, #d65832); font-size: 0.95rem; font-weight: 700; }
 {% endstylesheet %}
 
 {% javascript %}

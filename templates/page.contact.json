@@ -1,0 +1,32 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "header": {
+      "type": "moru-page-header",
+      "settings": {
+        "show_breadcrumbs": true,
+        "eyebrow": "CONTACT",
+        "heading": "お問い合わせ",
+        "lead": "<p>ご注文・商品・返品・30日間安心保証・特定商取引法に基づく事業者情報の開示請求はこちらからご連絡ください。</p>",
+        "alignment": "left",
+        "background": "none"
+      }
+    },
+    "main": {
+      "type": "moru-page-contact",
+      "settings": {}
+    }
+  },
+  "order": [
+    "header",
+    "main"
+  ]
+}

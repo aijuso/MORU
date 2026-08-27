@@ -1,288 +1,398 @@
-<div
-  class="moru-categories moru-categories--{{ section.settings.shape }}{% if section.settings.background == 'alt' %} moru-categories--boxed{% endif %}"
-  style="--moru-cat-columns: {{ section.settings.columns }};"
->
-  <div class="moru-section-header">
-    <h2>{{ section.settings.title }}</h2>
-    {% if section.settings.view_all_link != blank %}
-      <a class="moru-section-header__link" href="{{ section.settings.view_all_link }}">{{ section.settings.view_all_label }} &rarr;</a>
-    {% endif %}
-  </div>
+<moru-category-tabs class="moru-category-tabs" data-section-id="{{ section.id }}">
+  <div class="moru-category-tabs__inner">
+    <div class="moru-section-header">
+      <h2>{{ section.settings.title }}</h2>
+    </div>
 
-  <ul class="moru-categories__circles" role="list">
-    {% for block in section.blocks %}
-      <li class="moru-categories__circle-item" {{ block.shopify_attributes }}>
-        {% liquid
-          assign circle_url = '#'
-          if block.settings.collection != blank
-            assign circle_url = block.settings.collection.url
+    <div class="moru-category-tabs__tablist-wrap">
+      <div class="moru-category-tabs__tablist" role="tablist" aria-label="{{ section.settings.title | escape }}">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign category = block.settings.collection
+            assign category_label = block.settings.label
+            if category_label == blank and category != blank
+              assign category_label = category.title
+            endif
+            assign tab_id = 'moru-category-tab-' | append: section.id | append: '-' | append: block.id
+            assign panel_id = 'moru-category-panel-' | append: section.id | append: '-' | append: block.id
+          -%}
+          <button
+            id="{{ tab_id }}"
+            class="moru-category-tabs__tab{% if forloop.first %} is-active{% endif %}"
+            type="button"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="{{ panel_id }}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+            data-moru-category-tab
+            data-target="{{ panel_id }}"
+            {{ block.shopify_attributes }}
+          >
+            {{ category_label | default: 'カテゴリー' }}
+          </button>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="moru-category-tabs__panels">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign category = block.settings.collection
+          assign category_label = block.settings.label
+          if category_label == blank and category != blank
+            assign category_label = category.title
           endif
-        %}
-        <a href="{{ circle_url }}" class="moru-categories__circle-link">
-          <span class="moru-categories__circle">
-            <span class="moru-categories__circle-inner">
-              {% if block.settings.image %}
-                {{ block.settings.image | image_url: width: 240, height: 240, crop: 'center' | image_tag: loading: 'lazy' }}
-              {% else %}
-                {{ 'collection-1' | placeholder_svg_tag }}
-              {% endif %}
-            </span>
-          </span>
-          <span class="moru-categories__label">
-            {%- if block.settings.label != blank -%}
-              {{ block.settings.label }}
+          assign tab_id = 'moru-category-tab-' | append: section.id | append: '-' | append: block.id
+          assign panel_id = 'moru-category-panel-' | append: section.id | append: '-' | append: block.id
+        -%}
+        <div
+          id="{{ panel_id }}"
+          class="moru-category-tabs__panel"
+          role="tabpanel"
+          aria-labelledby="{{ tab_id }}"
+          data-moru-category-panel
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          <ul
+            class="moru-category-tabs__grid"
+            role="list"
+            style="--moru-category-columns: {{ section.settings.columns }};"
+          >
+            {%- if category != blank -%}
+              {%- for product in category.products limit: section.settings.products_to_show -%}
+                <li class="moru-category-tabs__product">
+                  {%- render 'moru-product-card', product: product, show_subtitle: false -%}
+                </li>
+              {%- else -%}
+                <li class="moru-category-tabs__empty">現在表示できる商品はありません。</li>
+              {%- endfor -%}
             {%- else -%}
-              {{ 'moru.placeholder.category' | t }}
+              <li class="moru-category-tabs__empty">コレクションを選択してください。</li>
             {%- endif -%}
-          </span>
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
-</div>
+          </ul>
+
+          {%- if section.settings.show_view_all and category != blank -%}
+            <div class="moru-category-tabs__footer">
+              <a class="moru-category-tabs__view-all" href="{{ category.url }}">
+                {{ category_label }}を{{ section.settings.view_all_label }}
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M10 1L15 6M15 6L10 11M15 6H1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</moru-category-tabs>
 
 {% stylesheet %}
-  .moru-categories {
-    padding-block: var(--space-2xl) var(--space-xl);
-  }
-
-  .moru-categories__circles {
-    display: grid;
-    grid-template-columns: repeat(var(--moru-cat-columns, 8), minmax(0, 1fr));
-    gap: var(--space-md);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    text-align: center;
-  }
-
-  .moru-categories__circle-item {
-    display: flex;
-    justify-content: center;
-  }
-
-  .moru-categories__circle-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
-    color: var(--color-text);
-    text-decoration: none;
-    font-size: var(--font-size-sm);
-  }
-
-  .moru-categories__circle {
+  .moru-category-tabs {
     display: block;
-    width: 6.875rem;
-    height: 6.875rem;
-    padding: var(--space-2xs);
-    border-radius: 50%;
-    border: 1px solid var(--color-border);
-    background-color: var(--color-bg-alt);
-    transition: transform 300ms ease, border-color 300ms ease;
+    padding-block: var(--space-2xl);
   }
 
-  .moru-categories__circle-inner {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-
-  .moru-categories__circle-inner img,
-  .moru-categories__circle-inner svg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 400ms ease;
-  }
-
-  .moru-categories__circle-link:hover .moru-categories__circle {
-    transform: translateY(-4px);
-    border-color: var(--color-muted);
-  }
-
-  .moru-categories__circle-link:hover .moru-categories__circle-inner img {
-    transform: scale(1.08);
-  }
-
-  /*
-   * 参考デザインは、クリーム地の枠の中に白い正方形カードが並ぶ形。
-   * 丸("circle")も設定から選べるよう、どちらも同じマークアップで出し分ける。
-   */
-  .moru-categories--boxed {
+  .moru-category-tabs__inner {
     padding: var(--space-lg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
-    background-color: var(--color-bg-alt);
+    background: var(--color-bg-alt);
   }
 
-  .moru-categories--square .moru-categories__circle-item {
-    display: block;
+  .moru-category-tabs__tablist-wrap {
+    margin-block-end: var(--space-lg);
+    overflow: hidden;
   }
 
-  .moru-categories--square .moru-categories__circle-link {
+  .moru-category-tabs__tablist {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    min-width: max-content;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .moru-category-tabs__tab {
+    position: relative;
+    appearance: none;
+    padding: 0 0 var(--space-sm);
+    border: 0;
+    background: transparent;
+    color: var(--color-muted);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 180ms ease;
+  }
+
+  .moru-category-tabs__tab::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: var(--color-accent-blue);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 180ms ease;
+  }
+
+  .moru-category-tabs__tab:hover {
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-category-tabs__tab.is-active {
+    color: var(--color-text);
+  }
+
+  .moru-category-tabs__tab.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .moru-category-tabs__tab:focus-visible {
+    outline: 2px solid var(--color-accent-blue);
+    outline-offset: 4px;
+  }
+
+  .moru-category-tabs__panel[hidden] {
+    display: none;
+  }
+
+  .moru-category-tabs__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--moru-category-columns, 4), minmax(0, 1fr));
+    gap: var(--space-lg) var(--space-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moru-category-tabs__product {
+    min-width: 0;
+  }
+
+  .moru-category-tabs__empty {
+    grid-column: 1 / -1;
+    padding-block: var(--space-xl);
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+    text-align: center;
+  }
+
+  .moru-category-tabs__footer {
+    display: flex;
+    justify-content: center;
+    margin-block-start: var(--space-xl);
+  }
+
+  .moru-category-tabs__view-all {
+    display: inline-flex;
+    align-items: center;
     gap: var(--space-xs);
+    padding-block: var(--space-xs);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    transition: color 180ms ease;
   }
 
-  .moru-categories--square .moru-categories__circle {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1;
-    padding: var(--space-xs);
-    border-radius: var(--radius-card);
-    background-color: var(--color-surface);
+  .moru-category-tabs__view-all:hover {
+    color: var(--color-accent-terracotta);
   }
 
-  .moru-categories--square .moru-categories__circle-inner {
-    border-radius: 0;
-  }
-
-  .moru-categories--square .moru-categories__circle-inner img,
-  .moru-categories--square .moru-categories__circle-inner svg {
-    object-fit: contain;
-  }
-
-  .moru-categories--square .moru-categories__label {
-    font-size: var(--font-size-xs);
-  }
-
-  @media (max-width: 1024px) {
-    .moru-categories__circles {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+  @media (max-width: 1023px) {
+    .moru-category-tabs__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 749px) {
-    .moru-categories__circles {
-      gap: var(--space-xs);
+    .moru-category-tabs {
+      padding-block: var(--space-xl);
     }
 
-    .moru-categories--circle .moru-categories__circle {
-      width: 4.25rem;
-      height: 4.25rem;
-    }
-
-    .moru-categories--boxed {
+    .moru-category-tabs__inner {
       padding: var(--space-md);
+    }
+
+    .moru-category-tabs__tablist-wrap {
+      margin-inline: calc(var(--space-md) * -1);
+      padding-inline: var(--space-md);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .moru-category-tabs__tablist-wrap::-webkit-scrollbar {
+      display: none;
+    }
+
+    .moru-category-tabs__tablist {
+      gap: var(--space-md);
+    }
+
+    .moru-category-tabs__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md) var(--space-xs);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .moru-categories__circle,
-    .moru-categories__circle-inner img {
+    .moru-category-tabs__tab,
+    .moru-category-tabs__tab::after,
+    .moru-category-tabs__view-all {
       transition: none;
-    }
-
-    .moru-categories__circle-link:hover .moru-categories__circle {
-      transform: none;
-    }
-
-    .moru-categories__circle-link:hover .moru-categories__circle-inner img {
-      transform: none;
     }
   }
 {% endstylesheet %}
 
+{% javascript %}
+  class MoruCategoryTabs extends HTMLElement {
+    connectedCallback() {
+      this.tabs = Array.from(this.querySelectorAll('[data-moru-category-tab]'));
+      this.panels = Array.from(this.querySelectorAll('[data-moru-category-panel]'));
+
+      this.onClick = this.onClick || this.handleClick.bind(this);
+      this.onKeydown = this.onKeydown || this.handleKeydown.bind(this);
+
+      this.addEventListener('click', this.onClick);
+      this.addEventListener('keydown', this.onKeydown);
+    }
+
+    disconnectedCallback() {
+      if (this.onClick) this.removeEventListener('click', this.onClick);
+      if (this.onKeydown) this.removeEventListener('keydown', this.onKeydown);
+    }
+
+    handleClick(event) {
+      const tab = event.target.closest('[data-moru-category-tab]');
+      if (!tab || !this.contains(tab)) return;
+      this.activate(tab, false);
+    }
+
+    handleKeydown(event) {
+      const tab = event.target.closest('[data-moru-category-tab]');
+      if (!tab || !this.contains(tab)) return;
+
+      const index = this.tabs.indexOf(tab);
+      if (index < 0) return;
+
+      let nextIndex = null;
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % this.tabs.length;
+      if (event.key === 'ArrowLeft') nextIndex = (index - 1 + this.tabs.length) % this.tabs.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = this.tabs.length - 1;
+      if (nextIndex === null) return;
+
+      event.preventDefault();
+      this.activate(this.tabs[nextIndex], true);
+    }
+
+    activate(activeTab, shouldFocus) {
+      const targetId = activeTab.dataset.target;
+
+      this.tabs.forEach((tab) => {
+        const isActive = tab === activeTab;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        tab.tabIndex = isActive ? 0 : -1;
+      });
+
+      this.panels.forEach((panel) => {
+        panel.hidden = panel.id !== targetId;
+      });
+
+      if (shouldFocus) activeTab.focus();
+    }
+  }
+
+  if (!customElements.get('moru-category-tabs')) {
+    customElements.define('moru-category-tabs', MoruCategoryTabs);
+  }
+{% endjavascript %}
+
 {% schema %}
 {
-  "name": "t:moru.category_browser.name",
+  "name": "カテゴリー切替グリッド",
+  "tag": "section",
   "settings": [
     {
       "type": "text",
       "id": "title",
-      "label": "t:moru.common.title",
-      "default": "t:moru.category_browser.title_default"
-    },
-    {
-      "type": "select",
-      "id": "shape",
-      "label": "t:moru.category_browser.shape_label",
-      "options": [
-        { "value": "square", "label": "t:moru.category_browser.shape_square" },
-        { "value": "circle", "label": "t:moru.category_browser.shape_circle" }
-      ],
-      "default": "square"
+      "label": "見出し",
+      "default": "カテゴリーから探す"
     },
     {
       "type": "range",
-      "id": "columns",
+      "id": "products_to_show",
       "min": 4,
-      "max": 8,
+      "max": 12,
       "step": 1,
-      "label": "t:moru.category_browser.columns_label",
+      "label": "カテゴリーごとの表示商品数",
       "default": 8
     },
     {
       "type": "select",
-      "id": "background",
-      "label": "t:moru.common.background_label",
+      "id": "columns",
+      "label": "PCの商品列数",
       "options": [
-        { "value": "alt", "label": "t:moru.usp.bg_alt" },
-        { "value": "none", "label": "t:moru.usp.bg_none" }
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
       ],
-      "default": "alt"
+      "default": "4"
     },
     {
-      "type": "url",
-      "id": "view_all_link",
-      "label": "t:moru.category_browser.view_all_link_label"
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "「すべて見る」を表示",
+      "default": true
     },
     {
       "type": "text",
       "id": "view_all_label",
-      "label": "t:moru.common.view_all_label",
-      "default": "t:moru.common.view_all_default"
+      "label": "「すべて見る」文言",
+      "default": "すべて見る"
     }
   ],
   "blocks": [
     {
       "type": "category",
-      "name": "t:moru.category_browser.block_category_name",
-      "limit": 8,
+      "name": "カテゴリー",
       "settings": [
         {
           "type": "text",
           "id": "label",
-          "label": "t:moru.category_browser.block_label_label"
-        },
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "t:moru.category_browser.block_image_label"
+          "label": "表示名"
         },
         {
           "type": "collection",
           "id": "collection",
-          "label": "t:moru.common.collection"
+          "label": "コレクション"
         }
       ]
     }
   ],
-  "max_blocks": 8,
+  "max_blocks": 7,
   "disabled_on": {
     "groups": ["header", "footer"]
   },
   "presets": [
     {
-      "name": "t:moru.category_browser.name",
+      "name": "カテゴリー切替グリッド",
       "blocks": [
-        {
-          "type": "category"
-        },
-        {
-          "type": "category"
-        },
-        {
-          "type": "category"
-        },
-        {
-          "type": "category"
-        },
-        {
-          "type": "category"
-        }
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" }
       ]
     }
   ]

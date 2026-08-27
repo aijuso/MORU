@@ -19,7 +19,7 @@
             "title": "猫がくつろぐと、\n部屋が完成する。",
             "subtitle": "やわらかな時間が流れる、\n人とペットの心地よい暮らし。",
             "button_label": "フラワーラウンジを見る",
-            "button_link": ""
+            "button_link": "/products/moru-flower-lounge"
           }
         },
         "slide_2": {
@@ -29,7 +29,7 @@
             "title": "ペットと暮らす、\n私らしい部屋。",
             "subtitle": "心地よいインテリアで、\n人もペットもくつろげる毎日を。",
             "button_label": "フラワーラウンジを見る",
-            "button_link": ""
+            "button_link": "/products/moru-flower-lounge"
           }
         },
         "slide_3": {
@@ -39,7 +39,7 @@
             "title": "一緒に暮らすを、\nもっと美しく。",
             "subtitle": "ペットも人も、心地よく整う毎日へ",
             "button_label": "フラワーラウンジを見る",
-            "button_link": ""
+            "button_link": "/products/moru-flower-lounge"
           }
         },
         "slide_mCpJ9i": {
@@ -49,7 +49,7 @@
             "title": "猫が寝転ぶと、\n部屋が完成する。",
             "subtitle": "やわらかい時間が流れる、\n私の部屋。",
             "button_label": "フラワーラウンジを見る",
-            "button_link": ""
+            "button_link": "/products/moru-flower-lounge"
           }
         }
       },
@@ -70,7 +70,7 @@
           "type": "usp",
           "settings": {
             "icon": "truck",
-            "heading": "税込15,000円以上で送料無料",
+            "heading": "税込7,700円以上で送料無料",
             "subheading": "全国一律"
           }
         },
@@ -86,16 +86,16 @@
           "type": "usp",
           "settings": {
             "icon": "shield",
-            "heading": "30日間の返品・交換",
-            "subheading": "届いてから、ゆっくり決められます"
+            "heading": "30日間安心保証",
+            "subheading": "ご満足いただけない場合は返金いたします"
           }
         },
         "usp_4": {
           "type": "usp",
           "settings": {
-            "icon": "paw",
+            "icon": "check",
             "heading": "猫と暮らす目線でセレクト",
-            "subheading": "置く場所と手ざわりを見て選んでいます"
+            "subheading": "人とペットの空間になじむデザインを中心に"
           }
         }
       },
@@ -113,388 +113,92 @@
     "bestsellers": {
       "type": "moru-bestsellers",
       "blocks": {
-        "rank_1": {
-          "type": "rank",
-          "settings": {
-            "product": "moru-flower-lounge"
-          }
-        },
-        "rank_2": {
-          "type": "rank",
-          "settings": {
-            "product": "corduroy-folding-chair"
-          }
-        },
-        "rank_3": {
-          "type": "rank",
-          "settings": {
-            "product": "piping-cushion-cover"
-          }
-        },
-        "rank_4": {
-          "type": "rank",
-          "settings": {
-            "product": "coil-side-table"
-          }
-        },
-        "rank_5": {
-          "type": "rank",
-          "settings": {
-            "product": "ceramic-bookend"
-          }
-        }
+        "rank_1": {"type": "rank", "settings": {"product": "moru-flower-lounge"}},
+        "rank_2": {"type": "rank", "settings": {"product": "corduroy-folding-chair"}},
+        "rank_3": {"type": "rank", "settings": {"product": "piping-cushion"}},
+        "rank_4": {"type": "rank", "settings": {"product": "coil-side-table"}},
+        "rank_5": {"type": "rank", "settings": {"product": "ceramic-bookend"}}
       },
-      "block_order": [
-        "rank_1",
-        "rank_2",
-        "rank_3",
-        "rank_4",
-        "rank_5"
-      ],
-      "settings": {
-        "title": "ベストセラー",
-        "collection": "interior",
-        "view_all_label": "すべて見る",
-        "show_subtitle": false
-      }
+      "block_order": ["rank_1", "rank_2", "rank_3", "rank_4", "rank_5"],
+      "settings": {"title": "ベストセラー", "collection": "new-arrivals", "view_all_label": "すべて見る", "show_subtitle": false}
     },
     "new_arrivals": {
       "type": "moru-product-grid",
-      "settings": {
-        "title": "新着アイテム",
-        "collection": "new-arrivals",
-        "products_to_show": 8,
-        "columns": "4",
-        "show_view_all": true,
-        "view_all_label": "すべて見る",
-        "show_new_badge": true,
-        "show_subtitle": false,
-        "bottom_button_label": "",
-        "new_within_days": 60
-      }
+      "settings": {"title": "新着アイテム", "collection": "new-arrivals", "products_to_show": 8, "columns": "4", "show_view_all": true, "view_all_label": "すべて見る", "show_new_badge": true, "show_subtitle": false, "bottom_button_label": ""}
     },
     "shop_the_room": {
       "type": "moru-shop-the-room",
       "blocks": {
-        "spot_1": {
-          "type": "product",
-          "settings": {
-            "product": "moko-lounge-chair",
-            "top": 30,
-            "left": 25
-          }
-        },
-        "spot_2": {
-          "type": "product",
-          "settings": {
-            "product": "moru-flower-lounge",
-            "top": 24,
-            "left": 48
-          }
-        },
-        "spot_3": {
-          "type": "product",
-          "disabled": true,
-          "settings": {
-            "product": "moru-flower-lounge",
-            "top": 70,
-            "left": 80
-          }
-        },
-        "spot_4": {
-          "type": "product",
-          "disabled": true,
-          "settings": {
-            "product": "moru-flower-lounge",
-            "top": 40,
-            "left": 70
-          }
-        }
+        "spot_1": {"type": "product", "settings": {"product": "moko-lounge-chair", "top": 30, "left": 25}},
+        "spot_2": {"type": "product", "settings": {"product": "moru-flower-lounge", "top": 24, "left": 48}},
+        "spot_3": {"type": "product", "disabled": true, "settings": {"product": "moru-flower-lounge", "top": 70, "left": 80}},
+        "spot_4": {"type": "product", "disabled": true, "settings": {"product": "moru-flower-lounge", "top": 40, "left": 70}}
       },
-      "block_order": [
-        "spot_1",
-        "spot_2",
-        "spot_3",
-        "spot_4"
-      ],
-      "settings": {
-        "title": "部屋で見る",
-        "image": "shopify://shop_images/bdc40adbce99a42b9c2943ebbb8455f1.png",
-        "room_label": "MORU LIVING ROOM",
-        "description": "やわらかな光と丸みのある家具が調和する、リビングのコーディネート。",
-        "button_label": "この部屋のアイテムをすべて見る",
-        "button_link": ""
-      }
+      "block_order": ["spot_1", "spot_2", "spot_3", "spot_4"],
+      "settings": {"title": "部屋で見る", "image": "shopify://shop_images/bdc40adbce99a42b9c2943ebbb8455f1.png", "room_label": "MORU LIVING ROOM", "description": "やわらかな光と丸みのある家具が調和する、リビングのコーディネート。", "button_label": "インテリアをすべて見る", "button_link": "/collections/interior"}
     },
     "cta_banners_1": {
       "type": "moru-cta-banners",
       "blocks": {
-        "banner_1": {
-          "type": "banner",
-          "settings": {
-            "show_banner": true,
-            "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_13_55_1.png",
-            "link": "",
-            "image_alt": ""
-          }
-        },
-        "banner_2": {
-          "type": "banner",
-          "settings": {
-            "show_banner": true,
-            "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_13_56_2.png",
-            "link": "",
-            "image_alt": ""
-          }
-        }
+        "banner_1": {"type": "banner", "settings": {"show_banner": true, "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_13_55_1.png", "link": "/products/cloud-side-table", "image_alt": "クラウド サイドテーブルとマッシュルーム コードレステーブルランプのPAIRを見る"}},
+        "banner_2": {"type": "banner", "settings": {"show_banner": false, "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_13_56_2.png", "link": "/collections/sale#promo", "image_alt": "セール対象アイテムを見る"}}
       },
-      "block_order": [
-        "banner_1",
-        "banner_2"
-      ],
-      "settings": {
-        "columns": "2",
-        "width": "page",
-        "spacing": "narrow"
-      }
+      "block_order": ["banner_1", "banner_2"],
+      "settings": {"columns": "2", "width": "page", "spacing": "narrow"}
+    },
+    "promo_hub": {
+      "type": "moru-promo-hub",
+      "settings": {"sale_rate": 10, "pair_rate": 15, "preview_mode": false}
     },
     "category_browser": {
       "type": "moru-category-browser",
       "blocks": {
-        "cat_1": {
-          "type": "category",
-          "settings": {
-            "label": "ペット",
-            "collection": "pet"
-          }
-        },
-        "cat_2": {
-          "type": "category",
-          "settings": {
-            "label": "チェア・スツール",
-            "collection": "chair-stool"
-          }
-        },
-        "cat_3": {
-          "type": "category",
-          "settings": {
-            "label": "テーブル",
-            "collection": "table"
-          }
-        },
-        "cat_4": {
-          "type": "category",
-          "settings": {
-            "label": "収納",
-            "collection": "storage"
-          }
-        },
-        "cat_5": {
-          "type": "category",
-          "settings": {
-            "label": "照明",
-            "collection": "lighting"
-          }
-        },
-        "cat_6": {
-          "type": "category",
-          "settings": {
-            "label": "ファブリック",
-            "collection": "fabric"
-          }
-        },
-        "cat_7": {
-          "type": "category",
-          "settings": {
-            "label": "雑貨",
-            "collection": "goods"
-          }
-        }
+        "cat_pet": {"type": "category", "settings": {"label": "ペット", "collection": "pet"}},
+        "cat_chair": {"type": "category", "settings": {"label": "チェア・スツール", "collection": "chair-stool"}},
+        "cat_table": {"type": "category", "settings": {"label": "テーブル", "collection": "table"}},
+        "cat_lighting": {"type": "category", "settings": {"label": "照明", "collection": "lighting"}},
+        "cat_fabric": {"type": "category", "settings": {"label": "ファブリック", "collection": "fabric"}},
+        "cat_goods": {"type": "category", "settings": {"label": "雑貨", "collection": "goods"}},
+        "cat_storage": {"type": "category", "settings": {"label": "収納", "collection": "storage"}}
       },
-      "block_order": [
-        "cat_1",
-        "cat_2",
-        "cat_3",
-        "cat_4",
-        "cat_5",
-        "cat_6",
-        "cat_7"
-      ],
-      "settings": {
-        "title": "カテゴリーから探す",
-        "shape": "square",
-        "columns": 7,
-        "background": "alt",
-        "view_all_link": "",
-        "view_all_label": "すべて見る"
-      }
-    },
-    "category_products": {
-      "type": "moru-product-grid",
-      "settings": {
-        "title": "ペットのくらし",
-        "collection": "pet",
-        "products_to_show": 8,
-        "columns": "4",
-        "show_view_all": false,
-        "view_all_label": "すべて見る",
-        "show_new_badge": false,
-        "show_subtitle": true,
-        "bottom_button_label": "すべて見る"
-      }
+      "block_order": ["cat_pet", "cat_chair", "cat_table", "cat_lighting", "cat_fabric", "cat_goods", "cat_storage"],
+      "settings": {"title": "カテゴリーから探す", "products_to_show": 8, "columns": "4", "show_view_all": true, "view_all_label": "すべて見る"}
     },
     "cta_banners_2": {
       "type": "moru-cta-banners",
       "blocks": {
-        "banner_1": {
-          "type": "banner",
-          "settings": {
-            "show_banner": true,
-            "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_33_05.png",
-            "link": "",
-            "image_alt": ""
-          }
-        },
-        "banner_2": {
-          "type": "banner",
-          "settings": {
-            "show_banner": true,
-            "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_32_55.png",
-            "link": "",
-            "image_alt": ""
-          }
-        }
+        "banner_1": {"type": "banner", "settings": {"show_banner": true, "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_33_05.png", "link": "", "image_alt": ""}},
+        "banner_2": {"type": "banner", "settings": {"show_banner": true, "image": "shopify://shop_images/ChatGPT_Image_2026_8_23_18_32_55.png", "link": "", "image_alt": ""}}
       },
-      "block_order": [
-        "banner_1",
-        "banner_2"
-      ],
-      "settings": {
-        "columns": "2",
-        "width": "page",
-        "spacing": "narrow"
-      }
+      "block_order": ["banner_1", "banner_2"],
+      "disabled": true,
+      "settings": {"columns": "2", "width": "page", "spacing": "narrow"}
     },
     "community_journal": {
       "type": "moru-community-journal",
       "blocks": {
-        "photo_1": {
-          "type": "photo",
-          "settings": {
-            "image_alt": "",
-            "link": ""
-          }
-        },
-        "photo_2": {
-          "type": "photo",
-          "settings": {
-            "image_alt": "",
-            "link": ""
-          }
-        },
-        "photo_3": {
-          "type": "photo",
-          "settings": {
-            "image_alt": "",
-            "link": ""
-          }
-        },
-        "photo_4": {
-          "type": "photo",
-          "settings": {
-            "image_alt": "",
-            "link": ""
-          }
-        }
+        "photo_1": {"type": "photo", "settings": {"image_alt": "", "link": ""}},
+        "photo_2": {"type": "photo", "settings": {"image_alt": "", "link": ""}},
+        "photo_3": {"type": "photo", "settings": {"image_alt": "", "link": ""}},
+        "photo_4": {"type": "photo", "settings": {"image_alt": "", "link": ""}}
       },
-      "block_order": [
-        "photo_1",
-        "photo_2",
-        "photo_3",
-        "photo_4"
-      ],
+      "block_order": ["photo_1", "photo_2", "photo_3", "photo_4"],
       "disabled": true,
-      "settings": {
-        "social_title": "#MORUのある暮らし",
-        "social_callout": "＼ みんなの投稿をもっと見る ／",
-        "social_handle": "@moru_petlife をフォロー",
-        "social_link": "",
-        "journal_title": "読みもの / スタイリングガイド",
-        "blog": "",
-        "view_all_label": "すべて見る"
-      }
+      "settings": {"social_title": "#MORUのある暮らし", "social_callout": "＼ みんなの投稿をもっと見る ／", "social_handle": "@moru_petlife をフォロー", "social_link": "", "journal_title": "読みもの / スタイリングガイド", "blog": "", "view_all_label": "すべて見る"}
     },
     "weekly_picks": {
       "type": "moru-weekly-picks",
       "blocks": {
-        "pick_1": {
-          "type": "pick",
-          "settings": {
-            "product": "",
-            "link": "",
-            "show_caption": false
-          }
-        },
-        "pick_2": {
-          "type": "pick",
-          "settings": {
-            "product": "",
-            "link": "",
-            "show_caption": false
-          }
-        },
-        "pick_3": {
-          "type": "pick",
-          "settings": {
-            "product": "",
-            "link": "",
-            "show_caption": false
-          }
-        },
-        "pick_4": {
-          "type": "pick",
-          "settings": {
-            "product": "",
-            "link": "",
-            "show_caption": false
-          }
-        },
-        "pick_5": {
-          "type": "pick",
-          "settings": {
-            "product": "",
-            "link": "",
-            "show_caption": false
-          }
-        }
+        "pick_1": {"type": "pick", "settings": {"product": "", "link": "", "show_caption": false}},
+        "pick_2": {"type": "pick", "settings": {"product": "", "link": "", "show_caption": false}},
+        "pick_3": {"type": "pick", "settings": {"product": "", "link": "", "show_caption": false}},
+        "pick_4": {"type": "pick", "settings": {"product": "", "link": "", "show_caption": false}},
+        "pick_5": {"type": "pick", "settings": {"product": "", "link": "", "show_caption": false}}
       },
-      "block_order": [
-        "pick_1",
-        "pick_2",
-        "pick_3",
-        "pick_4",
-        "pick_5"
-      ],
+      "block_order": ["pick_1", "pick_2", "pick_3", "pick_4", "pick_5"],
       "disabled": true,
-      "settings": {
-        "title": "今週のおすすめ",
-        "columns": 5,
-        "view_all_link": "",
-        "view_all_label": "すべて見る"
-      }
+      "settings": {"title": "今週のおすすめ", "columns": 5, "view_all_link": "", "view_all_label": "すべて見る"}
     }
   },
-  "order": [
-    "hero",
-    "usp_bar",
-    "bestsellers",
-    "new_arrivals",
-    "shop_the_room",
-    "cta_banners_1",
-    "category_browser",
-    "category_products",
-    "cta_banners_2",
-    "community_journal",
-    "weekly_picks"
-  ]
+  "order": ["hero", "usp_bar", "bestsellers", "new_arrivals", "shop_the_room", "cta_banners_1", "promo_hub", "category_browser", "cta_banners_2", "community_journal", "weekly_picks"]
 }

@@ -28,6 +28,7 @@
     {% # Load and preload the critical CSS and base design tokens %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'moru-frontend-polish.css' | asset_url | stylesheet_tag }}
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
@@ -41,5 +42,6 @@
     {{ content_for_layout }}
 
     {% sections 'footer-group' %}
+    <script src="{{ 'moru-frontend-polish.js' | asset_url }}" defer></script>
   </body>
 </html>

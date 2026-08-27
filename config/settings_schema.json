@@ -223,7 +223,7 @@
         "id": "cart_hold_enabled",
         "label": "t:labels.cart_hold_enabled",
         "info": "t:info.cart_hold_enabled",
-        "default": true
+        "default": false
       }
     ]
   }

@@ -1,0 +1,174 @@
+<div class="moru-page-contact">
+  {% form 'contact', class: 'moru-page-contact__form' %}
+    {% if form.posted_successfully? %}
+      <div class="moru-page-contact__success" role="status">
+        <h2>お問い合わせを受け付けました</h2>
+        <p>内容を確認のうえ、順番にご返信します。</p>
+      </div>
+    {% else %}
+      {% if form.errors %}
+        <div class="moru-page-contact__errors" role="alert">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <div class="moru-page-contact__intro">
+        <p>ご注文に関するお問い合わせは、注文番号をご記載ください。特定商取引法に基づく事業者情報の開示をご希望の場合は、本文に「特定商取引法に基づく表記の開示希望」とご記載ください。</p>
+      </div>
+
+      <div class="moru-page-contact__grid">
+        <label class="moru-page-contact__field">
+          <span>お名前</span>
+          <input type="text" name="contact[name]" value="{{ form.name | escape }}" autocomplete="name">
+        </label>
+        <label class="moru-page-contact__field">
+          <span>メールアドレス <em>必須</em></span>
+          <input type="email" name="contact[email]" value="{{ form.email | escape }}" autocomplete="email" autocorrect="off" autocapitalize="off" required>
+        </label>
+      </div>
+
+      <label class="moru-page-contact__field">
+        <span>電話番号</span>
+        <input type="tel" name="contact[phone]" value="{{ form.phone | escape }}" autocomplete="tel">
+      </label>
+
+      <label class="moru-page-contact__field">
+        <span>お問い合わせ内容 <em>必須</em></span>
+        <textarea name="contact[body]" rows="8" required>{{ form.body | escape }}</textarea>
+      </label>
+
+      <p class="moru-page-contact__privacy">
+        送信いただいた情報は、お問い合わせ対応のために利用します。詳しくは<a href="/pages/privacy">プライバシーポリシー</a>をご確認ください。
+      </p>
+
+      <button type="submit" class="moru-page-contact__submit">送信する</button>
+    {% endif %}
+  {% endform %}
+</div>
+
+{% stylesheet %}
+  .moru-page-contact {
+    max-width: 52rem;
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .moru-page-contact__form {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .moru-page-contact__intro,
+  .moru-page-contact__success,
+  .moru-page-contact__errors {
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-bg-alt);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-body);
+  }
+
+  .moru-page-contact__intro p,
+  .moru-page-contact__success p {
+    margin: 0;
+  }
+
+  .moru-page-contact__success h2 {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-lg);
+  }
+
+  .moru-page-contact__errors {
+    color: var(--color-accent-terracotta);
+  }
+
+  .moru-page-contact__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+
+  .moru-page-contact__field {
+    display: grid;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+  }
+
+  .moru-page-contact__field em {
+    margin-inline-start: .35em;
+    color: var(--color-accent-terracotta);
+    font-size: var(--font-size-xs);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .moru-page-contact__field input,
+  .moru-page-contact__field textarea {
+    width: 100%;
+    padding: .8rem .9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font: inherit;
+    line-height: 1.6;
+  }
+
+  .moru-page-contact__field input:focus,
+  .moru-page-contact__field textarea:focus {
+    outline: 2px solid color-mix(in srgb, var(--color-accent-blue) 30%, transparent);
+    outline-offset: 1px;
+    border-color: var(--color-accent-blue);
+  }
+
+  .moru-page-contact__privacy {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    line-height: 1.8;
+    color: var(--color-muted);
+  }
+
+  .moru-page-contact__submit {
+    width: fit-content;
+    min-width: 9rem;
+    padding: .8rem 1.4rem;
+    border: 0;
+    border-radius: 4px;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .moru-page-contact__submit:hover {
+    opacity: .85;
+  }
+
+  @media (max-width: 640px) {
+    .moru-page-contact__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .moru-page-contact__submit {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "お問い合わせフォーム",
+  "settings": [],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "presets": [
+    {
+      "name": "お問い合わせフォーム"
+    }
+  ]
+}
+{% endschema %}

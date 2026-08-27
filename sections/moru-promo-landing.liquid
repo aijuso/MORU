@@ -1,0 +1,36 @@
+{% liquid
+  assign show_sale_landing = false
+  if collection.handle == 'sale' and collection.products_count > 0
+    assign show_sale_landing = true
+  endif
+%}
+
+{% if show_sale_landing %}
+  <section id="promo" class="moru-promo-landing" data-promo-mode="sale">
+    <div class="moru-promo-landing__inner">
+      <p class="moru-promo-landing__eyebrow moru-promo-landing__eyebrow--sale">SEASONAL SALE</p>
+      <h2 class="moru-promo-landing__title">対象アイテム 10% OFF</h2>
+      <p class="moru-promo-landing__lead">対象商品はチェックアウトで10% OFFが自動適用されます。ほかの割引条件と重なる場合、同じ1点に割引は重複せず、対象数量ごとによりお得な割引が適用されます。</p>
+      <div class="moru-promo-landing__meta" aria-label="セールについて">
+        <span>対象商品のみ</span>
+        <span>10% OFF</span>
+        <span>一部バリエーション対象外</span>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% stylesheet %}
+  .moru-promo-landing{margin:0 0 var(--space-xl);padding:clamp(34px,7vw,72px) clamp(18px,5vw,56px);border-radius:var(--radius-card);background:var(--color-bg-alt)}
+  .moru-promo-landing__inner{max-width:850px;margin:0 auto;text-align:center}
+  .moru-promo-landing__eyebrow{margin:0 0 12px;color:var(--color-accent-blue);font-size:11px;font-weight:700;letter-spacing:.18em}
+  .moru-promo-landing__eyebrow--sale{color:var(--color-accent-terracotta)}
+  .moru-promo-landing__title{margin:0;font-size:clamp(28px,4vw,46px);line-height:1.4}
+  .moru-promo-landing__lead{max-width:680px;margin:18px auto 0;color:var(--color-muted);font-size:var(--font-size-sm);line-height:1.9}
+  .moru-promo-landing__meta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:24px}
+  .moru-promo-landing__meta span{padding:7px 11px;border:1px solid var(--color-border);border-radius:999px;background-color:var(--color-bg);color:var(--color-text);font-size:11px}
+{% endstylesheet %}
+
+{% schema %}
+{"name":"MORU Promo Landing","settings":[],"presets":[{"name":"MORU Promo Landing"}]}
+{% endschema %}

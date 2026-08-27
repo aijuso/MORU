@@ -69,7 +69,7 @@
 
   .moru-room__card {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
     gap: var(--space-lg);
     padding: var(--space-lg);
     background-color: var(--color-bg-alt);
@@ -79,6 +79,8 @@
 
   .moru-room__media {
     position: relative;
+    width: 100%;
+    min-width: 0;
     aspect-ratio: 4 / 3;
     overflow: hidden;
     border-radius: var(--radius-card);
@@ -129,6 +131,10 @@
     }
   }
 
+  .moru-room__panel {
+    min-width: 0;
+  }
+
   .moru-room__label {
     margin: 0;
     font-family: var(--font-heading--family);
@@ -152,7 +158,7 @@
 
   .moru-room__product-link {
     display: grid;
-    grid-template-columns: 3rem 1fr auto;
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-xs);
@@ -193,6 +199,11 @@
       grid-template-columns: 1fr;
       padding: var(--space-md);
     }
+
+    .moru-room__media {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+    }
   }
 {% endstylesheet %}
 
@@ -209,7 +220,8 @@
     {
       "type": "image_picker",
       "id": "image",
-      "label": "t:moru.shop_the_room.image_label"
+      "label": "部屋画像（PC・スマホ共通）",
+      "info": "推奨 4:3 / 1600×1200px以上。PCは左、スマホは上に表示し、どちらも4:3比率を維持します。ホットスポット位置も同じ比率を基準にします。"
     },
     {
       "type": "text",

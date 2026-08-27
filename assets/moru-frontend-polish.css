@@ -1,0 +1,233 @@
+/* MORU launch polish: intentionally scoped to existing MORU components. */
+
+/* HOME — room imagery reads as a room, not a square-ish product crop. */
+.moru-room__media {
+  aspect-ratio: 16 / 9 !important;
+}
+
+/* PDP — textual variant choices keep a stable height and never wrap. */
+.moru-option:not(.moru-option--swatch) .moru-option__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--space-xs);
+}
+
+.moru-option:not(.moru-option--swatch) .moru-option__item {
+  width: 100%;
+  min-width: 0;
+  flex: none;
+}
+
+.moru-option:not(.moru-option--swatch) .moru-option__pill {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* PDP gallery — four real previews + a visual mosaic affordance; never show a literal +N count. */
+.moru-product__thumb-more {
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.moru-product__thumb-more-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card, 2px);
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.moru-product__thumb-more-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--color-border);
+}
+
+.moru-product__thumb-more-cell {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+.moru-product__thumb-more-cell img,
+.moru-product__thumb-more-cell svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.52;
+  filter: grayscale(0.35) saturate(0.72);
+  transform: scale(1.03);
+}
+
+.moru-product__thumb-more-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgb(46 46 46 / 0.08);
+  pointer-events: none;
+}
+
+.moru-product__thumb-more-plus {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.84);
+  color: var(--color-text);
+  box-shadow: 0 1px 7px rgb(0 0 0 / 0.12);
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.moru-product__thumb-more-btn:hover,
+.moru-product__thumb-more-btn:focus-visible {
+  border-color: var(--color-accent-blue);
+  box-shadow: inset 0 0 0 1px var(--color-accent-blue);
+}
+
+.moru-product__thumbs .moru-product__thumb.is-active,
+.moru-product__thumbs .moru-product__thumb[aria-current='true'] {
+  border-color: var(--color-accent-blue) !important;
+  box-shadow: inset 0 0 0 2px var(--color-accent-blue) !important;
+}
+
+/* PDP features — image-first editorial stack on every viewport; never crop source imagery. */
+.moru-features__rows {
+  gap: clamp(2.75rem, 6vw, 5.5rem) !important;
+}
+
+.moru-features__row,
+.moru-features__row--text-only {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: var(--space-lg) !important;
+  width: min(100%, 72rem);
+  margin-inline: auto;
+}
+
+.moru-features__row--flip .moru-features__media {
+  order: 0 !important;
+}
+
+.moru-features__media {
+  width: 100%;
+  aspect-ratio: auto !important;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+.moru-features__media img {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+}
+
+.moru-features__body {
+  width: min(100%, 54rem);
+  margin-inline: auto;
+}
+
+/* Cart drawer — media stays a true square instead of stretching with row content. */
+.moru-cart-drawer-v2__media {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  align-self: start;
+  justify-self: start;
+}
+
+.moru-cart-drawer-v2__media img,
+.moru-cart-drawer-v2__media svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 959px) {
+  /* Cart page — products first, summary / coupon / checkout second. */
+  .moru-cart__items-column { order: 1 !important; }
+  .moru-cart__summary { order: 2 !important; }
+}
+
+@media (max-width: 749px) {
+  /* PDP gallery — four thumbnails fit the phone width and the rail itself swipes horizontally. */
+  .moru-product__thumbs {
+    display: grid !important;
+    grid-template-columns: none !important;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--space-sm) * 3)) / 4);
+    gap: var(--space-sm);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .moru-product__thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .moru-product__thumbs > li {
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Hero — localize the white fade around the actual mobile copy position, instead of whitening a whole half. */
+  .moru-hero__slide[data-mobile-position='top_left'] .moru-hero__overlay { --moru-mobile-fade-x: 18%; --moru-mobile-fade-y: 16%; }
+  .moru-hero__slide[data-mobile-position='top_center'] .moru-hero__overlay { --moru-mobile-fade-x: 50%; --moru-mobile-fade-y: 16%; }
+  .moru-hero__slide[data-mobile-position='top_right'] .moru-hero__overlay { --moru-mobile-fade-x: 82%; --moru-mobile-fade-y: 16%; }
+  .moru-hero__slide[data-mobile-position='middle_left'] .moru-hero__overlay { --moru-mobile-fade-x: 18%; --moru-mobile-fade-y: 50%; }
+  .moru-hero__slide[data-mobile-position='middle_center'] .moru-hero__overlay { --moru-mobile-fade-x: 50%; --moru-mobile-fade-y: 50%; }
+  .moru-hero__slide[data-mobile-position='middle_right'] .moru-hero__overlay { --moru-mobile-fade-x: 82%; --moru-mobile-fade-y: 50%; }
+  .moru-hero__slide[data-mobile-position='bottom_left'] .moru-hero__overlay { --moru-mobile-fade-x: 18%; --moru-mobile-fade-y: 82%; }
+  .moru-hero__slide[data-mobile-position='bottom_center'] .moru-hero__overlay { --moru-mobile-fade-x: 50%; --moru-mobile-fade-y: 82%; }
+  .moru-hero__slide[data-mobile-position='bottom_right'] .moru-hero__overlay { --moru-mobile-fade-x: 82%; --moru-mobile-fade-y: 82%; }
+
+  .moru-hero__slide .moru-hero__overlay {
+    background: radial-gradient(
+      ellipse 95% 58% at var(--moru-mobile-fade-x, 18%) var(--moru-mobile-fade-y, 82%),
+      rgb(255 255 255 / 0.98) 0%,
+      rgb(255 255 255 / 0.82) 28%,
+      rgb(255 255 255 / 0.38) 50%,
+      rgb(255 255 255 / 0.10) 66%,
+      transparent 78%
+    ) !important;
+  }
+}
+
+@media (max-width: 599px) {
+  /* Long variant names get one full-width row each on phones. */
+  .moru-option:not(.moru-option--swatch) .moru-option__list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,35 @@
+{% if shop.policies.size > 0 %}
+  <section class="moru-policy-links full-width" aria-label="各種ポリシー">
+    <div class="moru-policy-links__inner">
+      <h2 class="moru-policy-links__heading">各種ポリシー</h2>
+      <ul class="moru-policy-links__list" role="list">
+        {% for policy in shop.policies %}
+          {% if policy.body != blank %}
+            <li class="moru-policy-links__item">
+              <a class="moru-policy-links__link" href="{{ policy.url }}">{{ policy.title }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endif %}
+
+{% stylesheet %}
+  .moru-policy-links { background:var(--color-bg); color:var(--color-text); border-top:1px solid var(--color-border); }
+  .moru-policy-links__inner { max-width:1360px; margin:0 auto; padding:1.4rem 2.5rem 1.8rem; }
+  .moru-policy-links__heading { margin:0 0 .8rem; color:var(--color-text); font-family:var(--font-body--family); font-size:.72rem; font-weight:600; letter-spacing:.12em; }
+  .moru-policy-links__list { display:flex; flex-wrap:wrap; align-items:center; gap:.65rem 1.25rem; margin:0; padding:0; list-style:none; }
+  .moru-policy-links__item { display:flex; align-items:center; }
+  .moru-policy-links__link { color:var(--color-muted); font-size:.74rem; font-weight:300; line-height:1.5; letter-spacing:.02em; text-decoration:none; transition:color .2s ease; }
+  .moru-policy-links__link:hover { color:var(--color-text); }
+  @media(max-width:768px){.moru-policy-links__inner{padding:1.25rem 1.5rem 1.5rem}.moru-policy-links__list{gap:.55rem 1rem}.moru-policy-links__link{font-size:.72rem}}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "各種ポリシー",
+  "enabled_on": { "groups": ["footer"] },
+  "settings": []
+}
+{% endschema %}
