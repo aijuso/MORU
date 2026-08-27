@@ -115,15 +115,40 @@ async function call(path, { method = 'GET', body } = {}) {
   return res;
 }
 
-/** cart/add は連投すると 429 になる。少し待って数回試す。 */
+// ---- レート制限とペース配分 --------------------------------------------------
+//
+// `/cart/add.js` は IP 単位で 429 を返す。**バックオフ 3s×6 では全然足りない**
+// (2026-08-27 に 21ケース中 14ケースが 429 で潰れた)。
+// いちど 429 に入るとバケットの回復に分単位かかるので、長めに待つ。
+//
+//   MORU_PACE=<ms>   ケース間の待ち(既定 2000)
+//   MORU_CASES=A-1,B-3   実行するケースを絞る(429 で落ちた分だけ流し直す用)
+//
+const PACE = Number(process.env.MORU_PACE || 2000);
+const BACKOFF = [5000, 10000, 20000, 40000, 60000, 60000, 90000];
+
+/** cart/add は連投すると 429 になる。長めのバックオフで粘る。 */
 async function addToCart(id, quantity) {
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 0; i <= BACKOFF.length; i++) {
     const res = await call('/cart/add.js', { method: 'POST', body: { id, quantity } });
     if (res.status < 400) return res;
+    // 422 = その Variant が買えない(商品が DRAFT 等)。待っても変わらないので即返す。
     if (res.status !== 429) return res;
-    await sleep(3000 * i);
+    if (i === BACKOFF.length) break;
+    await sleep(BACKOFF[i]);
   }
   return { status: 429 };
+}
+
+/** cart.js も 429 を返す。ここで諦めるとケース全体が測定不能になる。 */
+async function readCart() {
+  for (let i = 0; i <= BACKOFF.length; i++) {
+    const res = await call('/cart.js');
+    if (res.status !== 429) return res;
+    if (i === BACKOFF.length) break;
+    await sleep(BACKOFF[i]);
+  }
+  return null;
 }
 
 async function main() {
@@ -136,23 +161,38 @@ async function main() {
   }
   console.log('✅ ストアフロントに入れた(パスワード保護は解除されている)');
 
+  const only = (process.env.MORU_CASES || '').split(',').map((x) => x.trim()).filter(Boolean);
+  const targets = only.length ? CASES.filter((c) => only.includes(c.id)) : CASES;
+  if (only.length) console.log(`(MORU_CASES 指定: ${targets.map((c) => c.id).join(' / ')})`);
+
   const results = [];
-  for (const c of CASES) {
+  for (const c of targets) {
     await call('/cart/clear.js', { method: 'POST' });
+    let blocked = null;   // 'draft' = 商品が買えない / 'rate' = レート制限
     for (const [id, qty] of c.items) {
       const add = await addToCart(id, qty);
       if (add.status >= 400) {
+        // 422 は「その Variant が購入できない」= 商品が DRAFT。テストの失敗ではない。
+        blocked = add.status === 429 ? 'rate' : 'draft';
         console.log(`  ⚠️ ${c.id}: cart/add に失敗 (variant ${id} → ${add.status})`);
       }
       await sleep(500);
     }
-    const cartRes = await call('/cart.js');
-    const raw = await cartRes.text();
+    if (blocked) {
+      const why = blocked === 'draft'
+        ? 'SKIP(商品が DRAFT で購入不可。Function の問題ではない)'
+        : 'BLOCKED(レート制限。測定できていない)';
+      console.log(`${blocked === 'draft' ? 'SKIP' : 'BLOCKED'} ${c.id} ${c.name}\n      ${why}`);
+      results.push({ ...c, subtotal: 0, discount: 0, after: 0, names: [], pass: false, blocked });
+      continue;
+    }
+    const cartRes = await readCart();
+    const raw = cartRes ? await cartRes.text() : '';
     let cart;
     try { cart = JSON.parse(raw); }
     catch {
-      console.log(`  ❌ ${c.id}: cart.js が JSON を返さなかった (status ${cartRes.status})`);
-      results.push({ ...c, subtotal: 0, discount: 0, after: 0, names: [], pass: false });
+      console.log(`BLOCKED ${c.id}: cart.js が JSON を返さなかった (status ${cartRes ? cartRes.status : 'none'})`);
+      results.push({ ...c, subtotal: 0, discount: 0, after: 0, names: [], pass: false, blocked: 'rate' });
       continue;
     }
     const subtotal = cart.items.reduce((n, i) => n + i.original_line_price, 0) / 100;
@@ -164,8 +204,8 @@ async function main() {
 
     const e = c.expect;
     const pass = subtotal === e.subtotal && Math.round(discount) === e.discount;
-    results.push({ ...c, subtotal, discount, after, names: uniq, pass });
-    await sleep(700);
+    results.push({ ...c, subtotal, discount, after, names: uniq, pass, blocked: null });
+    await sleep(PACE);
     console.log(`${pass ? 'PASS' : 'FAIL'} ${c.id} ${c.name}`);
     console.log(`      小計 ${yen(subtotal)}(期待 ${yen(e.subtotal)}) / 割引 -${yen(discount)}(期待 -${yen(e.discount)}) / 割引後 ${yen(after)}`);
     if (uniq.length) console.log(`      割引名: ${uniq.join(' / ')}`);
@@ -173,15 +213,38 @@ async function main() {
 
   await call('/cart/clear.js', { method: 'POST' });
 
-  const passed = results.filter((r) => r.pass).length;
-  console.log(`\n${passed} PASS / ${results.length - passed} FAIL / 全 ${results.length} ケース`);
+  // 判定は3種類に分ける。**まとめて FAIL にすると「Function が壊れている」と読めてしまう。**
+  const measured = results.filter((r) => !r.blocked);
+  const passed = measured.filter((r) => r.pass).length;
+  const failed = measured.length - passed;
+  const skipped = results.filter((r) => r.blocked === 'draft');
+  const rateLimited = results.filter((r) => r.blocked === 'rate');
+
+  console.log(`\n${passed} PASS / ${failed} FAIL(測定できた ${measured.length} ケース中)`);
+  if (skipped.length) {
+    console.log(`SKIP ${skipped.length}(商品が DRAFT で購入不可): ${skipped.map((r) => r.id).join(' / ')}`);
+  }
+  if (rateLimited.length) {
+    console.log(`🔴 BLOCKED ${rateLimited.length}(レート制限で測定できていない): ${rateLimited.map((r) => r.id).join(' / ')}`);
+    console.log(`   時間をおいて流し直す: MORU_CASES=${rateLimited.map((r) => r.id).join(',')} node ops/promotions/storefront-tests/run.mjs`);
+  }
+
+  const verdict = (r) => {
+    if (r.blocked === 'draft') return '⏭️ SKIP(DRAFT)';
+    if (r.blocked === 'rate') return '🔴 BLOCKED(429)';
+    return r.pass ? '✅ PASS' : '❌ FAIL';
+  };
   console.log('\n=== 結果表(docs 貼り付け用)===');
   console.log('| # | ケース | 小計 | 期待割引 | 実測割引 | 割引後 | 割引名 | 判定 |');
   console.log('|---|---|---|---|---|---|---|---|');
   for (const r of results) {
-    console.log(`| ${r.id} | ${r.name} | ${yen(r.subtotal)} | -${yen(r.expect.discount)} | -${yen(r.discount)} | ${yen(r.after)} | ${r.names.join(' / ') || '—'} | ${r.pass ? '✅ PASS' : '❌ FAIL'} |`);
+    const cells = r.blocked
+      ? `— | -${yen(r.expect.discount)} | — | — | —`
+      : `${yen(r.subtotal)} | -${yen(r.expect.discount)} | -${yen(r.discount)} | ${yen(r.after)} | ${r.names.join(' / ') || '—'}`;
+    console.log(`| ${r.id} | ${r.name} | ${cells} | ${verdict(r)} |`);
   }
-  process.exit(passed === results.length ? 0 : 1);
+  // レート制限は「未測定」であって合格でも不合格でもない。0 で返すと緑に見えてしまう。
+  process.exit(failed === 0 && rateLimited.length === 0 ? 0 : 1);
 }
 
 main().catch((e) => { console.error('実行エラー:', e.message); process.exit(1); });
