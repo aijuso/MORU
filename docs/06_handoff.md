@@ -1,8 +1,130 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: 2026-08-25(ペア・セット Function 追加 / ローンチ阻害監査 / DEV→MAIN 差分)
-> 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni`(旧: `claude/moru-living-shopify-setup-tg2rzr`)
-> 対象ストア: `rgy5ee-fv.myshopify.com`
+> 最終更新: **2026-08-27**(本番公開 / クーポン UX / MORU500 / ローンチ前バックエンド整理)
+> 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni` — **新しいブランチを作らない(Owner 指示)**
+> 対象ストア: `rgy5ee-fv.myshopify.com` / 独自ドメイン **`moruliving.com`**(SSL 有効)
+
+---
+
+# ★★ 2026-08-27 — 新しいセッションはここだけ読めば再開できる ★★
+
+## 1. いまの状態(3行)
+
+- **フロントは本番公開済み。** `MORU Release 2026-08-27` が MAIN
+- **ストアはパスワード保護中。** だから**ストアフロントに到達できず、実機 QA が走らせられない**
+- 販促(Sale / まとめ買い / PAIR / 送料無料 / ¥500クーポン)は**バックエンド側は完成・稼働中**
+
+## 2. テーマ(⚠️ 2026-08-26 に入れ替わった。古い表を信じない)
+
+| テーマ | theme id | role | 扱い |
+|---|---|---|---|
+| **MORU Release 2026-08-27** | **`166459769072`** | **MAIN(公開中)** | 🚫 直接書き込み・publish しない |
+| MORU LIVING (Skeleton構築) | `166203621616` | UNPUBLISHED | **切り戻し先**として温存 |
+| **MORU Frontend Dev** | **`166341181680`** | UNPUBLISHED | ✅ **フロントの正本。変更はここに入れる** |
+| Horizon | `166127468784` | UNPUBLISHED | 旧プロジェクト。触らない |
+
+**フロントは ChatGPT が Frontend Dev で実装、MAIN 反映は Owner が実施する。**
+Claude が Frontend Dev を直す場合は**Owner の明示指示があるときだけ**(2026-08-26 のクーポン UX がその例)。
+
+## 3. 🔧 この環境でのテーマ反映方法(重要・ハマりどころ)
+
+**`shopify theme pull` / `push` は使えない。** 対話ログインが要り、Theme Access トークンも無い。
+
+代わりに **Admin API** を使う:
+
+1. Dev の現物を `theme(id:).files(filenames:).body` で取得
+2. **ローカルに復元したら、md5 が Shopify の `checksumMd5` と一致するか必ず確認**してからパッチを当てる
+   (一致しなければ復元ミス。そこで止める)
+3. 反映は `stagedUploadsCreate`(`resource: FILE`)で実ファイルを上げ、
+   `themeFilesUpsert` に **`body: { type: URL }`** で取り込ませる
+   → **本文を手で書き写さないので転記ミスが起こり得ない**
+4. 反映後に `checksumMd5` で readback
+
+⚠️ `publishableUnpublish` は MCP の安全ポリシーで**拒否される**。
+商品を落とすときは `productUpdate { status: DRAFT }` を使う(可逆・データ保持)。
+
+⚠️ **Chromium はこのサンドボックスのプロキシを通れない**(`ERR_CONNECTION_RESET`)。
+ストアフロントを見るときは素の `fetch` / `curl` を使う。
+
+⚠️ **`shopify-dev-mcp` は接続失敗中。** `validate_theme_codeblocks` が無いので、
+docs/07 §6 に従い **`shopify theme check`** で代替する。
+
+## 4. 販促の構成(稼働中)
+
+**Discount は 2件。**
+
+| # | ID | 種別 | 内容 |
+|---|---|---|---|
+| 1 | `DiscountAutomaticNode/1484384305392` | Automatic (App) | MORU 販促割引(統合) / PRODUCT+ORDER+SHIPPING / ACTIVE |
+| 2 | `DiscountCodeNode/1484417040624` | Code | 新規会員登録 ¥500OFF / **`MORU500`** / ORDER / ACTIVE |
+
+**両方 `combinesWith` 全 false = 加算しない。** 競合したら Shopify が顧客に得な方を選ぶ
+(実測で確認済み。送料無料が消える事故は起きない)。
+
+- **Function の設定の正本は shop metafield `custom.moru_promotions_config`**
+  (アプリ: `apps/moru-promotions` / 現在 `moru-promotions-12` / extension は
+  `moru-promotions-discount` と `-ui` の2つだけ。旧2件は削除済み)
+- まとめ買い対象の正本は **Product metafield `custom.multi_buy_eligible`**
+- MORU500 の対象は **Segment `578826076400`(`number_of_orders = 0`)**
+  ⚠️ 新しい顧客アカウントでは `Customer.state` が ENABLED にならない。
+  `customer_account_status` を条件に入れると**誰にもマッチしない**
+- `sale` collection(`489369338096`)は **`TAG EQUALS 'sale'` のスマートコレクション**。
+  18商品タグ済みで config と差分 0
+
+## 5. ストア設定(確定済み)
+
+| | |
+|---|---|
+| 配送 | **通常配送 ¥870 のみ** / 割引前小計 **¥7,700 以上で無料**(Function が判定) |
+| 速達 ¥3,762 | **削除済み** |
+| 国際配送 | `Standard ¥3,000` → `active: false` / `shipsToCountries: ["JP"]` |
+| 商品 | **ACTIVE 28 / DRAFT 8** |
+| built-in policies | **6種すべて登録済み**(Owner 側で同期。本文と Page の一致は未検証) |
+
+**DRAFT 8商品**: プラッシュ クッション / アブストラクト オブジェ / セル モジュールキャビネット /
+ルナ ウォールライト / ピボ テーブルランプ / ソラ キャットハンモック /
+手編みコースター / レジン スカルプチャーオブジェ
+→ **すべて `status: ACTIVE` に戻すだけで復帰できる。**
+
+## 6. 🔴 残っているローンチ阻害(3つ)
+
+| # | 項目 | 誰が |
+|---|---|---|
+| 1 | **パスワード保護が有効のまま** | Owner |
+| 2 | **通常配送の transit time(「3〜5営業日」)が残っているか未確認**。`/cart/shipping_rates.json` でしか見えず、パスワード中は叩けない。この接続の API バージョンからは触れないので**管理画面**で削除する | Owner |
+| 3 | **MORU500 の顧客への案内が未実装。** ストア側に `{% if customer != nil and customer.orders_count == 0 %}` のブロックが無く、**顧客がコードを知る手段が無い** | Frontend |
+
+**パスワードが解除されたら最初にやること:**
+`node ops/promotions/storefront-tests/run.mjs`
+→ 前回 21 PASS / 0 FAIL。**ただし A-2(手編みコースター ×3)は DRAFT にしたため現在 20ケース。**
+
+## 7. 未確認・要判断で残っているもの
+
+- **ピボ テーブルランプ**: 説明画像19枚中17枚に中国語。**画像7 に「护眼 / 节能护眼 / 健康护眼」**
+  = CLAUDE.md 絶対ルール15 が名指しで禁じる健康表現。**日本語化ではなく削除か差し替えが要る。**
+  画像19 は寸法・材質・光源の仕様表が中国語のまま
+- **ピボは `sale.productIds` に残っている**(config は変更禁止だったのでそのまま)。外すか要判断
+- 手編みコースター / レジン: Variant 名が機械翻訳のまま(「カエルの直径は12cmです」等)
+- 30日間安心保証の顧客向け文面と policy 本文の突き合わせ
+- `ship_est` 実測3件の CKB 依頼
+- 価格の未決9件(`ops/products/_price_audit_20260825.md` §9)
+
+## 8. 次のフェーズ: Meta(Facebook)広告
+
+Owner が着手予定。**独自ドメイン `moruliving.com` があるのでドメイン認証は可能。**
+Facebook & Instagram 販売チャネルは**未導入**(publications は オンラインストア / Shop / POS のみ)。
+**パスワード解除が前提**(審査でランディングページが見られず落ちる)。
+手順は本セッションのチャットに記載。
+
+## 9. 読む順番
+
+1. `CLAUDE.md`(絶対ルール。特に 15 = 未検証の品質・健康表現)
+2. **`docs/13_pricing_promotion_framework.md`** — 価格設計の正(docs/10・12 より優先)
+3. `docs/06_decisions_log.md` の **D-117〜D-147**
+4. **`ops/promotions/_new_member_500_design_20260826.md`** — 本セッションの設計・実測ログ(§18〜§23 が最新)
+5. `ops/promotions/README.md` — Function 運用の Runbook
+
+---
 
 ## ⚠️ テーマの運用ルール(最初に読む・2026-08-24 実査で確認)
 
