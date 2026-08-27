@@ -120,8 +120,26 @@ docs/07 §6 に従い **`shopify theme check`** で代替する。
 MORU_STORE_URL=https://moruliving.com node ops/promotions/storefront-tests/run.mjs
 ```
 (既定値も `moruliving.com` に直したので env は無くても動く)
-→ **A-2 と E-2 は手編みコースターを使っており、DRAFT 化で `cart/add.js` が 422。
-成立するのは 21ケース中 19ケース**(前の申し送りの「20ケース」は E-2 を数え漏らしていた)。
+### 実行結果(2026-08-27)— **17 PASS / 0 FAIL / SKIP 4**
+
+**Function の挙動が期待と違ったケースはゼロ。** 明細は
+`ops/promotions/_new_member_500_design_20260826.md` §24。
+
+裏づけられた挙動: まとめ買い 2点10% / 3点以上15%(4点以上も15%) /
+別 Variant は合算・別 Product は合算しない / SUMMER SALE 10% /
+ハル2脚セットの Sale 除外 / PAIR 15% と Sale の同時成立 / 送料無料しきい値の境界。
+
+**SKIP 4件 = A-2・E-2(手編みコースター)と A-6・D-1(ソラ)。**
+どちらも DRAFT で `cart/add.js` が 422 を返すため。
+⚠️ **成立するのは 21ケース中 17ケース。**
+これ以前の申し送りの「20ケース」「19ケース」はどちらも誤り
+(ソラも DRAFT であることを数え漏らしていた)。ACTIVE に戻せば 21 に戻る。
+
+⚠️ **`/cart/add.js` は IP 単位で 429 を返す。** 連続実行・並行実行をするとバケットが潰れ、
+数分回復しない(実際に21ケース中14ケースを潰した)。落ちたケースだけなら
+`MORU_CASES=B-1,D-2,E-1 node ops/promotions/storefront-tests/run.mjs` で流し直せる。
+判定は **PASS / FAIL / SKIP(DRAFT) / BLOCKED(429)** の4種に分かれる。
+**BLOCKED は「未測定」であって合格ではない**(残ると exit 1)。
 
 ## 6.5 カラースウォッチ(2026-08-27 に設定・D-149)
 
