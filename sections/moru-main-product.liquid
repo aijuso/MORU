@@ -5,9 +5,66 @@
   if product != blank and product.has_only_default_variant == false
     assign has_real_options = true
   endif
+
+  # --- SUMMER SALE の表示価格 -------------------------------------------------
+  #
+  # 値引きは **Discount Function がカートで適用する**。compare_at_price ではないので、
+  # 何もしないと商品ページは定価のまま出る。実際それで、商品カード(一覧・関連商品)だけが
+  # セール価格を出し、単品ページは定価という食い違いが起きていた。
+  #
+  # 判定の正本は shop metafield `custom.moru_promotions_config`。
+  # **`snippets/moru-product-card.liquid` と同じ config・同じ計算式を使う。**
+  # 片方だけ直すと、また同じ商品で違う金額が出る。
+  #
+  # ⚠️ ここに出すのは **Sale だけ**。まとめ買いと PAIR は**カートの中身**で成立が決まるので、
+  #    単品ページに出すと事実と違う表示になる(CLAUDE.md 絶対ルール6・docs/01 §4)。
+  #
+  # ⚠️ カードは「除外されていない最安 Variant」を基準にするが、こちらは
+  #    **いま選ばれている Variant** を見る。ハルの2脚セットのように Sale 除外の
+  #    Variant があるので、選択に追従しないと除外品に嘘の値引きを出すことになる。
+  assign sale_rate = 0
+  assign sale_excluded_variant_ids = blank
+  assign promotion_config = shop.metafields.custom.moru_promotions_config.value
+
+  if product != blank and promotion_config != blank and promotion_config.sale != blank
+    assign sale_product_ids = promotion_config.sale.productIds
+    assign product_gid = 'gid://shopify/Product/' | append: product.id
+    if sale_product_ids != blank and sale_product_ids contains product_gid
+      assign sale_rate = promotion_config.sale.percentage | default: 0 | plus: 0
+      assign sale_excluded_variant_ids = promotion_config.sale.excludedVariantIds
+    endif
+  endif
+
+  assign sale_multiplier = 100 | minus: sale_rate
+
+  assign current_on_sale = false
+  assign current_sale_price = current_variant.price
+  if sale_rate > 0 and product != blank
+    assign current_variant_gid = 'gid://shopify/ProductVariant/' | append: current_variant.id
+    unless sale_excluded_variant_ids != blank and sale_excluded_variant_ids contains current_variant_gid
+      assign current_sale_price = current_variant.price | times: sale_multiplier | divided_by: 100
+      assign current_on_sale = true
+    endunless
+  endif
 %}
 
-<div class="moru-product" data-moru-product data-section-id="{{ section.id }}">
+{%- comment -%}
+  Sale 除外 Variant の ID を JS に渡す。バリアントを切り替えたときに
+  除外品へ値引きを出さないために要る。
+{%- endcomment -%}
+{%- capture sale_excluded_ids -%}
+  {%- if sale_rate > 0 and sale_excluded_variant_ids != blank -%}
+    {%- for variant in product.variants -%}
+      {%- assign loop_variant_gid = 'gid://shopify/ProductVariant/' | append: variant.id -%}
+      {%- if sale_excluded_variant_ids contains loop_variant_gid -%}{{ variant.id }},{%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign sale_excluded_ids = sale_excluded_ids | strip -%}
+
+<div class="moru-product" data-moru-product data-section-id="{{ section.id }}"
+  data-moru-sale-rate="{{ sale_rate }}"
+  data-moru-sale-excluded="{{ sale_excluded_ids }}">
   {% if section.settings.show_breadcrumbs %}
     <nav class="moru-breadcrumbs" aria-label="{{ 'moru.product.breadcrumbs' | t }}">
       <ol>
@@ -152,14 +209,20 @@
       {% endif %}
 
       <div class="moru-product__price-row">
-        <span class="moru-product__price" data-moru-price>
+        <span class="moru-product__price{% if current_on_sale %} moru-product__price--sale{% endif %}" data-moru-price>
           {%- if product != blank -%}
-            {{ current_variant.price | money }}
+            {%- if current_on_sale -%}
+              {{ current_sale_price | money }}
+            {%- else -%}
+              {{ current_variant.price | money }}
+            {%- endif -%}
           {%- else -%}
             {{ 'moru.placeholder.price' | t }}
           {%- endif -%}
         </span>
-        {% if current_variant.compare_at_price > current_variant.price %}
+        {% if current_on_sale %}
+          <s class="moru-product__compare" data-moru-compare>{{ current_variant.price | money }}</s>
+        {% elsif current_variant.compare_at_price > current_variant.price %}
           <s class="moru-product__compare" data-moru-compare>{{ current_variant.compare_at_price | money }}</s>
         {% else %}
           <s class="moru-product__compare" data-moru-compare hidden></s>
@@ -783,6 +846,11 @@
     font-weight: 600;
   }
 
+  /* セール中の価格。moru-product-card と同じ色にそろえる */
+  .moru-product__price--sale {
+    color: var(--color-sale, #d65832);
+  }
+
   .moru-product__compare {
     font-size: var(--font-size-sm);
     color: var(--color-muted);
@@ -1402,6 +1470,17 @@
       const json = this.querySelector('[data-variant-json]');
       this.variants = json ? JSON.parse(json.textContent) : [];
       this.product = this.closest('[data-moru-product]');
+
+      // セールの判定材料は Liquid が data 属性で渡してくる(正本は
+      // shop metafield custom.moru_promotions_config)。
+      this.saleRate = parseInt((this.product && this.product.dataset.moruSaleRate) || '0', 10) || 0;
+      this.saleExcluded = new Set(
+        (((this.product && this.product.dataset.moruSaleExcluded) || '')
+          .split(',')
+          .map((id) => id.trim())
+          .filter(Boolean))
+      );
+
       this.addEventListener('change', () => this.onChange());
     }
 
@@ -1444,10 +1523,25 @@
 
       if (idInput) idInput.value = variant.id;
       if (subtitleEl) subtitleEl.textContent = variant.title;
-      if (priceEl) priceEl.textContent = this.formatMoney(variant.price);
+
+      // SUMMER SALE。Liquid 側と同じ計算(切り捨て)にそろえる。
+      // ずれると初期表示と切り替え後で違う金額が出る。
+      const onSale = this.saleRate > 0 && !this.saleExcluded.has(String(variant.id));
+      const shownPrice = onSale
+        ? Math.floor((variant.price * (100 - this.saleRate)) / 100)
+        : variant.price;
+
+      if (priceEl) {
+        priceEl.textContent = this.formatMoney(shownPrice);
+        priceEl.classList.toggle('moru-product__price--sale', onSale);
+      }
 
       if (compareEl) {
-        if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+        if (onSale) {
+          // セール中は「定価に線」= その Variant の通常価格を出す
+          compareEl.textContent = this.formatMoney(variant.price);
+          compareEl.hidden = false;
+        } else if (variant.compare_at_price && variant.compare_at_price > variant.price) {
           compareEl.textContent = this.formatMoney(variant.compare_at_price);
           compareEl.hidden = false;
         } else {
