@@ -1,0 +1,517 @@
+[
+ {
+  "handle": "moru-color-d5e25b5f0f",
+  "label": "アイボリー",
+  "color": "#E7D6CA"
+ },
+ {
+  "handle": "moru-color-58733b2b26",
+  "label": "アンバー（7点セット）",
+  "color": "#C98A3C"
+ },
+ {
+  "handle": "moru-color-0f42e129c0",
+  "label": "イエロー",
+  "color": "#E8C24A"
+ },
+ {
+  "handle": "moru-color-4d9d570079",
+  "label": "イエロー ウェーブ",
+  "color": "#E8C24A"
+ },
+ {
+  "handle": "moru-color-2863b298d7",
+  "label": "イエロー エコー",
+  "color": "#E8C24A"
+ },
+ {
+  "handle": "moru-color-c1698b75c8",
+  "label": "イエロー スモールスクエア",
+  "color": "#E8C24A"
+ },
+ {
+  "handle": "moru-color-11de327e95",
+  "label": "イエロー ダイヤグリッド",
+  "color": "#E8C24A"
+ },
+ {
+  "handle": "moru-color-d8f69813ef",
+  "label": "イエロー ヘリンボーン",
+  "color": "#E8C24A"
+ },
+ {
+  "handle": "moru-color-de186cc75b",
+  "label": "ウォールナット（1段）",
+  "color": "#6B4A31"
+ },
+ {
+  "handle": "moru-color-7be5c11c08",
+  "label": "エメラルド",
+  "color": "#2E7D6B"
+ },
+ {
+  "handle": "moru-color-b65839e209",
+  "label": "オフホワイト",
+  "color": "#EDE9E1"
+ },
+ {
+  "handle": "moru-color-590c2f58ec",
+  "label": "オフホワイト フレンチフラワー",
+  "color": "#EDE9E1"
+ },
+ {
+  "handle": "moru-color-69c3f2a358",
+  "label": "オリーブグリーン",
+  "color": "#7A7455"
+ },
+ {
+  "handle": "moru-color-e86638b52f",
+  "label": "オレンジ",
+  "color": "#D9773B"
+ },
+ {
+  "handle": "moru-color-d7345fd3f8",
+  "label": "オレンジレッド",
+  "color": "#D1502F"
+ },
+ {
+  "handle": "moru-color-166327977b",
+  "label": "カーキ",
+  "color": "#8E8467"
+ },
+ {
+  "handle": "moru-color-822215618c",
+  "label": "カーキ バーチカルプリーツ",
+  "color": "#8E8467"
+ },
+ {
+  "handle": "moru-color-abecea0ee0",
+  "label": "カーキ ブラッシュ",
+  "color": "#8E8467"
+ },
+ {
+  "handle": "moru-color-4035c5e17b",
+  "label": "カーキ ベルベット",
+  "color": "#8E8467"
+ },
+ {
+  "handle": "moru-color-489e6e330a",
+  "label": "カーキ ワイドストライプ",
+  "color": "#8E8467"
+ },
+ {
+  "handle": "moru-color-6894331cb3",
+  "label": "カラメル",
+  "color": "#A9682F"
+ },
+ {
+  "handle": "moru-color-49b113ffd1",
+  "label": "グリーン",
+  "color": "#4E7A54"
+ },
+ {
+  "handle": "moru-color-ea4a1bf3d2",
+  "label": "グレー",
+  "color": "#9A9A98"
+ },
+ {
+  "handle": "moru-color-4d9eb98bf4",
+  "label": "クローム（クリアシェード）",
+  "color": "#C8CCD0"
+ },
+ {
+  "handle": "moru-color-2b842352c2",
+  "label": "コーデュロイ オレンジ",
+  "color": "#D9773B"
+ },
+ {
+  "handle": "moru-color-946eb1f100",
+  "label": "コーデュロイ キャラメル",
+  "color": "#A9682F"
+ },
+ {
+  "handle": "moru-color-79d6047aa3",
+  "label": "コーデュロイ グリーン",
+  "color": "#4E7A54"
+ },
+ {
+  "handle": "moru-color-91a157c630",
+  "label": "コーデュロイ ブラック",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-6c8687b322",
+  "label": "コーデュロイ ブルー",
+  "color": "#3F6FA8"
+ },
+ {
+  "handle": "moru-color-b0ee624d1e",
+  "label": "コーデュロイ ホワイト",
+  "color": "#F2F0EC"
+ },
+ {
+  "handle": "moru-color-49b36e4cdc",
+  "label": "ゴールド",
+  "color": "#C6A253"
+ },
+ {
+  "handle": "moru-color-8e5a2809b6",
+  "label": "シルバー",
+  "color": "#C3C6C9"
+ },
+ {
+  "handle": "moru-color-a87853a6f0",
+  "label": "スターライトブラック（1段）",
+  "color": "#23252A"
+ },
+ {
+  "handle": "moru-color-e40358db09",
+  "label": "スペースグレイ",
+  "color": "#6E7276"
+ },
+ {
+  "handle": "moru-color-9e562bd74d",
+  "label": "ダークウォールナット × オフホワイトファブリック",
+  "color": "#EDE9E1"
+ },
+ {
+  "handle": "moru-color-939746df62",
+  "label": "ダークウォールナット × オレンジファブリック",
+  "color": "#D9773B"
+ },
+ {
+  "handle": "moru-color-e4a42c0a4e",
+  "label": "ダークウォールナット × ブラックパッチワーク",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-634bb92b3d",
+  "label": "ダークウォールナット × ベージュパッチワーク",
+  "color": "#D9C7AE"
+ },
+ {
+  "handle": "moru-color-49fefc5e6d",
+  "label": "ダークウォールナット × ライスイエローファブリック",
+  "color": "#EADFB8"
+ },
+ {
+  "handle": "moru-color-d41f09fa39",
+  "label": "ダークグリーン",
+  "color": "#2F4E3A"
+ },
+ {
+  "handle": "moru-color-d439b65936",
+  "label": "トゥルーレッド",
+  "color": "#C4342A"
+ },
+ {
+  "handle": "moru-color-c796a6ec84",
+  "label": "バーガンディ",
+  "color": "#6E2733"
+ },
+ {
+  "handle": "moru-color-a6217ccb24",
+  "label": "バーガンディ（クリアシェード）",
+  "color": "#6E2733"
+ },
+ {
+  "handle": "moru-color-5ad7699edb",
+  "label": "パープル",
+  "color": "#8878B0"
+ },
+ {
+  "handle": "moru-color-461539b4fe",
+  "label": "パールブラック（クリアシェード）",
+  "color": "#2B2D31"
+ },
+ {
+  "handle": "moru-color-8657f9e26b",
+  "label": "パールホワイト",
+  "color": "#EFEDE6"
+ },
+ {
+  "handle": "moru-color-79184a62dc",
+  "label": "バイオレット",
+  "color": "#7E6BA8"
+ },
+ {
+  "handle": "moru-color-4cd0b81c8f",
+  "label": "ピーコックブルー",
+  "color": "#1F6E7A"
+ },
+ {
+  "handle": "moru-color-d0ad0342a2",
+  "label": "ピンキー",
+  "color": "#EBB7BE"
+ },
+ {
+  "handle": "moru-color-ee5b790c89",
+  "label": "ピンク",
+  "color": "#E4A8B0"
+ },
+ {
+  "handle": "moru-color-7c0497a5cd",
+  "label": "ピンク（7点セット）",
+  "color": "#E4A8B0"
+ },
+ {
+  "handle": "moru-color-92fb67f35c",
+  "label": "フェイクファーストライプ-カーキ",
+  "color": "#8E8467"
+ },
+ {
+  "handle": "moru-color-ab47e52a33",
+  "label": "フェイクファーストライプ-キャラメル",
+  "color": "#A9682F"
+ },
+ {
+  "handle": "moru-color-2c93e24180",
+  "label": "フェイクファーストライプ-クリームホワイト",
+  "color": "#F0E7D8"
+ },
+ {
+  "handle": "moru-color-d7289618c2",
+  "label": "フェイクファーストライプ-ダークグレー",
+  "color": "#5A5A58"
+ },
+ {
+  "handle": "moru-color-6f52e69317",
+  "label": "フェイクファーストライプ-ターメリックイエロー",
+  "color": "#D9A521"
+ },
+ {
+  "handle": "moru-color-50ec0f190d",
+  "label": "フェイクファーストライプ-ピンク",
+  "color": "#E4A8B0"
+ },
+ {
+  "handle": "moru-color-1805d36417",
+  "label": "フェイクファーストライプ-ブルー",
+  "color": "#3F6FA8"
+ },
+ {
+  "handle": "moru-color-0c96cd0a81",
+  "label": "フェイクファーストライプ-フルーツグリーン",
+  "color": "#8FAE6B"
+ },
+ {
+  "handle": "moru-color-fe2426abec",
+  "label": "フェイクファーストライプ-ライトグレー",
+  "color": "#C6C6C4"
+ },
+ {
+  "handle": "moru-color-c4c28f3286",
+  "label": "フェイクファーストライプ-ライトパープル",
+  "color": "#B7ADD4"
+ },
+ {
+  "handle": "moru-color-ef71ad95e6",
+  "label": "フォググレー",
+  "color": "#B6B7B3"
+ },
+ {
+  "handle": "moru-color-6c53ee81a1",
+  "label": "ブラウン",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-c51a35c51c",
+  "label": "ブラウン コーデュロイチェック",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-dca9484c05",
+  "label": "ブラウン パイピング",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-dd9ed19871",
+  "label": "ブラウン フォレストカット",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-1301ec61b1",
+  "label": "ブラウン ブリック×スワロー",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-640accd1da",
+  "label": "ブラウン フレンチフラワー",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-f9d35de76c",
+  "label": "ブラウン ヘリンボーンチェック",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-6b1bf2ba48",
+  "label": "ブラウン ペンシルライン",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-be29b9d9e3",
+  "label": "ブラウン レースジオメトリック",
+  "color": "#6E4E37"
+ },
+ {
+  "handle": "moru-color-34df274a76",
+  "label": "ブラック",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-6028ba6eb7",
+  "label": "ブラック × オフホワイトファブリック",
+  "color": "#EDE9E1"
+ },
+ {
+  "handle": "moru-color-c4534a6ad5",
+  "label": "ブラック × ブラックパッチワーク",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-3c93a5f9f2",
+  "label": "ブラック × ベージュパッチワーク",
+  "color": "#D9C7AE"
+ },
+ {
+  "handle": "moru-color-21280bbc10",
+  "label": "ブラック × ベージュファブリック",
+  "color": "#D9C7AE"
+ },
+ {
+  "handle": "moru-color-78373eb0f5",
+  "label": "ブラック 1連",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-fcf11ad656",
+  "label": "ブラック 2連",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-1135e1553e",
+  "label": "ブラック Aタイプ",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-2ac9d321d8",
+  "label": "ブラック Bタイプ",
+  "color": "#2A2A28"
+ },
+ {
+  "handle": "moru-color-ee88098135",
+  "label": "ブルー",
+  "color": "#3F6FA8"
+ },
+ {
+  "handle": "moru-color-3e781d6a38",
+  "label": "ブルー（7点セット）",
+  "color": "#3F6FA8"
+ },
+ {
+  "handle": "moru-color-9f5904d619",
+  "label": "ブルーグレー",
+  "color": "#8C9AA6"
+ },
+ {
+  "handle": "moru-color-773180c036",
+  "label": "フルーツグリーン",
+  "color": "#8FAE6B"
+ },
+ {
+  "handle": "moru-color-792bc28641",
+  "label": "ベージュ",
+  "color": "#D9C7AE"
+ },
+ {
+  "handle": "moru-color-65b03a8eac",
+  "label": "ホワイト",
+  "color": "#F2F0EC"
+ },
+ {
+  "handle": "moru-color-2be7f69b7e",
+  "label": "ホワイト Aタイプ",
+  "color": "#F2F0EC"
+ },
+ {
+  "handle": "moru-color-2c20ee0183",
+  "label": "ホワイト Bタイプ",
+  "color": "#F2F0EC"
+ },
+ {
+  "handle": "moru-color-f21c1da33b",
+  "label": "ホワイト（7点セット）",
+  "color": "#F2F0EC"
+ },
+ {
+  "handle": "moru-color-15f8972fc2",
+  "label": "ミルキーホワイト ダイヤキルト",
+  "color": "#F4F1EA"
+ },
+ {
+  "handle": "moru-color-d6b1615b51",
+  "label": "ミルキーホワイト（1段）",
+  "color": "#F4F1EA"
+ },
+ {
+  "handle": "moru-color-b1f8d5d7db",
+  "label": "ミルクイエロー ブリック",
+  "color": "#F0DFA8"
+ },
+ {
+  "handle": "moru-color-77efd8b24e",
+  "label": "ライトカーキ カットフラワー",
+  "color": "#C4B79A"
+ },
+ {
+  "handle": "moru-color-462001a967",
+  "label": "ライトグレー",
+  "color": "#C6C6C4"
+ },
+ {
+  "handle": "moru-color-98c6308f63",
+  "label": "ライトパープル",
+  "color": "#B7ADD4"
+ },
+ {
+  "handle": "moru-color-f481c7b69f",
+  "label": "ライトブルー",
+  "color": "#A8C6DE"
+ },
+ {
+  "handle": "moru-color-7c03601888",
+  "label": "ライムブルー",
+  "color": "#7FB6B0"
+ },
+ {
+  "handle": "moru-color-4374f07e39",
+  "label": "ルビー（7点セット）",
+  "color": "#9B2340"
+ },
+ {
+  "handle": "moru-color-1ad2545d4c",
+  "label": "レッド",
+  "color": "#B23A2E"
+ },
+ {
+  "handle": "moru-color-13688b3c61",
+  "label": "レモンイエロー",
+  "color": "#EFD34D"
+ },
+ {
+  "handle": "moru-color-47b75d73a3",
+  "label": "ローズゴールド",
+  "color": "#C89A86"
+ },
+ {
+  "handle": "moru-color-1715f17ba0",
+  "label": "天然木 1連",
+  "color": "#C7A87C"
+ },
+ {
+  "handle": "moru-color-17a316b9dc",
+  "label": "天然木 2連",
+  "color": "#C7A87C"
+ }
+]

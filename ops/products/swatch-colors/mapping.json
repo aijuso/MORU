@@ -1,0 +1,1221 @@
+{
+  "labels": [
+    {
+      "label": "アイボリー",
+      "color": "#E7D6CA"
+    },
+    {
+      "label": "アンバー（7点セット）",
+      "color": "#C98A3C"
+    },
+    {
+      "label": "イエロー",
+      "color": "#E8C24A"
+    },
+    {
+      "label": "イエロー ウェーブ",
+      "color": "#E8C24A"
+    },
+    {
+      "label": "イエロー エコー",
+      "color": "#E8C24A"
+    },
+    {
+      "label": "イエロー スモールスクエア",
+      "color": "#E8C24A"
+    },
+    {
+      "label": "イエロー ダイヤグリッド",
+      "color": "#E8C24A"
+    },
+    {
+      "label": "イエロー ヘリンボーン",
+      "color": "#E8C24A"
+    },
+    {
+      "label": "ウォールナット（1段）",
+      "color": "#6B4A31"
+    },
+    {
+      "label": "エメラルド",
+      "color": "#2E7D6B"
+    },
+    {
+      "label": "オフホワイト",
+      "color": "#EDE9E1"
+    },
+    {
+      "label": "オフホワイト フレンチフラワー",
+      "color": "#EDE9E1"
+    },
+    {
+      "label": "オリーブグリーン",
+      "color": "#7A7455"
+    },
+    {
+      "label": "オレンジ",
+      "color": "#D9773B"
+    },
+    {
+      "label": "オレンジレッド",
+      "color": "#D1502F"
+    },
+    {
+      "label": "カーキ",
+      "color": "#8E8467"
+    },
+    {
+      "label": "カーキ バーチカルプリーツ",
+      "color": "#8E8467"
+    },
+    {
+      "label": "カーキ ブラッシュ",
+      "color": "#8E8467"
+    },
+    {
+      "label": "カーキ ベルベット",
+      "color": "#8E8467"
+    },
+    {
+      "label": "カーキ ワイドストライプ",
+      "color": "#8E8467"
+    },
+    {
+      "label": "カラメル",
+      "color": "#A9682F"
+    },
+    {
+      "label": "グリーン",
+      "color": "#4E7A54"
+    },
+    {
+      "label": "グレー",
+      "color": "#9A9A98"
+    },
+    {
+      "label": "クローム（クリアシェード）",
+      "color": "#C8CCD0"
+    },
+    {
+      "label": "コーデュロイ オレンジ",
+      "color": "#D9773B"
+    },
+    {
+      "label": "コーデュロイ キャラメル",
+      "color": "#A9682F"
+    },
+    {
+      "label": "コーデュロイ グリーン",
+      "color": "#4E7A54"
+    },
+    {
+      "label": "コーデュロイ ブラック",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "コーデュロイ ブルー",
+      "color": "#3F6FA8"
+    },
+    {
+      "label": "コーデュロイ ホワイト",
+      "color": "#F2F0EC"
+    },
+    {
+      "label": "ゴールド",
+      "color": "#C6A253"
+    },
+    {
+      "label": "シルバー",
+      "color": "#C3C6C9"
+    },
+    {
+      "label": "スターライトブラック（1段）",
+      "color": "#23252A"
+    },
+    {
+      "label": "スペースグレイ",
+      "color": "#6E7276"
+    },
+    {
+      "label": "ダークウォールナット × オフホワイトファブリック",
+      "color": "#EDE9E1"
+    },
+    {
+      "label": "ダークウォールナット × オレンジファブリック",
+      "color": "#D9773B"
+    },
+    {
+      "label": "ダークウォールナット × ブラックパッチワーク",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "ダークウォールナット × ベージュパッチワーク",
+      "color": "#D9C7AE"
+    },
+    {
+      "label": "ダークウォールナット × ライスイエローファブリック",
+      "color": "#EADFB8"
+    },
+    {
+      "label": "ダークグリーン",
+      "color": "#2F4E3A"
+    },
+    {
+      "label": "トゥルーレッド",
+      "color": "#C4342A"
+    },
+    {
+      "label": "バーガンディ",
+      "color": "#6E2733"
+    },
+    {
+      "label": "バーガンディ（クリアシェード）",
+      "color": "#6E2733"
+    },
+    {
+      "label": "パープル",
+      "color": "#8878B0"
+    },
+    {
+      "label": "パールブラック（クリアシェード）",
+      "color": "#2B2D31"
+    },
+    {
+      "label": "パールホワイト",
+      "color": "#EFEDE6"
+    },
+    {
+      "label": "バイオレット",
+      "color": "#7E6BA8"
+    },
+    {
+      "label": "ピーコックブルー",
+      "color": "#1F6E7A"
+    },
+    {
+      "label": "ピンキー",
+      "color": "#EBB7BE"
+    },
+    {
+      "label": "ピンク",
+      "color": "#E4A8B0"
+    },
+    {
+      "label": "ピンク（7点セット）",
+      "color": "#E4A8B0"
+    },
+    {
+      "label": "フェイクファーストライプ-カーキ",
+      "color": "#8E8467"
+    },
+    {
+      "label": "フェイクファーストライプ-キャラメル",
+      "color": "#A9682F"
+    },
+    {
+      "label": "フェイクファーストライプ-クリームホワイト",
+      "color": "#F0E7D8"
+    },
+    {
+      "label": "フェイクファーストライプ-ダークグレー",
+      "color": "#5A5A58"
+    },
+    {
+      "label": "フェイクファーストライプ-ターメリックイエロー",
+      "color": "#D9A521"
+    },
+    {
+      "label": "フェイクファーストライプ-ピンク",
+      "color": "#E4A8B0"
+    },
+    {
+      "label": "フェイクファーストライプ-ブルー",
+      "color": "#3F6FA8"
+    },
+    {
+      "label": "フェイクファーストライプ-フルーツグリーン",
+      "color": "#8FAE6B"
+    },
+    {
+      "label": "フェイクファーストライプ-ライトグレー",
+      "color": "#C6C6C4"
+    },
+    {
+      "label": "フェイクファーストライプ-ライトパープル",
+      "color": "#B7ADD4"
+    },
+    {
+      "label": "フォググレー",
+      "color": "#B6B7B3"
+    },
+    {
+      "label": "ブラウン",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン コーデュロイチェック",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン パイピング",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン フォレストカット",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン ブリック×スワロー",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン フレンチフラワー",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン ヘリンボーンチェック",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン ペンシルライン",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラウン レースジオメトリック",
+      "color": "#6E4E37"
+    },
+    {
+      "label": "ブラック",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "ブラック × オフホワイトファブリック",
+      "color": "#EDE9E1"
+    },
+    {
+      "label": "ブラック × ブラックパッチワーク",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "ブラック × ベージュパッチワーク",
+      "color": "#D9C7AE"
+    },
+    {
+      "label": "ブラック × ベージュファブリック",
+      "color": "#D9C7AE"
+    },
+    {
+      "label": "ブラック 1連",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "ブラック 2連",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "ブラック Aタイプ",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "ブラック Bタイプ",
+      "color": "#2A2A28"
+    },
+    {
+      "label": "ブルー",
+      "color": "#3F6FA8"
+    },
+    {
+      "label": "ブルー（7点セット）",
+      "color": "#3F6FA8"
+    },
+    {
+      "label": "ブルーグレー",
+      "color": "#8C9AA6"
+    },
+    {
+      "label": "フルーツグリーン",
+      "color": "#8FAE6B"
+    },
+    {
+      "label": "ベージュ",
+      "color": "#D9C7AE"
+    },
+    {
+      "label": "ホワイト",
+      "color": "#F2F0EC"
+    },
+    {
+      "label": "ホワイト Aタイプ",
+      "color": "#F2F0EC"
+    },
+    {
+      "label": "ホワイト Bタイプ",
+      "color": "#F2F0EC"
+    },
+    {
+      "label": "ホワイト（7点セット）",
+      "color": "#F2F0EC"
+    },
+    {
+      "label": "ミルキーホワイト ダイヤキルト",
+      "color": "#F4F1EA"
+    },
+    {
+      "label": "ミルキーホワイト（1段）",
+      "color": "#F4F1EA"
+    },
+    {
+      "label": "ミルクイエロー ブリック",
+      "color": "#F0DFA8"
+    },
+    {
+      "label": "ライトカーキ カットフラワー",
+      "color": "#C4B79A"
+    },
+    {
+      "label": "ライトグレー",
+      "color": "#C6C6C4"
+    },
+    {
+      "label": "ライトパープル",
+      "color": "#B7ADD4"
+    },
+    {
+      "label": "ライトブルー",
+      "color": "#A8C6DE"
+    },
+    {
+      "label": "ライムブルー",
+      "color": "#7FB6B0"
+    },
+    {
+      "label": "ルビー（7点セット）",
+      "color": "#9B2340"
+    },
+    {
+      "label": "レッド",
+      "color": "#B23A2E"
+    },
+    {
+      "label": "レモンイエロー",
+      "color": "#EFD34D"
+    },
+    {
+      "label": "ローズゴールド",
+      "color": "#C89A86"
+    },
+    {
+      "label": "天然木 1連",
+      "color": "#C7A87C"
+    },
+    {
+      "label": "天然木 2連",
+      "color": "#C7A87C"
+    }
+  ],
+  "products": [
+    {
+      "handle": "cloud-side-table",
+      "title": "クラウド サイドテーブル",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "スターライトブラック（1段）",
+          "hex": "#23252A",
+          "matched": "スターライトブラック"
+        },
+        {
+          "value": "ミルキーホワイト（1段）",
+          "hex": "#F4F1EA",
+          "matched": "ミルキーホワイト"
+        },
+        {
+          "value": "ウォールナット（1段）",
+          "hex": "#6B4A31",
+          "matched": "ウォールナット"
+        }
+      ]
+    },
+    {
+      "handle": "faux-fur-blanket",
+      "title": "フェイクファー ブランケット",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "フェイクファーストライプ-クリームホワイト",
+          "hex": "#F0E7D8",
+          "matched": "クリームホワイト"
+        },
+        {
+          "value": "フェイクファーストライプ-カーキ",
+          "hex": "#8E8467",
+          "matched": "カーキ"
+        },
+        {
+          "value": "フェイクファーストライプ-ダークグレー",
+          "hex": "#5A5A58",
+          "matched": "ダークグレー"
+        },
+        {
+          "value": "フェイクファーストライプ-ライトグレー",
+          "hex": "#C6C6C4",
+          "matched": "ライトグレー"
+        },
+        {
+          "value": "フェイクファーストライプ-ピンク",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        },
+        {
+          "value": "フェイクファーストライプ-フルーツグリーン",
+          "hex": "#8FAE6B",
+          "matched": "フルーツグリーン"
+        },
+        {
+          "value": "フェイクファーストライプ-キャラメル",
+          "hex": "#A9682F",
+          "matched": "キャラメル"
+        },
+        {
+          "value": "フェイクファーストライプ-ブルー",
+          "hex": "#3F6FA8",
+          "matched": "ブルー"
+        },
+        {
+          "value": "フェイクファーストライプ-ターメリックイエロー",
+          "hex": "#D9A521",
+          "matched": "ターメリックイエロー"
+        },
+        {
+          "value": "フェイクファーストライプ-ライトパープル",
+          "hex": "#B7ADD4",
+          "matched": "ライトパープル"
+        }
+      ]
+    },
+    {
+      "handle": "flannel-blanket",
+      "title": "フランネル ブランケット",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "スペースグレイ",
+          "hex": "#6E7276",
+          "matched": "スペースグレイ"
+        },
+        {
+          "value": "ピンキー",
+          "hex": "#EBB7BE",
+          "matched": "ピンキー"
+        },
+        {
+          "value": "フルーツグリーン",
+          "hex": "#8FAE6B",
+          "matched": "フルーツグリーン"
+        },
+        {
+          "value": "カーキ",
+          "hex": "#8E8467",
+          "matched": "カーキ"
+        },
+        {
+          "value": "ブルーグレー",
+          "hex": "#8C9AA6",
+          "matched": "ブルーグレー"
+        },
+        {
+          "value": "オフホワイト",
+          "hex": "#EDE9E1",
+          "matched": "オフホワイト"
+        },
+        {
+          "value": "カラメル",
+          "hex": "#A9682F",
+          "matched": "カラメル"
+        },
+        {
+          "value": "フォググレー",
+          "hex": "#B6B7B3",
+          "matched": "フォググレー"
+        },
+        {
+          "value": "ライトグレー",
+          "hex": "#C6C6C4",
+          "matched": "ライトグレー"
+        },
+        {
+          "value": "イエロー",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "バイオレット",
+          "hex": "#7E6BA8",
+          "matched": "バイオレット"
+        }
+      ]
+    },
+    {
+      "handle": "cell-sideboard",
+      "title": "セル サイドボード",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ホワイト Aタイプ",
+          "hex": "#F2F0EC",
+          "matched": "ホワイト"
+        },
+        {
+          "value": "ブラック Aタイプ",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        },
+        {
+          "value": "ホワイト Bタイプ",
+          "hex": "#F2F0EC",
+          "matched": "ホワイト"
+        },
+        {
+          "value": "ブラック Bタイプ",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        }
+      ]
+    },
+    {
+      "handle": "flower-bud-table-lamp",
+      "title": "フラワーバッド テーブルランプ",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "レッド",
+          "hex": "#B23A2E",
+          "matched": "レッド"
+        },
+        {
+          "value": "ホワイト",
+          "hex": "#F2F0EC",
+          "matched": "ホワイト"
+        },
+        {
+          "value": "ピンク",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        },
+        {
+          "value": "イエロー",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        }
+      ]
+    },
+    {
+      "handle": "clear-shade-table-lamp",
+      "title": "クリアシェード テーブルランプ",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "クローム（クリアシェード）",
+          "hex": "#C8CCD0",
+          "matched": "クローム"
+        },
+        {
+          "value": "バーガンディ（クリアシェード）",
+          "hex": "#6E2733",
+          "matched": "バーガンディ"
+        },
+        {
+          "value": "パールブラック（クリアシェード）",
+          "hex": "#2B2D31",
+          "matched": "パールブラック"
+        }
+      ]
+    },
+    {
+      "handle": "moko-lounge-chair",
+      "title": "モコ ラウンジチェア",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "コーデュロイ グリーン",
+          "hex": "#4E7A54",
+          "matched": "グリーン"
+        },
+        {
+          "value": "コーデュロイ ブラック",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        },
+        {
+          "value": "コーデュロイ ホワイト",
+          "hex": "#F2F0EC",
+          "matched": "ホワイト"
+        },
+        {
+          "value": "コーデュロイ キャラメル",
+          "hex": "#A9682F",
+          "matched": "キャラメル"
+        },
+        {
+          "value": "コーデュロイ ブルー",
+          "hex": "#3F6FA8",
+          "matched": "ブルー"
+        },
+        {
+          "value": "コーデュロイ オレンジ",
+          "hex": "#D9773B",
+          "matched": "オレンジ"
+        }
+      ]
+    },
+    {
+      "handle": "duo-nightstand",
+      "title": "デュオ ナイトテーブル",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "天然木 1連",
+          "hex": "#C7A87C",
+          "matched": "天然木"
+        },
+        {
+          "value": "天然木 2連",
+          "hex": "#C7A87C",
+          "matched": "天然木"
+        },
+        {
+          "value": "ブラック 1連",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        },
+        {
+          "value": "ブラック 2連",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        }
+      ]
+    },
+    {
+      "handle": "corduroy-folding-chair",
+      "title": "コーデュロイ フォールディングチェア",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ブラウン",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "ピーコックブルー",
+          "hex": "#1F6E7A",
+          "matched": "ピーコックブルー"
+        },
+        {
+          "value": "オレンジ",
+          "hex": "#D9773B",
+          "matched": "オレンジ"
+        },
+        {
+          "value": "ピンク",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        },
+        {
+          "value": "オリーブグリーン",
+          "hex": "#7A7455",
+          "matched": "オリーブグリーン"
+        }
+      ]
+    },
+    {
+      "handle": "twin-bell-alarm-clock",
+      "title": "ツインベル アラームクロック",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ホワイト",
+          "hex": "#F2F0EC",
+          "matched": "ホワイト"
+        }
+      ]
+    },
+    {
+      "handle": "mini-alarm-clock",
+      "title": "ミニ アラームクロック",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "エメラルド",
+          "hex": "#2E7D6B",
+          "matched": "エメラルド"
+        },
+        {
+          "value": "ライトパープル",
+          "hex": "#B7ADD4",
+          "matched": "ライトパープル"
+        },
+        {
+          "value": "オフホワイト",
+          "hex": "#EDE9E1",
+          "matched": "オフホワイト"
+        },
+        {
+          "value": "ピンク",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        }
+      ]
+    },
+    {
+      "handle": "mushroom-cordless-table-lamp",
+      "title": "マッシュルーム コードレステーブルランプ",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ゴールド",
+          "hex": "#C6A253",
+          "matched": "ゴールド"
+        },
+        {
+          "value": "シルバー",
+          "hex": "#C3C6C9",
+          "matched": "シルバー"
+        },
+        {
+          "value": "ローズゴールド",
+          "hex": "#C89A86",
+          "matched": "ローズゴールド"
+        },
+        {
+          "value": "バーガンディ",
+          "hex": "#6E2733",
+          "matched": "バーガンディ"
+        },
+        {
+          "value": "ダークグリーン",
+          "hex": "#2F4E3A",
+          "matched": "ダークグリーン"
+        },
+        {
+          "value": "ライムブルー",
+          "hex": "#7FB6B0",
+          "matched": "ライムブルー"
+        },
+        {
+          "value": "グレー",
+          "hex": "#9A9A98",
+          "matched": "グレー"
+        }
+      ]
+    },
+    {
+      "handle": "velvet-cushion-cover",
+      "title": "ベルベット クッション",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ブラウン ブリック×スワロー",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "ブラウン ペンシルライン",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "ブラウン フォレストカット",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "カーキ ブラッシュ",
+          "hex": "#8E8467",
+          "matched": "カーキ"
+        },
+        {
+          "value": "ブラウン コーデュロイチェック",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "カーキ ベルベット",
+          "hex": "#8E8467",
+          "matched": "カーキ"
+        },
+        {
+          "value": "ブラウン レースジオメトリック",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "カーキ バーチカルプリーツ",
+          "hex": "#8E8467",
+          "matched": "カーキ"
+        }
+      ]
+    },
+    {
+      "handle": "piping-cushion",
+      "title": "パイピング クッション",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ブラウン パイピング",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "ブラウン フレンチフラワー",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "ミルキーホワイト ダイヤキルト",
+          "hex": "#F4F1EA",
+          "matched": "ミルキーホワイト"
+        },
+        {
+          "value": "オフホワイト フレンチフラワー",
+          "hex": "#EDE9E1",
+          "matched": "オフホワイト"
+        },
+        {
+          "value": "ブラウン ヘリンボーンチェック",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        },
+        {
+          "value": "ミルクイエロー ブリック",
+          "hex": "#F0DFA8",
+          "matched": "ミルクイエロー"
+        },
+        {
+          "value": "ライトカーキ カットフラワー",
+          "hex": "#C4B79A",
+          "matched": "ライトカーキ"
+        },
+        {
+          "value": "カーキ ワイドストライプ",
+          "hex": "#8E8467",
+          "matched": "カーキ"
+        }
+      ]
+    },
+    {
+      "handle": "flower-floor-cushion",
+      "title": "フラワー フロアクッション",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ピンク",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        },
+        {
+          "value": "イエロー",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "グレー",
+          "hex": "#9A9A98",
+          "matched": "グレー"
+        },
+        {
+          "value": "グリーン",
+          "hex": "#4E7A54",
+          "matched": "グリーン"
+        }
+      ]
+    },
+    {
+      "handle": "balloon-dog-object",
+      "title": "バルーンドッグ オブジェ",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ブルー",
+          "hex": "#3F6FA8",
+          "matched": "ブルー"
+        },
+        {
+          "value": "グリーン",
+          "hex": "#4E7A54",
+          "matched": "グリーン"
+        },
+        {
+          "value": "ピンク",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        },
+        {
+          "value": "ゴールド",
+          "hex": "#C6A253",
+          "matched": "ゴールド"
+        },
+        {
+          "value": "シルバー",
+          "hex": "#C3C6C9",
+          "matched": "シルバー"
+        },
+        {
+          "value": "パールホワイト",
+          "hex": "#EFEDE6",
+          "matched": "パールホワイト"
+        },
+        {
+          "value": "ブルーグレー",
+          "hex": "#8C9AA6",
+          "matched": "ブルーグレー"
+        },
+        {
+          "value": "オレンジレッド",
+          "hex": "#D1502F",
+          "matched": "オレンジレッド"
+        }
+      ]
+    },
+    {
+      "handle": "vis-dining-chair",
+      "title": "ビス ダイニングチェア",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ブラック × ベージュパッチワーク",
+          "hex": "#D9C7AE",
+          "matched": "ベージュ"
+        },
+        {
+          "value": "ブラック × ブラックパッチワーク",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        },
+        {
+          "value": "ブラック × ベージュファブリック",
+          "hex": "#D9C7AE",
+          "matched": "ベージュ"
+        },
+        {
+          "value": "ブラック × オフホワイトファブリック",
+          "hex": "#EDE9E1",
+          "matched": "オフホワイト"
+        },
+        {
+          "value": "ダークウォールナット × ライスイエローファブリック",
+          "hex": "#EADFB8",
+          "matched": "ライスイエロー"
+        },
+        {
+          "value": "ダークウォールナット × オフホワイトファブリック",
+          "hex": "#EDE9E1",
+          "matched": "オフホワイト"
+        },
+        {
+          "value": "ダークウォールナット × ベージュパッチワーク",
+          "hex": "#D9C7AE",
+          "matched": "ベージュ"
+        },
+        {
+          "value": "ダークウォールナット × ブラックパッチワーク",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        },
+        {
+          "value": "ダークウォールナット × オレンジファブリック",
+          "hex": "#D9773B",
+          "matched": "オレンジ"
+        }
+      ]
+    },
+    {
+      "handle": "rolo-side-table",
+      "title": "ロロ サイドテーブル",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "イエロー",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "ブラック",
+          "hex": "#2A2A28",
+          "matched": "ブラック"
+        },
+        {
+          "value": "ホワイト",
+          "hex": "#F2F0EC",
+          "matched": "ホワイト"
+        }
+      ]
+    },
+    {
+      "handle": "jacquard-cushion-cover",
+      "title": "ジャカード 中綿付きクッション",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "イエロー ウェーブ",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "イエロー ダイヤグリッド",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "イエロー スモールスクエア",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "イエロー エコー",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "イエロー ヘリンボーン",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        }
+      ]
+    },
+    {
+      "handle": "boa-lounge-chair",
+      "title": "ボア ラウンジチェア",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ベージュ",
+          "hex": "#D9C7AE",
+          "matched": "ベージュ"
+        },
+        {
+          "value": "グレー",
+          "hex": "#9A9A98",
+          "matched": "グレー"
+        },
+        {
+          "value": "フルーツグリーン",
+          "hex": "#8FAE6B",
+          "matched": "フルーツグリーン"
+        },
+        {
+          "value": "イエロー",
+          "hex": "#E8C24A",
+          "matched": "イエロー"
+        },
+        {
+          "value": "カーキ",
+          "hex": "#8E8467",
+          "matched": "カーキ"
+        },
+        {
+          "value": "グリーン",
+          "hex": "#4E7A54",
+          "matched": "グリーン"
+        },
+        {
+          "value": "ピンク",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        },
+        {
+          "value": "パープル",
+          "hex": "#8878B0",
+          "matched": "パープル"
+        },
+        {
+          "value": "ライトブルー",
+          "hex": "#A8C6DE",
+          "matched": "ライトブルー"
+        },
+        {
+          "value": "ブラウン",
+          "hex": "#6E4E37",
+          "matched": "ブラウン"
+        }
+      ]
+    },
+    {
+      "handle": "coil-side-table",
+      "title": "コイル サイドテーブル",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "レモンイエロー",
+          "hex": "#EFD34D",
+          "matched": "レモンイエロー"
+        },
+        {
+          "value": "トゥルーレッド",
+          "hex": "#C4342A",
+          "matched": "トゥルーレッド"
+        },
+        {
+          "value": "グリーン",
+          "hex": "#4E7A54",
+          "matched": "グリーン"
+        }
+      ]
+    },
+    {
+      "handle": "glass-flower-object",
+      "title": "ガラスフラワー オブジェ",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "ルビー（7点セット）",
+          "hex": "#9B2340",
+          "matched": "ルビー"
+        },
+        {
+          "value": "ブルー（7点セット）",
+          "hex": "#3F6FA8",
+          "matched": "ブルー"
+        },
+        {
+          "value": "ピンク（7点セット）",
+          "hex": "#E4A8B0",
+          "matched": "ピンク"
+        },
+        {
+          "value": "ホワイト（7点セット）",
+          "hex": "#F2F0EC",
+          "matched": "ホワイト"
+        },
+        {
+          "value": "アンバー（7点セット）",
+          "hex": "#C98A3C",
+          "matched": "アンバー"
+        }
+      ]
+    },
+    {
+      "handle": "moru-flower-lounge",
+      "title": "MORU フラワーラウンジ",
+      "option": "カラー",
+      "values": [
+        {
+          "value": "アイボリー",
+          "hex": "#E7D6CA",
+          "matched": "アイボリー"
+        },
+        {
+          "value": "オリーブグリーン",
+          "hex": "#7A7455",
+          "matched": "オリーブグリーン"
+        }
+      ]
+    }
+  ],
+  "unresolved": [
+    {
+      "handle": "balloon-dog-object",
+      "title": "バルーンドッグ オブジェ",
+      "value": "マルチカラー"
+    }
+  ]
+}
