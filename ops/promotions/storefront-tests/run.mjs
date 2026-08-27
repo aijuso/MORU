@@ -153,10 +153,23 @@ async function readCart() {
 
 async function main() {
   // パスワード保護は解除されている前提。認証はしない。
-  const probe = await call('/cart.js');
-  if (probe.status !== 200) {
-    console.error(`❌ ストアフロントに入れない (cart.js → ${probe.status})。`);
-    console.error('   パスワード保護がまだ有効な可能性がある。/password は叩かない(レート制限のため)。');
+  //
+  // ⚠️ **429 を「パスワード保護が有効」と報告してはいけない。** 別物なので、
+  //    直前の実行がレート制限を残していると事実と違う原因を報告することになる
+  //    (2026-08-27 に実際に出した)。429 はここでも待って粘る。
+  const probe = await readCart();
+  if (!probe || probe.status !== 200) {
+    const code = probe ? probe.status : 429;
+    if (code === 429) {
+      console.error('❌ レート制限(429)が続いていて開始できない。**パスワード保護とは無関係。**');
+      console.error('   数分おいてから流し直す。MORU_CASES で対象を絞ると軽い。');
+    } else if (code >= 300 && code < 400) {
+      console.error(`❌ cart.js が ${code}(リダイレクト)。**ドメインが違う可能性が高い。**`);
+      console.error(`   いまの向き先: ${STORE} / 正規ドメインは https://moruliving.com`);
+    } else {
+      console.error(`❌ ストアフロントに入れない (cart.js → ${code})。`);
+      console.error('   パスワード保護が有効な可能性がある。/password は叩かない(レート制限のため)。');
+    }
     process.exit(1);
   }
   console.log('✅ ストアフロントに入れた(パスワード保護は解除されている)');
