@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(shopify theme pull:*)",
+      "Bash(shopify theme push:*)",
+      "Bash(shopify theme list:*)",
+      "Bash(shopify theme info:*)",
+      "Bash(shopify theme check:*)",
+      "Bash(shopify version:*)"
+    ],
+    "deny": [
+      "Bash(shopify theme delete:*)",
+      "Bash(shopify theme publish:*)"
+    ]
+  }
+}

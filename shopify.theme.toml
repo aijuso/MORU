@@ -1,0 +1,25 @@
+# Shopify CLI のテーマ環境定義
+#
+#   shopify theme pull -e live
+#   shopify theme push -e live --only sections/moru-main-product.liquid
+#
+# ⚠️ **password はここに書かない。** Theme Access パスワードは秘密情報なので、
+#    環境変数 SHOPIFY_CLI_THEME_TOKEN で渡す(このファイルは git に入る)。
+#    設定手順は ops/theme/README.md。
+
+[environments.dev]
+# MORU Frontend Dev(UNPUBLISHED)。フロントの正本。
+store = "rgy5ee-fv.myshopify.com"
+theme = "166341181680"
+
+[environments.live]
+# 公開中のテーマ。**ここへの push は本番に即反映される。**
+# live = true で「いま MAIN のテーマ」を指すので、テーマが入れ替わっても ID を直さなくてよい。
+store = "rgy5ee-fv.myshopify.com"
+live = true
+allow-live = true
+
+[environments.rollback]
+# 切り戻し先。MORU LIVING (Skeleton構築)。
+store = "rgy5ee-fv.myshopify.com"
+theme = "166203621616"

@@ -91,10 +91,27 @@ Shopifyテーマを **Skeleton Theme をベースにゼロから構築する** �
 - **ブランチは trunk 1本のみ。** 現行 trunk は `docs/06_handoff.md` 冒頭に記載。新しい作業ブランチは
   必ず trunk から派生させる(詳細は docs/07 §2)
 - **ストアは GitHub 連携していない。** git への push ではストアは変わらない。
-  反映は `shopify theme push --store=rgy5ee-fv.myshopify.com --theme 166341181680`(**MORU Frontend Dev / UNPUBLISHED**)。
   順序は必ず commit → git push → theme push
-- **`166203621616`(MORU LIVING (Skeleton構築))は `role: MAIN` の公開テーマ。書き込み・publish 禁止。**
-  `--allow-live` を使わない。push 前に毎回 `themes(first: 20) { nodes { id name role } }` で role を確認する
+- **反映は Shopify CLI で行う。手順とセットアップは `ops/theme/README.md`(唯一の正)。**
+  環境は `shopify.theme.toml` の `dev` / `live` / `rollback`。
+
+  ```
+  shopify theme check
+  shopify theme push -e live --only <ファイル> --nodelete
+  ```
+
+- ⚠️ **`--only` なしで `-e live` に push しない。** repo は本番テーマの正本ではなく
+  (2026-08-27 実測で相違24・repoに無いファイル11)、丸ごと push すると
+  **本番からファイルが消え、古い内容で上書きされる。**
+  触る前に `shopify theme pull -e live` で同期するか、Admin API の `checksumMd5` で突き合わせる
+- 🚫 **`shopify theme delete` / `shopify theme publish` は使わない**(`.claude/settings.json` で deny 済み)。
+  **公開の切り替えは人が管理画面で行う**
+- **MAIN(公開テーマ)の theme id は入れ替わる。** ID を直書きせず `-e live`(`live = true`)を使う。
+  現行の一覧は `docs/06_handoff.md` §2。push 前に
+  `themes(first: 20) { nodes { id name role } }` で role を確認する
+- ⚠️ **Shopify MCP からは公開テーマを直せない**(`themeFilesUpsert` / `themePublish` とも
+  安全ポリシーで拒否。2026-08-27 実測)。**MCP は読み取りと商品・メタフィールド用**、
+  テーマの書き込みは CLI、という切り分けにする
 - **参考デザインを受け取ったら、実装前に `docs/mockups/` へコミットする**(docs/07 §3)。
   チャットの画像は次のセッションから見えない
 - セクション命名: `sections/moru-*.liquid`

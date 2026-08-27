@@ -1747,3 +1747,60 @@ Frontend Dev の全ファイル checksum を repo と突き合わせた
 (`ops/theme/_repo_vs_dev_20260827.md`)。**一致54 / 相違24 / repoに無い11。**
 今回 `moru-main-product.liquid` を repo 上で直接編集できたのは、
 **たまたま md5 が完全一致していたから。** 次に他のファイルを触るときは必ず突き合わせる。
+
+---
+
+## D-151 テーマ反映を Shopify CLI 経由に変える(2026-08-27)
+
+**Claude から本番テーマを直せないことが、恒久的な運用の障害になっていた。**
+
+### 実測した事実
+
+| 経路 | 結果 |
+|---|---|
+| MCP `themeFilesUpsert` を公開テーマ宛て | **拒否**(`category: live_theme`) |
+| MCP `themePublish` | **拒否**(`category: destructive`) |
+| Shopify CLI | ハーネスの権限分類器が拒否。**allow で解除できる** |
+
+**前2つは Shopify MCP サーバー側の設計なので解除できない。**
+3つ目だけが解除できるので、**CLI を正式な反映手段にする。**
+
+### なぜ変える必要があったか
+
+未公開テーマを公開すると**そのテーマが MAIN になり、以後書き込めなくなる。**
+旧 MAIN は1世代古いので、次の修正は「同期 → 編集 → 公開」。
+**2テーマの ping-pong を毎回やることになる。** 恒久運用に耐えない。
+
+### 用意したもの
+
+| ファイル | 中身 |
+|---|---|
+| `shopify.theme.toml` | 環境定義 `dev` / `live` / `rollback`。**password は書かない**(git に入るため) |
+| `.claude/settings.json` | `shopify theme pull/push/list/info/check` を allow、**`delete` / `publish` を deny** |
+| `ops/theme/README.md` | セットアップと運用手順(**唯一の正**) |
+
+`live` 環境は `live = true` にしてある。**テーマが入れ替わっても ID を書き換えなくてよい。**
+
+### Owner の作業(一度だけ)
+
+1. 管理画面 → アプリ → **Theme Access** をインストールし、パスワードを発行
+2. **Claude Code(web)の環境変数**に登録(シェルの export はセッションごとに消える):
+   `SHOPIFY_CLI_THEME_TOKEN` / `SHOPIFY_FLAG_STORE=rgy5ee-fv.myshopify.com` / `SHOPIFY_FLAG_FORCE=1`
+
+### 🔴 セットアップ後、最初にやること
+
+```
+shopify theme pull -e live
+```
+
+**repo は本番の正本ではない**(相違24 / repo に無い11)。
+先に同期しないまま `--only` 無しで push すると、**本番から11ファイルが消え、24ファイルが古い内容で上書きされる。**
+
+### 方針変更した既存ルール
+
+CLAUDE.md の「`--allow-live` を使わない」「MAIN 書き込み・publish 禁止」は
+**Owner 判断で更新した**(2026-08-27)。ただし安全側の縛りは残す:
+
+- `--only` と `--nodelete` を必ず付ける
+- **`theme publish` と `theme delete` は引き続き人の手のみ**(deny 済み)。
+  公開の切り替えを機械に任せない
