@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: **2026-08-28**(Sheets 連携 D-155 / リサーチ・広告の資産化 ops/research・ops/ads D-156〜159 / 残る阻害は MORU500 案内のみ)
+> 最終更新: **2026-08-28**(Sheets 連携 D-155 / リサーチ・広告の資産化 D-156〜159 / 広告制作スキル新設 D-160 / 残る阻害は MORU500 案内のみ)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni` — **新しいブランチを作らない(Owner 指示)**
 > 対象ストア: `rgy5ee-fv.myshopify.com` / 独自ドメイン **`moruliving.com`**(SSL 有効)
 
@@ -230,10 +230,12 @@ MORU_STORE_URL=https://moruliving.com node ops/promotions/storefront-tests/run.m
 | 場所 | 中身 |
 |---|---|
 | `ops/research/` | README(Runbook)/ rubric(評価基準)/ sites(対象サイトDB)/ workflow(実行手順) |
-| `ops/ads/benchmarks/` | 分析の作法(README)+ kocol / desk-nest-cat-bed の競合分析 |
-| `ops/ads/creatives/` | フラワーラウンジの制作知見 / コピー設計 / Beautiful Utility の翻訳型 |
+| `ops/ads/benchmarks/` | 競合分析の**結果置き場**(kocol / desk-nest-cat-bed。取得日必須) |
+| `ops/ads/creatives/` | 商品ごとの採用プロンプト・コピーの記録 + Beautiful Utility の翻訳型 |
+| **`.claude/skills/ad-benchmark-creative/`** | **広告制作の正**(D-160)。8ステップ + AdWhispr の使い方・brandId表 / 借りる捨てる / コピー設計 / 生成の失敗6件 |
 
-**着手前に `ops/research/rubric.md` と `ops/ads/benchmarks/README.md` を読む(CLAUDE.md 絶対ルール16)。**
+**リサーチ前に `ops/research/rubric.md`(ルール16)、広告制作・競合分析前に
+`.claude/skills/ad-benchmark-creative/`(ルール17)を読む。**
 
 ## 8. 次のフェーズ: Meta(Facebook)広告
 

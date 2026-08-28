@@ -2067,3 +2067,39 @@ pip install --upgrade cffi      # ← 省略できない
 特集画像で4商品を1枚にした際、リファレンス欠落でランプが創作された実例あり
 (`ops/ads/creatives/flower-lounge.md` の失敗2)。
 **特集画像はリファレンスを1商品ずつ渡すか、個別生成して後から合成する。**
+
+---
+
+## D-160 広告制作スキル ad-benchmark-creative を新設(2026-08-28)
+
+**Owner 提供の zip を `.claude/skills/ad-benchmark-creative/` に展開した。**
+競合の実データ(AdWhispr)から MORU の広告を設計する8ステップのワークフローが確定した:
+
+ベンチマーク選定 → 全体像(完成型/探索型の判定)→ 個別広告を読む(longevity 順)→
+勝ちパターンの言語化 → MORU への翻訳(借りる/捨てる)→ 実在庫から商品選定 →
+クリエイティブ制作 → 記録。
+
+### 正の所在が変わったもの
+
+| 内容 | 旧 | 新(正) |
+|---|---|---|
+| 分析の作法・数字の信頼度 | `ops/ads/benchmarks/README.md` | skill `references/adwhispr.md` |
+| 借りる/捨てる | 同上 | skill `references/translation-rules.md` |
+| コピー設計(5×5×5) | `ops/ads/creatives/copy.md` | skill `references/copy-rules.md` |
+| 生成の失敗と対処 | `ops/ads/creatives/flower-lounge.md` | skill `references/creative-pitfalls.md`(6件+クレジット運用) |
+
+旧ファイルはスキルへのポインタに置き換え、`ops/ads/` は**分析結果・採用コピーの記録置き場**として残す
+(スキルのステップ8が書き込む先。ブランド分析は**取得日必須**)。
+
+### AdWhispr の運用(skill `references/adwhispr.md` が正)
+
+- brandId(UUID)と pageId(数値)は別物。ID表は同ファイルに記録済み
+  (Kocol / Desk Nest Cat Bed。2026-08-28 取得)
+- **`add_brand` は1日3件上限。削除しても枠は戻らない。追加前に Owner 確認**
+- `save_my_brand`(MORU 自身の登録)は外部サービスへの書き込み。**Owner 確認後に実行。現在未登録**
+- 勝ち指標は稼働日数のみ。performance score は使わない。分類ラベルは本文で検証
+
+### CLAUDE.md の変更
+
+絶対ルール16を分割: 16 = リサーチ前に `ops/research/rubric.md`、
+**17 = 広告制作・競合分析前に `.claude/skills/ad-benchmark-creative/`**。
