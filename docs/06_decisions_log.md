@@ -1910,3 +1910,60 @@ polish.css は独立した asset に出るので、**両方を突き合わせな
 ストアフロントの `<link href>` は **プロトコル相対(`//moruliving.com/...`)**。
 `'https://moruliving.com' + href` で組み立てると URL が壊れて全件取得失敗し、
 **「CSS に宣言が無い」と誤読する**(実際に一度踏んだ)。`//` なら `https:` を前置する。
+
+---
+
+## D-154 商品ページの「特徴」を記事(ブログ)組みにした(2026-08-27)
+
+**D-153 の並び順を上書きする。** Owner から kocol の商品ページのスクリーンショットで
+参考形が示された。**D-153 の「タイトル → 説明 → 画像」は短命で、これが最終。**
+
+### 並び順: 見出し → 画像 → 説明文
+
+D-153 では「タイトルと説明があって画像」と受け取って
+**タイトル → 説明 → 画像**にしたが、参考画像は
+
+1. 見出し(左に見出しマーク)
+2. その見出しに対応する画像
+3. その画像についての説明文
+
+の順だった。**画像が見出しと説明文の間に入る**のが要点。
+ひとつの見出しに画像と本文がぶら下がる、記事の一節の形になる。
+
+### 構造
+
+`__body`(index + title + text をまとめて持っていた)を**3つに割った**:
+
+| ブロック | 中身 |
+|---|---|
+| `.moru-features__head` | `01` の連番 + `<h3>` 見出し。**左の縦バーが見出しマーク** |
+| `.moru-features__media` | 画像 |
+| `.moru-features__body` | 説明文 |
+
+見出しマークは `border-inline-start: 3px solid var(--color-accent-terracotta)`。
+`__head` と `__body` はどちらも `width: min(100%, 54rem)` で**左端をそろえる**
+(`__body` の幅指定は polish.css 側にある)。
+
+見出しは `<h3>` のまま。セクション見出し「この商品の特徴」が `<h2>`、商品名が `<h1>` なので、
+**`<h2>` に上げると見出し階層が壊れる**(Owner の「H1やH2」は「見出し」の意)。
+
+### ベース CSS を1カラムにそろえた
+
+D-153 時点ではセクション側が `grid-template-columns:1fr 1fr`(2カラム)のままで、
+**polish.css の `!important` に1カラム化を依存していた。**
+3ブロック構成では polish を外した瞬間に崩れるので、セクション側も
+`minmax(0,1fr)` にした。**これで polish.css の有無にかかわらず同じ並びになる。**
+
+画像の `aspect-ratio:4/3` + `object-fit:cover` も外した(polish.css と同じく**切らない**方針)。
+
+### 検証(https://moruliving.com/products/moru-flower-lounge)
+
+- 全5ブロックで DOM 順 `見出し → 画像 → 本文` ✅ / 不一致 0
+- 配信 CSS: polish.css・styles.css とも1カラムで一致。`__head` に
+  `border-inline-start:3px solid var(--color-accent-terracotta)` が出ている ✅
+- `theme check` 100 files / 0 offenses、Dev と MAIN の両方へ反映
+
+### 未確認(Owner 判断待ち)
+
+- **`01`〜`05` の連番を残すか。** 参考の kocol には連番が無い。
+  今回は「消せと言われていないものを消さない」で残した

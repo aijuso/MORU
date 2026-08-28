@@ -30,14 +30,18 @@
       {% for feature in features %}
         {% assign side = forloop.index0 | modulo: 2 %}
         <article class="moru-features__row{% if side == 1 %} moru-features__row--flip{% endif %}{% if feature.image.value == blank %} moru-features__row--text-only{% endif %}">
-          <div class="moru-features__body">
+          <div class="moru-features__head">
             <p class="moru-features__index moru-display">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</p>
             {% if feature.heading.value != blank %}<h3 class="moru-features__title">{{ feature.heading.value }}</h3>{% endif %}
-            {% if feature.body.value != blank %}<p class="moru-features__text">{{ feature.body.value | newline_to_br }}</p>{% endif %}
           </div>
           {% if feature.image.value != blank %}
             <div class="moru-features__media moru-card">
               {{ feature.image.value | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: feature.heading.value }}
+            </div>
+          {% endif %}
+          {% if feature.body.value != blank %}
+            <div class="moru-features__body">
+              <p class="moru-features__text">{{ feature.body.value | newline_to_br }}</p>
             </div>
           {% endif %}
         </article>
@@ -49,14 +53,18 @@
         {% if block.settings.image != blank or block.settings.heading != blank or block.settings.body != blank %}
           {% assign side = forloop.index0 | modulo: 2 %}
           <article class="moru-features__row{% if side == 1 %} moru-features__row--flip{% endif %}{% if block.settings.image == blank %} moru-features__row--text-only{% endif %}" {{ block.shopify_attributes }}>
-            <div class="moru-features__body">
+            <div class="moru-features__head">
               <p class="moru-features__index moru-display">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</p>
               {% if block.settings.heading != blank %}<h3 class="moru-features__title">{{ block.settings.heading }}</h3>{% endif %}
-              {% if block.settings.body != blank %}<p class="moru-features__text">{{ block.settings.body | newline_to_br }}</p>{% endif %}
             </div>
             {% if block.settings.image != blank %}
               <div class="moru-features__media moru-card">
                 {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: block.settings.image.alt }}
+              </div>
+            {% endif %}
+            {% if block.settings.body != blank %}
+              <div class="moru-features__body">
+                <p class="moru-features__text">{{ block.settings.body | newline_to_br }}</p>
               </div>
             {% endif %}
           </article>
@@ -70,21 +78,33 @@
 {% stylesheet %}
   .moru-features { padding-block: var(--space-xl) var(--space-2xl); }
   .moru-features__rows { display:flex; flex-direction:column; gap:var(--space-2xl); }
-  .moru-features__row { display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:var(--space-2xl); }
-  .moru-features__row--text-only { grid-template-columns:1fr; }
-  /* DOM は「タイトル → 説明 → 画像」の順。表示順もこれに従わせるので order で並べ替えない。
+  /* 記事組みなので1カラム。見出し → 画像 → 説明文 を縦に積む。
+     (polish.css も全ビューポートを1カラムに固定しているが、
+      ここが2カラムのままだと polish を外した瞬間に崩れるのでベースをそろえる) */
+  .moru-features__row { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--space-lg); }
+  /* 記事のような縦組み。DOM は「見出し → 画像 → 説明文」の順で、
+     表示順もこれに従わせるので order で並べ替えない。
      ⚠️ assets/moru-frontend-polish.css が全ビューポートを1カラムに固定している
      (説明画像を切らないため)。ここで order を触ると、!important が効く flip 行と
      効かない非 flip 行で並びが食い違う。 */
   .moru-features__row .moru-features__media,
   .moru-features__row--flip .moru-features__media { order:0; }
-  .moru-features__media { aspect-ratio:4/3; background-color:var(--color-bg-alt); }
-  .moru-features__media img { width:100%; height:100%; object-fit:cover; }
+
+  /* 見出しブロック。左の縦バーが見出しマーク。本文と左端をそろえる */
+  .moru-features__head {
+    width:min(100%, 54rem);
+    margin-inline:auto;
+    border-inline-start:3px solid var(--color-accent-terracotta);
+    padding-inline-start:var(--space-md);
+  }
+  /* 説明画像は寸法図・仕様表を含むので切らない(polish.css と同じ方針) */
+  .moru-features__media { background-color:var(--color-bg-alt); }
+  .moru-features__media img { display:block; width:100%; height:auto; }
   .moru-features__index { margin:0 0 var(--space-xs); font-size:var(--font-size-xs); color:var(--color-accent-terracotta); }
-  .moru-features__title { margin:0 0 var(--space-md); font-size:var(--font-size-xl); }
+  .moru-features__title { margin:0; font-size:var(--font-size-xl); line-height:1.5; }
   .moru-features__text { margin:0; font-size:var(--font-size-sm); line-height:var(--line-height-body); color:var(--color-muted); }
   @media (max-width:768px) {
-    .moru-features__row { grid-template-columns:1fr; gap:var(--space-md); }
+    .moru-features__row { gap:var(--space-md); }
   }
 {% endstylesheet %}
 
