@@ -557,9 +557,6 @@
           </div>
           <div class="moru-product__coupon-toast" data-product-coupon-toast role="status" aria-live="polite" hidden>{{ 'moru.product.coupon_toast' | t }}</div>
       {% endif %}
-    </div>
-    </div>
-  </div>
 
   {% if section.blocks.size > 0 %}
     <ul class="moru-product__trust" role="list">
@@ -634,6 +631,10 @@
       {% endif %}
     </div>
   {% endif %}
+    </div>
+    </div>
+  </div>
+
 </div>
 
 {% stylesheet %}
@@ -895,6 +896,42 @@
   }
 
   .moru-product__info-col { min-inline-size: 0; }
+
+  /* trust とお届け予定日は info カラム内(2026-08-28 に全幅バーから移動)。縦積みコンパクト */
+  .moru-product__info .moru-product__trust {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm) var(--space-md);
+    margin: var(--space-md) 0 0;
+    padding: var(--space-sm) 0 0;
+    border-block-start: 1px solid var(--color-border);
+    background: none;
+    list-style: none;
+  }
+  .moru-product__info .moru-product__trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+    padding: 0;
+    font-size: var(--font-size-xs);
+  }
+  .moru-product__info .moru-product__trust-item svg { inline-size: 16px; block-size: 16px; color: var(--color-accent-terracotta); }
+  .moru-product__info .moru-product__trust-desc { display: none; }
+  .moru-product__info .moru-delivery {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+    margin: var(--space-sm) 0 0;
+    padding: var(--space-xs) var(--space-sm);
+    border: none;
+    border-radius: 6px;
+    background-color: var(--color-bg-alt);
+    font-size: var(--font-size-xs);
+  }
+  .moru-product__info .moru-delivery__info { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2xs); }
+  .moru-product__info .moru-delivery__info svg { inline-size: 16px; block-size: 16px; align-self: center; }
+  .moru-product__info .moru-delivery__zip { display: none; }
 
   /* PC: 右カラム(商品名〜クーポン)がスクロールに追従する(オーハウス式・2026-08-28)。
      追従の実体は JS(data-moru-info-panel)。ここでは追従中の見た目だけ。 */
@@ -1470,9 +1507,9 @@
       ticking = false;
       if (!mq.matches) { reset(); return; }
       var colRect = col.getBoundingClientRect();
-      var panelH = panel.offsetHeight;
-      var top = Math.min(GAP, window.innerHeight - panelH - GAP);
+      var top = GAP;
       if (colRect.top >= top) { reset(); return; }
+      var panelH = Math.min(panel.offsetHeight, window.innerHeight - GAP * 2);
       var maxTop = endBoundary() - panelH - GAP;
       if (maxTop < top) top = maxTop;
       col.style.minHeight = panelH + 'px';
