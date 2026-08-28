@@ -36,7 +36,7 @@
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="template-{{ template.name | handle }}">
     {% sections 'header-group' %}
 
     {{ content_for_layout }}

@@ -173,7 +173,8 @@
       </dialog>
     </moru-product-gallery>
 
-    <div class="moru-product__info">
+    <div class="moru-product__info-col" data-moru-info-col>
+    <div class="moru-product__info" data-moru-info-panel>
       <h1 class="moru-product__title">{%- if product != blank -%}{{ product.title }}{%- else -%}{{ 'moru.placeholder.product_title' | t }}{%- endif -%}</h1>
 
       <p class="moru-product__subtitle" data-moru-variant-subtitle>
@@ -557,6 +558,7 @@
           <div class="moru-product__coupon-toast" data-product-coupon-toast role="status" aria-live="polite" hidden>{{ 'moru.product.coupon_toast' | t }}</div>
       {% endif %}
     </div>
+    </div>
   </div>
 
   {% if section.blocks.size > 0 %}
@@ -890,6 +892,31 @@
   .moru-product__info {
     display: flex;
     flex-direction: column;
+  }
+
+  .moru-product__info-col { min-inline-size: 0; }
+
+  /* PC: 右カラム(商品名〜クーポン)がスクロールに追従する(オーハウス式・2026-08-28)。
+     追従の実体は JS(data-moru-info-panel)。ここでは追従中の見た目だけ。 */
+  .moru-product__info.is-floating {
+    z-index: 30;
+    overflow-y: auto;
+    max-block-size: calc(100vh - 32px);
+  }
+
+  @media (min-width: 990px) {
+    /* 追従ゾーン: 商品ページの後続セクションを左カラム幅に寄せる。
+       右40%は追従パネルのための余白。ゾーンの終わりは「一緒に購入」(moru-product-grid)。 */
+    .template-product .shopify-section:has(.moru-quantity-offers),
+    .template-product .shopify-section:has(.moru-features),
+    .template-product .shopify-section:has(.moru-product-promos),
+    .template-product .shopify-section:has(.moru-details),
+    .template-product .shopify-section:has(.moru-styling) {
+      inline-size: min(100%, 72rem);
+      margin-inline: auto;
+      padding-inline-end: 40%;
+      box-sizing: border-box;
+    }
   }
 
   .moru-product__title {
@@ -1414,6 +1441,58 @@
 {% endstylesheet %}
 
 {% javascript %}
+  (function () {
+    // PC: 情報カラム(商品名〜クーポン)をスクロールに追従させる。
+    // sticky はセクション境界を越えられないため fixed で実装する。
+    var panel = document.querySelector('[data-moru-info-panel]');
+    var col = document.querySelector('[data-moru-info-col]');
+    if (!panel || !col) return;
+    var mq = window.matchMedia('(min-width: 990px)');
+    var GAP = 24;
+    var ticking = false;
+
+    function endBoundary() {
+      var grid = document.querySelector('.moru-product-grid');
+      var section = grid && grid.closest('.shopify-section');
+      if (section) return section.getBoundingClientRect().top;
+      var footer = document.querySelector('footer');
+      return footer ? footer.getBoundingClientRect().top : Infinity;
+    }
+    function reset() {
+      panel.classList.remove('is-floating');
+      panel.style.position = '';
+      panel.style.top = '';
+      panel.style.left = '';
+      panel.style.width = '';
+      col.style.minHeight = '';
+    }
+    function update() {
+      ticking = false;
+      if (!mq.matches) { reset(); return; }
+      var colRect = col.getBoundingClientRect();
+      var panelH = panel.offsetHeight;
+      var top = Math.min(GAP, window.innerHeight - panelH - GAP);
+      if (colRect.top >= top) { reset(); return; }
+      var maxTop = endBoundary() - panelH - GAP;
+      if (maxTop < top) top = maxTop;
+      col.style.minHeight = panelH + 'px';
+      panel.classList.add('is-floating');
+      panel.style.position = 'fixed';
+      panel.style.top = top + 'px';
+      panel.style.left = colRect.left + 'px';
+      panel.style.width = colRect.width + 'px';
+    }
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    window.addEventListener('load', onScroll);
+    onScroll();
+  })();
+
   (function () {
     var buyNow = document.querySelector('[data-moru-buy-now]');
     if (!buyNow) return;
