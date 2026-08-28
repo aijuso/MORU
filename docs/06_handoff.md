@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: **2026-08-27**(セール価格を本番反映・実測ずみ / repo を本番と同期 / 残る阻害は MORU500 案内のみ)
+> 最終更新: **2026-08-28**(Google Sheets 連携を確立 D-155 / 残る阻害は MORU500 案内のみ)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni` — **新しいブランチを作らない(Owner 指示)**
 > 対象ストア: `rgy5ee-fv.myshopify.com` / 独自ドメイン **`moruliving.com`**(SSL 有効)
 
@@ -210,6 +210,20 @@ MORU_STORE_URL=https://moruliving.com node ops/promotions/storefront-tests/run.m
 - 30日間安心保証の顧客向け文面と policy 本文の突き合わせ
 - `ship_est` 実測3件の CKB 依頼
 - 価格の未決9件(`ops/products/_price_audit_20260825.md` §9)
+
+## 7.5 Google Sheets 連携(2026-08-28 に確立・D-155)
+
+**商品リサーチ用シート「MORU 商品リサーチDB」への読み書きが通った。手順書は `ops/research/README.md`(唯一の正)。**
+
+| | |
+|---|---|
+| シート ID | `1W8LczbaYgB7s6hzhmNfNyjou36Jt0tTF1_VqNwskB4w` |
+| 認証 | サービスアカウント `morusheet@shopfiy-506905.iam.gserviceaccount.com` |
+| 鍵 | 環境変数 `GOOGLE_SHEETS_KEY_B64`(JSON キーの base64。**登録済み**) |
+| タブ | `マスターDB` / `2026-08-28` |
+
+セッションごとに `pip install gspread google-auth && pip install --upgrade cffi`。
+**`cffi` の upgrade を省くと `import gspread` が `PanicException` で落ちる。**
 
 ## 8. 次のフェーズ: Meta(Facebook)広告
 

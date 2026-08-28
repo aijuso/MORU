@@ -1971,3 +1971,49 @@ D-153 時点ではセクション側が `grid-template-columns:1fr 1fr`(2カラ�
 
 `__head` の中身は `<h3>` だけになったが、**見出しマーク(左の縦バー)を持たせる器として残す。**
 見出しが空のときは `__head` ごと出力しない。
+
+---
+
+## D-155 Google Sheets 連携を確立した(2026-08-28)
+
+**商品リサーチ用スプレッドシート「MORU 商品リサーチDB」に、セッションから読み書きできるようにした。**
+2026-08-27 に疎通(名前解決・TLS)まで確認して止まっていたものを、実接続まで進めた。
+
+### 決めたこと
+
+| | |
+|---|---|
+| 認証 | **サービスアカウント**(`morusheet@shopfiy-506905.iam.gserviceaccount.com`) |
+| 鍵の渡し方 | JSON キーを base64 1行にして**環境変数 `GOOGLE_SHEETS_KEY_B64`** |
+| ライブラリ | `gspread` + `google-auth` |
+| scope | `https://www.googleapis.com/auth/spreadsheets` |
+| 手順書 | **`ops/research/README.md`(唯一の正)** |
+
+`ops/theme/README.md`(Theme Access トークン)と同じ扱いにした。
+**シークレットは repo に置かず、ハーネスの環境変数に登録する。**
+`shopify.theme.toml` に password を書かないのと同じ理由。
+
+### 実測した事実
+
+- 接続成功。既存タブは `Untitled` の1枚だった
+- `Untitled` → **`マスターDB`** にリネーム、**`2026-08-28`** タブを新規追加
+- **プロキシ起因の失敗は起きない。** `sheets.googleapis.com` / `oauth2.googleapis.com` とも到達する
+  (`shopify-dev-mcp` の接続失敗や Chromium の `ERR_CONNECTION_RESET` とは別)
+
+### 🔴 落とし穴: `cffi` を upgrade しないと import で落ちる
+
+`pip install gspread google-auth` だけでは **`import gspread` が `PanicException` で落ちる。**
+プリインストールの `cffi` が古く、`cryptography` の Rust 拡張と ABI が合わないため。
+
+```bash
+pip install gspread google-auth
+pip install --upgrade cffi      # ← 省略できない
+```
+
+`cryptography` のアンインストール失敗エラーは**無視してよい**(無視して接続成功を確認済み)。
+
+### 運用の縛り
+
+- **`マスターDB` を消さない・リネームしない。** 日次の作業は日付タブを足す
+- 書き込みは `ws.update()` に2次元配列を渡して**1リクエストにまとめる**(1分60リクエスト制限)
+- **キーの中身を出力しない。** `private_key` を print するコードを書かない
