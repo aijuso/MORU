@@ -557,7 +557,10 @@
           </div>
           <div class="moru-product__coupon-toast" data-product-coupon-toast role="status" aria-live="polite" hidden>{{ 'moru.product.coupon_toast' | t }}</div>
       {% endif %}
+    </div>
+    </div>
 
+    <div class="moru-product__below" data-moru-below>
   {% if section.blocks.size > 0 %}
     <ul class="moru-product__trust" role="list">
       {% for block in section.blocks %}
@@ -631,7 +634,6 @@
       {% endif %}
     </div>
   {% endif %}
-    </div>
     </div>
   </div>
 
@@ -897,63 +899,24 @@
 
   .moru-product__info-col { min-inline-size: 0; }
 
-  /* trust とお届け予定日は info カラム内(2026-08-28 に全幅バーから移動)。縦積みコンパクト */
-  .moru-product__info .moru-product__trust {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-sm) var(--space-md);
-    margin: var(--space-md) 0 0;
-    padding: var(--space-sm) 0 0;
-    border-block-start: 1px solid var(--color-border);
-    background: none;
-    list-style: none;
-  }
-  .moru-product__info .moru-product__trust-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-2xs);
-    padding: 0;
-    font-size: var(--font-size-xs);
-  }
-  .moru-product__info .moru-product__trust-item svg { inline-size: 16px; block-size: 16px; color: var(--color-accent-terracotta); }
-  .moru-product__info .moru-product__trust-desc { display: none; }
-  .moru-product__info .moru-delivery {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2xs) var(--space-xs);
-    margin: var(--space-sm) 0 0;
-    padding: var(--space-xs) var(--space-sm);
-    border: none;
-    border-radius: 6px;
-    background-color: var(--color-bg-alt);
-    font-size: var(--font-size-xs);
-  }
-  .moru-product__info .moru-delivery__info { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2xs); }
-  .moru-product__info .moru-delivery__info svg { inline-size: 16px; block-size: 16px; align-self: center; }
-  .moru-product__info .moru-delivery__zip { display: none; }
 
-  /* PC: 右カラム(商品名〜クーポン)がスクロールに追従する(オーハウス式・2026-08-28)。
-     追従の実体は JS(data-moru-info-panel)。ここでは追従中の見た目だけ。 */
-  .moru-product__info.is-floating {
-    z-index: 30;
-    overflow-y: auto;
-    max-block-size: calc(100vh - 32px);
-  }
+  /* PC: オーハウス式 2カラム。JS が後続セクションを __below(左カラム)へ移し、
+     右カラムは CSS sticky で追従する(常に商品名が上端。長い分はパネル内スクロール)。 */
+  .moru-product__below { min-inline-size: 0; }
 
   @media (min-width: 990px) {
-    /* 追従ゾーン: 商品ページの後続セクションを左カラム幅に寄せる。
-       右40%は追従パネルのための余白。ゾーンの終わりは「一緒に購入」(moru-product-grid)。 */
-    .template-product .shopify-section:has(.moru-quantity-offers),
-    .template-product .shopify-section:has(.moru-features),
-    .template-product .shopify-section:has(.moru-product-promos),
-    .template-product .shopify-section:has(.moru-details),
-    .template-product .shopify-section:has(.moru-styling) {
-      inline-size: min(100%, 72rem);
-      margin-inline: auto;
-      padding-inline-end: 40%;
-      box-sizing: border-box;
+    .moru-product__main { align-items: start; }
+    .moru-product__gallery { grid-column: 1; grid-row: 1; }
+    .moru-product__below { grid-column: 1; grid-row: 2; }
+    .moru-product__info-col { grid-column: 2; grid-row: 1 / span 2; align-self: stretch; }
+    .moru-product__info {
+      position: sticky;
+      top: 24px;
+      max-block-size: calc(100vh - 48px);
+      overflow-y: auto;
     }
+    /* 左カラム幅では4列が窮屈なので2×2に(バンドのデザインは元のまま) */
+    .moru-product__below .moru-product__trust { grid-template-columns: repeat(2, 1fr); }
   }
 
   .moru-product__title {
@@ -1479,55 +1442,39 @@
 
 {% javascript %}
   (function () {
-    // PC: 情報カラム(商品名〜クーポン)をスクロールに追従させる。
-    // sticky はセクション境界を越えられないため fixed で実装する。
-    var panel = document.querySelector('[data-moru-info-panel]');
-    var col = document.querySelector('[data-moru-info-col]');
-    if (!panel || !col) return;
+    // PC: 後続セクション(数量割引/特徴/販促/詳細/スタイリング)を左カラム(__below)へ移す。
+    // グリッドの右セルが2行ぶんに伸びるので、CSS sticky が商品名からページ下部まで効く。
+    var below = document.querySelector('[data-moru-below]');
+    if (!below) return;
     var mq = window.matchMedia('(min-width: 990px)');
-    var GAP = 24;
-    var ticking = false;
-
-    function endBoundary() {
-      var grid = document.querySelector('.moru-product-grid');
-      var section = grid && grid.closest('.shopify-section');
-      if (section) return section.getBoundingClientRect().top;
-      var footer = document.querySelector('footer');
-      return footer ? footer.getBoundingClientRect().top : Infinity;
+    var roots = ['.moru-quantity-offers', '.moru-features', '.moru-product-promos', '.moru-details', '.moru-styling'];
+    var moved = [];
+    function collect() {
+      var sections = [];
+      roots.forEach(function (sel) {
+        document.querySelectorAll(sel).forEach(function (el) {
+          var section = el.closest('.shopify-section');
+          if (section && sections.indexOf(section) === -1) sections.push(section);
+        });
+      });
+      return sections;
     }
-    function reset() {
-      panel.classList.remove('is-floating');
-      panel.style.position = '';
-      panel.style.top = '';
-      panel.style.left = '';
-      panel.style.width = '';
-      col.style.minHeight = '';
+    function apply() {
+      if (mq.matches) {
+        if (moved.length) return;
+        collect().forEach(function (section) {
+          moved.push({ el: section, parent: section.parentNode, next: section.nextSibling });
+          below.appendChild(section);
+        });
+      } else {
+        while (moved.length) {
+          var m = moved.pop();
+          m.parent.insertBefore(m.el, m.next);
+        }
+      }
     }
-    function update() {
-      ticking = false;
-      if (!mq.matches) { reset(); return; }
-      var colRect = col.getBoundingClientRect();
-      var top = GAP;
-      if (colRect.top >= top) { reset(); return; }
-      var panelH = Math.min(panel.offsetHeight, window.innerHeight - GAP * 2);
-      var maxTop = endBoundary() - panelH - GAP;
-      if (maxTop < top) top = maxTop;
-      col.style.minHeight = panelH + 'px';
-      panel.classList.add('is-floating');
-      panel.style.position = 'fixed';
-      panel.style.top = top + 'px';
-      panel.style.left = colRect.left + 'px';
-      panel.style.width = colRect.width + 'px';
-    }
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(update);
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    window.addEventListener('load', onScroll);
-    onScroll();
+    apply();
+    mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply);
   })();
 
   (function () {
