@@ -1963,7 +1963,11 @@ D-153 時点ではセクション側が `grid-template-columns:1fr 1fr`(2カラ�
   `border-inline-start:3px solid var(--color-accent-terracotta)` が出ている ✅
 - `theme check` 100 files / 0 offenses、Dev と MAIN の両方へ反映
 
-### 未確認(Owner 判断待ち)
+### 連番は消した(2026-08-27 Owner 判断)
 
-- **`01`〜`05` の連番を残すか。** 参考の kocol には連番が無い。
-  今回は「消せと言われていないものを消さない」で残した
+**`01`〜`05` の連番は削除。** 参考の kocol に連番が無く、Owner が「消してほしい」と判断した。
+マークアップ(metafield 分岐・block 分岐の両方)と `.moru-features__index` の CSS を撤去。
+他ファイルからの参照は無いことを確認ずみ。
+
+`__head` の中身は `<h3>` だけになったが、**見出しマーク(左の縦バー)を持たせる器として残す。**
+見出しが空のときは `__head` ごと出力しない。

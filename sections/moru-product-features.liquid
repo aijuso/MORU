@@ -30,10 +30,11 @@
       {% for feature in features %}
         {% assign side = forloop.index0 | modulo: 2 %}
         <article class="moru-features__row{% if side == 1 %} moru-features__row--flip{% endif %}{% if feature.image.value == blank %} moru-features__row--text-only{% endif %}">
-          <div class="moru-features__head">
-            <p class="moru-features__index moru-display">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</p>
-            {% if feature.heading.value != blank %}<h3 class="moru-features__title">{{ feature.heading.value }}</h3>{% endif %}
-          </div>
+          {% if feature.heading.value != blank %}
+            <div class="moru-features__head">
+              <h3 class="moru-features__title">{{ feature.heading.value }}</h3>
+            </div>
+          {% endif %}
           {% if feature.image.value != blank %}
             <div class="moru-features__media moru-card">
               {{ feature.image.value | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: feature.heading.value }}
@@ -53,10 +54,11 @@
         {% if block.settings.image != blank or block.settings.heading != blank or block.settings.body != blank %}
           {% assign side = forloop.index0 | modulo: 2 %}
           <article class="moru-features__row{% if side == 1 %} moru-features__row--flip{% endif %}{% if block.settings.image == blank %} moru-features__row--text-only{% endif %}" {{ block.shopify_attributes }}>
-            <div class="moru-features__head">
-              <p class="moru-features__index moru-display">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</p>
-              {% if block.settings.heading != blank %}<h3 class="moru-features__title">{{ block.settings.heading }}</h3>{% endif %}
-            </div>
+            {% if block.settings.heading != blank %}
+              <div class="moru-features__head">
+                <h3 class="moru-features__title">{{ block.settings.heading }}</h3>
+              </div>
+            {% endif %}
             {% if block.settings.image != blank %}
               <div class="moru-features__media moru-card">
                 {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: block.settings.image.alt }}
@@ -100,7 +102,6 @@
   /* 説明画像は寸法図・仕様表を含むので切らない(polish.css と同じ方針) */
   .moru-features__media { background-color:var(--color-bg-alt); }
   .moru-features__media img { display:block; width:100%; height:auto; }
-  .moru-features__index { margin:0 0 var(--space-xs); font-size:var(--font-size-xs); color:var(--color-accent-terracotta); }
   .moru-features__title { margin:0; font-size:var(--font-size-xl); line-height:1.5; }
   .moru-features__text { margin:0; font-size:var(--font-size-sm); line-height:var(--line-height-body); color:var(--color-muted); }
   @media (max-width:768px) {
