@@ -1440,8 +1440,24 @@
   }
 
   @media (max-width: 599px) {
+    /* スマホでも2列2行を保つ(Owner 指示 2026-08-28)。
+       1カラムだと4行に伸びて、下のセクションが遠くなる。
+       列が半分になるぶん、余白とアイコンを詰めて文字の折り返しを減らす。 */
     .moru-product__trust {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm) var(--space-xs);
+      padding: var(--space-sm);
+    }
+
+    .moru-product__trust-item {
+      gap: var(--space-xs);
+      /* grid の子が auto 幅で膨らんで枠外に出るのを防ぐ */
+      min-width: 0;
+    }
+
+    .moru-product__trust-icon svg {
+      width: 1.25rem;
+      height: 1.25rem;
     }
 
     .moru-delivery__info {

@@ -2353,3 +2353,19 @@ MORU500 案内のローンチ阻害は**解消**。
 
 デュオ ナイトテーブルのキャッチコピー「**枝先の家具**だからこそ、選ぶ価値がある。」の意味が取れない
 (「脇役の家具」の誤変換か)。**推測で直さず残した。**
+
+### 追記1(2026-08-28・安心バナーをスマホでも2列2行に)
+
+**Owner 指示(スクリーンショットで指定)。** 商品ページの安心バナー(trust)は
+**599px 以下だけが1カラム**で、4項目が縦に4行伸びていた。**2列2行**に変更。
+
+- `sections/moru-main-product.liquid` の `@media (max-width: 599px)` の
+  `.moru-product__trust { grid-template-columns: 1fr }` → `repeat(2, 1fr)`
+- 列が半分の幅になるので、gap・padding・アイコン(1.5rem → 1.25rem)を詰めて
+  折り返しを減らした。`.moru-product__trust-item` に `min-width: 0`(grid の子が
+  auto 幅で膨らんで枠外に出るのを防ぐ)
+- **他のブレークポイントは元から2列**なので触っていない
+  (PC は `.moru-product__below` 側で2×2・D-161 追記6、990〜599px も2列)
+- `theme check` 101 files / 0 offenses。**dev と live の両方へ push**(内容一致を維持)
+- 検証: 本番の `compiled_assets/styles.css` を取得し、599px ブロックに
+  `grid-template-columns:repeat(2,1fr)` が入っていることを確認
