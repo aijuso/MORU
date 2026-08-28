@@ -132,10 +132,16 @@
 
       <aside class="moru-cart__summary">
         {%- comment -%}
-          FAQ の「新規会員登録後、対象のお客様のカートに表示される¥500OFFクーポン」の実体。
-          対象 = ログイン済みかつ注文0回(MORU500 のセグメント条件と同じ)。
+          ¥500OFFクーポンの案内枠。MORU500 は全顧客に開放済み(1人1回・2026-08-28)。
+          すでにカートに適用されている場合は出さない。
         {%- endcomment -%}
-        {% if section.settings.show_member_coupon and customer and customer.orders_count == 0 %}
+        {%- assign applied_codes = cart.discount_applications | where: 'type', 'discount_code' | map: 'title' -%}
+        {% if section.settings.show_member_coupon and applied_codes contains section.settings.member_coupon_code %}
+          {%- assign show_member_coupon_block = false -%}
+        {% elsif section.settings.show_member_coupon %}
+          {%- assign show_member_coupon_block = true -%}
+        {% endif %}
+        {% if show_member_coupon_block %}
           <div class="moru-cart__member-coupon">
             <p class="moru-cart__member-coupon-title">{{ 'moru.cart.member_coupon_title' | t }}</p>
             <p class="moru-cart__member-coupon-text">{{ 'moru.cart.member_coupon_text' | t }}</p>
@@ -198,7 +204,13 @@
               assign shipping_is_free = false
             endif
           -%}
-          <div class="moru-cart__line"><span>{{ 'moru.cart.shipping' | t }}</span><span class="moru-cart__line-value{% if shipping_is_free %} moru-cart__line-value--free{% endif %}">{% if shipping_is_free %}{{ 'moru.cart.shipping_free' | t }}{% else %}{{ shipping_fee | money }}{% endif %}</span></div>
+          {% if cart.total_discount > 0 %}
+            <div class="moru-cart__line moru-cart__line--discount"><span>{{ 'moru.cart.product_discount' | t }}</span><span class="moru-cart__line-value moru-cart__line-value--discount">&minus;{{ cart.total_discount | money }}</span></div>
+          {% endif %}
+          <div class="moru-cart__line"><span>{{ 'moru.cart.shipping' | t }}</span><span class="moru-cart__line-value{% if shipping_is_free %} moru-cart__line-value--free{% endif %}">{% if shipping_is_free %}<s class="moru-cart__shipping-original">{{ shipping_fee | money }}</s> {{ 'moru.cart.shipping_free' | t }}{% else %}{{ shipping_fee | money }}{% endif %}</span></div>
+          {% if shipping_is_free %}
+            <div class="moru-cart__line moru-cart__line--discount"><span>{{ 'moru.cart.shipping_discount' | t }}</span><span class="moru-cart__line-value moru-cart__line-value--discount">&minus;{{ shipping_fee | money }}</span></div>
+          {% endif %}
           {%- unless shipping_is_free -%}
             {%- assign remaining = free_threshold | minus: cart.original_total_price -%}
             {%- assign remaining_money = remaining | money -%}
@@ -330,6 +342,9 @@
   .moru-cart__line:last-child { margin-block-end:0; }
   .moru-cart__line-value { color:var(--color-text); font-weight:500; }
   .moru-cart__line-value--free { color:var(--color-accent-terracotta); font-weight:700; }
+  .moru-cart__shipping-original { color:var(--color-muted); font-weight:400; margin-inline-end:4px; }
+  .moru-cart__line--discount { color:var(--color-accent-terracotta); }
+  .moru-cart__line--discount .moru-cart__line-value--discount { color:var(--color-accent-terracotta); font-weight:600; }
   .moru-cart__line--shipping-hint { font-size:var(--font-size-xs); color:var(--color-muted); }
   .moru-cart__total { display:flex; align-items:baseline; justify-content:space-between; margin-block-end:var(--space-lg); }
   .moru-cart__total-label { font-size:var(--font-size-lg); font-weight:600; }

@@ -504,6 +504,11 @@
             </span>
           </button>
 
+          {% if section.settings.show_buy_now %}
+            <button type="button" class="moru-product__buynow" data-moru-buy-now data-error="{{ 'moru.product.buy_now_error' | t | escape }}">
+              {{ 'moru.product.buy_now' | t }}
+            </button>
+          {% endif %}
           {% if section.settings.show_wishlist %}
             <button type="button" class="moru-product__wishlist" data-moru-wishlist aria-pressed="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -518,14 +523,12 @@
           {% endif %}
         </div>
 
-        {% if section.settings.show_express_checkout %}
-          <div class="moru-product__express">
-            <div class="moru-product__express-divider">
-              <span>{{ 'moru.product.express_checkout' | t }}</span>
-            </div>
-            {{ form | payment_button }}
-          </div>
-        {% endif %}
+        {%- comment -%}
+          Shopify の動的チェックアウトボタン(shopで購入)は廃止し、自前の
+          「今すぐ購入」に置き換えた(Owner 指示 2026-08-28)。カート追加 →
+          /checkout へ直行。行き先のチェックアウトでカード・PayPal・Shop Pay・
+          Google Pay がすべて選べるので、動的ボタンより迷いがない。
+        {%- endcomment -%}
       {% endform %}
 
       {%- comment -%}
@@ -534,8 +537,10 @@
         注文実績のある会員には出さない(事実に反する訴求になるため)。
         期限は設定しない(実際に無期限。偽の期限は絶対ルール6で禁止)。
       {%- endcomment -%}
+      {%- comment -%}
+        MORU500 は全顧客に開放済み(1人1回・2026-08-28)。全員に表示する。
+      {%- endcomment -%}
       {% if section.settings.show_coupon_card %}
-        {% unless customer and customer.orders_count > 0 %}
           <div class="moru-product__coupon" data-product-coupon>
             <span class="moru-product__coupon-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2 9V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"></path><line x1="9" y1="9" x2="15" y2="15"></line><circle cx="9.5" cy="14.5" r="0.5"></circle><circle cx="14.5" cy="9.5" r="0.5"></circle></svg>
@@ -550,7 +555,6 @@
             </button>
           </div>
           <div class="moru-product__coupon-toast" data-product-coupon-toast role="status" aria-live="polite" hidden>{{ 'moru.product.coupon_toast' | t }}</div>
-        {% endunless %}
       {% endif %}
     </div>
   </div>
@@ -1182,10 +1186,10 @@
     justify-content: center;
     gap: var(--space-xs);
     height: 3rem;
-    border: 1px solid var(--color-text);
+    border: 1px solid var(--color-accent-terracotta);
     border-radius: 2px;
-    background-color: var(--color-text);
-    color: var(--color-surface);
+    background-color: var(--color-bg);
+    color: var(--color-accent-terracotta);
     font-family: inherit;
     font-size: var(--font-size-sm);
     font-weight: 500;
@@ -1207,6 +1211,26 @@
     width: 1.125rem;
     height: 1.125rem;
   }
+
+  .moru-product__buynow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    height: 3rem;
+    border: 1px solid var(--color-accent-terracotta);
+    border-radius: 2px;
+    background-color: var(--color-accent-terracotta);
+    color: #fff;
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: opacity 200ms ease;
+  }
+  .moru-product__buynow:hover { opacity: 0.85; }
+  .moru-product__buynow[disabled] { opacity: 0.6; cursor: wait; }
 
   .moru-product__wishlist {
     display: flex;
@@ -1240,28 +1264,6 @@
   }
 
   /* Express checkout */
-  .moru-product__express-divider {
-    display: flex;
-    align-items: center;
-    margin-block-end: var(--space-sm);
-    font-size: var(--font-size-xs);
-    letter-spacing: var(--letter-spacing-wide);
-    color: var(--color-muted);
-  }
-
-  .moru-product__express-divider::before,
-  .moru-product__express-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background-color: var(--color-border);
-  }
-
-  .moru-product__express-divider span {
-    padding-inline: var(--space-sm);
-  }
-
-  /* Trust badges */
   .moru-product__trust {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -1395,33 +1397,42 @@
     .moru-product__actions {
       position: fixed;
       inset-block-end: 0;
-      inset-inline-start: 0;
-      inline-size: 50%;
+      inset-inline: 0;
       z-index: 40;
+      flex-direction: row;
+      gap: var(--space-2xs);
       margin: 0;
-      padding: var(--space-2xs) var(--space-2xs) calc(var(--space-2xs) + env(safe-area-inset-bottom)) var(--space-sm);
-      background-color: var(--color-bg);
-      border-block-start: 1px solid var(--color-border);
+      padding: var(--space-2xs) var(--space-sm) calc(var(--space-2xs) + env(safe-area-inset-bottom));
+      background-color: var(--color-bg-alt);
+      border-block-start: 1px solid var(--color-accent-terracotta);
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
     }
     .moru-product__actions .moru-product__wishlist { display: none; }
-    .moru-product__add { inline-size: 100%; }
-    .moru-product__express {
-      position: fixed;
-      inset-block-end: 0;
-      inset-inline-end: 0;
-      inline-size: 50%;
-      z-index: 40;
-      margin: 0;
-      padding: var(--space-2xs) var(--space-sm) calc(var(--space-2xs) + env(safe-area-inset-bottom)) var(--space-2xs);
-      background-color: var(--color-bg);
-      border-block-start: 1px solid var(--color-border);
-    }
-    .moru-product__express-divider { display: none; }
-    .moru-product__express .shopify-payment-button__button { block-size: 3rem; min-block-size: 3rem; }
+    .moru-product__add { flex: 1; background-color: var(--color-bg); }
+    .moru-product__actions .moru-product__buynow { flex: 1; inline-size: auto; }
   }
 {% endstylesheet %}
 
 {% javascript %}
+  (function () {
+    var buyNow = document.querySelector('[data-moru-buy-now]');
+    if (!buyNow) return;
+    buyNow.addEventListener('click', function () {
+      var form = buyNow.closest('form');
+      if (!form) return;
+      buyNow.disabled = true;
+      fetch('/cart/add.js', { method: 'POST', body: new FormData(form) })
+        .then(function (response) {
+          if (!response.ok) throw new Error('add failed');
+          window.location.href = '/checkout';
+        })
+        .catch(function () {
+          buyNow.disabled = false;
+          window.alert(buyNow.dataset.error);
+        });
+    });
+  })();
+
   (function () {
     var copyButton = document.querySelector('[data-product-coupon-copy]');
     if (!copyButton) return;
@@ -1844,9 +1855,9 @@
     },
     {
       "type": "checkbox",
-      "id": "show_express_checkout",
-      "label": "t:moru.main_product.show_express_checkout_label",
-      "info": "t:moru.main_product.show_express_checkout_info",
+      "id": "show_buy_now",
+      "label": "t:moru.main_product.show_buy_now_label",
+      "info": "t:moru.main_product.show_buy_now_info",
       "default": true
     },
     {
