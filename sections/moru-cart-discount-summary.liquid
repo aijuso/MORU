@@ -1,35 +1,8 @@
-<moru-cart-discount-summary class="moru-cart-discount-summary" aria-hidden="true">
-  {% if customer and customer.orders_count == 0 %}
-    <template data-moru-member-coupon-template>
-      {% if request.locale.iso_code == 'ja' %}
-        <div class="moru-cart__member-coupon" data-moru-member-coupon>
-          <div class="moru-cart__member-coupon-copy">
-            <p class="moru-cart__member-coupon-eyebrow">新規会員特典</p>
-            <p class="moru-cart__member-coupon-title">¥500 OFFクーポン</p>
-          </div>
-          <div class="moru-cart__member-coupon-code-row">
-            <span class="moru-cart__member-coupon-code" aria-label="クーポンコード MORU500">MORU500</span>
-            <button type="button" class="moru-cart__member-coupon-button" data-moru-member-coupon-copy data-code="MORU500" aria-label="クーポンコード MORU500 をコピー">コピー</button>
-          </div>
-          <p class="moru-cart__member-coupon-note">他の割引の方がお得な場合は、自動的にお得な割引が優先されます。</p>
-          <p class="moru-cart__member-coupon-status" data-moru-member-coupon-status role="status" aria-live="polite" hidden>コピーしました</p>
-        </div>
-      {% else %}
-        <div class="moru-cart__member-coupon" data-moru-member-coupon>
-          <div class="moru-cart__member-coupon-copy">
-            <p class="moru-cart__member-coupon-eyebrow">NEW MEMBER BENEFIT</p>
-            <p class="moru-cart__member-coupon-title">¥500 OFF coupon</p>
-          </div>
-          <div class="moru-cart__member-coupon-code-row">
-            <span class="moru-cart__member-coupon-code" aria-label="Coupon code MORU500">MORU500</span>
-            <button type="button" class="moru-cart__member-coupon-button" data-moru-member-coupon-copy data-code="MORU500" aria-label="Copy coupon code MORU500">Copy</button>
-          </div>
-          <p class="moru-cart__member-coupon-note">If another discount gives you a better price, Shopify will automatically prioritize the better discount.</p>
-          <p class="moru-cart__member-coupon-status" data-moru-member-coupon-status role="status" aria-live="polite" hidden>Copied</p>
-        </div>
-      {% endif %}
-    </template>
-  {% endif %}
+<moru-cart-discount-summary class="moru-cart-discount-summary" aria-hidden="true" data-shipping-fee="{{ section.settings.shipping_fee | default: 870 }}" data-free-threshold="{{ section.settings.free_shipping_threshold | default: 7700 }}">
+  {%- comment -%}
+    MORU500 の案内枠は moru-main-cart のサーバー描画に一本化した(2026-08-28)。
+    ここでの注入は行わない。
+  {%- endcomment -%}
 </moru-cart-discount-summary>
 
 {% stylesheet %}
@@ -37,10 +10,10 @@
   .moru-cart__item-price.has-moru-discount span { color:var(--color-accent-terracotta); font-weight:700; }
   .moru-cart__item-saving { margin-top:2px; color:var(--color-accent-terracotta); font-size:10px; font-weight:700; white-space:nowrap; }
   .moru-cart__discount-summary { display:grid; gap:5px; margin:0 0 var(--space-md); padding:var(--space-sm) 0 var(--space-md); border-bottom:1px solid var(--color-border); }
-  .moru-cart__discount-summary-row { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-md); color:var(--color-muted); font-size:var(--font-size-xs); }
+  .moru-cart__discount-summary-row { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-md); color:var(--color-muted); font-size:var(--font-size-sm); }
   .moru-cart__discount-summary-row--saving { color:var(--color-accent-terracotta); }
   .moru-cart__discount-summary-row--saving strong { font-size:var(--font-size-sm); }
-  .moru-cart__discount-summary-total { margin:2px 0 0; color:var(--color-accent-terracotta); font-size:10px; font-weight:700; text-align:right; }
+  .moru-cart__discount-summary-total { margin:2px 0 0; color:var(--color-accent-terracotta); font-size:var(--font-size-xs); font-weight:700; text-align:right; }
   .moru-cart__member-coupon { margin:0 0 var(--space-md); padding:var(--space-md); border:1px solid color-mix(in srgb, var(--color-accent-blue) 35%, var(--color-border)); border-radius:8px; background:color-mix(in srgb, var(--color-accent-blue) 5%, var(--color-surface)); }
   .moru-cart__member-coupon-copy { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-sm); margin:0 0 var(--space-sm); }
   .moru-cart__member-coupon-eyebrow { margin:0; color:var(--color-accent-blue); font-size:10px; font-weight:700; letter-spacing:.08em; }
@@ -169,7 +142,13 @@
       summary.querySelector('[data-moru-cart-discount-summary]')?.remove();
       const totalLabel = total.querySelector('.moru-cart__total-label');
       const discount = Number(cart.total_discount || 0);
-      if (discount <= 0) {
+      // 送料割引: 割引前小計がしきい値以上なら送料ぶんもお得として合算する(D-127 と同じ基準)
+      const shippingFee = (parseInt(this.dataset.shippingFee, 10) || 870) * 100;
+      const freeThreshold = (parseInt(this.dataset.freeThreshold, 10) || 7700) * 100;
+      const originalTotal = Number(cart.original_total_price || 0) || (Number(cart.total_price || 0) + discount);
+      const shippingSaving = originalTotal >= freeThreshold ? shippingFee : 0;
+      const totalSaving = discount + shippingSaving;
+      if (totalSaving <= 0) {
         if (totalLabel && totalLabel.dataset.moruOriginalLabel) totalLabel.textContent = totalLabel.dataset.moruOriginalLabel;
         return;
       }
@@ -179,14 +158,13 @@
         totalLabel.textContent = '割引後合計';
       }
 
-      const original = Number(cart.original_total_price || 0) || (Number(cart.total_price || 0) + discount);
       const box = document.createElement('div');
       box.className = 'moru-cart__discount-summary';
       box.dataset.moruCartDiscountSummary = 'true';
       box.innerHTML = `
-        <div class="moru-cart__discount-summary-row"><span>通常合計</span><s>${this.formatMoney(original)}</s></div>
-        <div class="moru-cart__discount-summary-row moru-cart__discount-summary-row--saving"><span>割引合計</span><strong>−${this.formatMoney(discount)}</strong></div>
-        <p class="moru-cart__discount-summary-total">合計 ${this.formatMoney(discount)} お得</p>
+        <div class="moru-cart__discount-summary-row"><span>通常合計</span><s>${this.formatMoney(originalTotal)}</s></div>
+        <div class="moru-cart__discount-summary-row moru-cart__discount-summary-row--saving"><span>割引合計</span><strong>−${this.formatMoney(totalSaving)}</strong></div>
+        <p class="moru-cart__discount-summary-total">合計 ${this.formatMoney(totalSaving)} お得</p>
       `;
       total.parentNode.insertBefore(box, total);
     }
@@ -199,7 +177,7 @@
 {
   "name":"カート：割引表示補助",
   "tag":"section",
-  "settings":[],
+  "settings":[{"type":"number","id":"shipping_fee","label":"送料(円)","default":870},{"type":"number","id":"free_shipping_threshold","label":"送料無料のしきい値(円)","info":"割引前小計がこの金額以上なら送料分も割引合計に含める","default":7700}],
   "enabled_on":{"templates":["cart"]},
   "presets":[{"name":"カート：割引表示補助"}]
 }

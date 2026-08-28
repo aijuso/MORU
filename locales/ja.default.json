@@ -264,6 +264,7 @@
       "conditions": "お一人様1回まで。他の割引とは併用できません。"
     },
     "cart_drawer": {
+      "free_shipping_applied": "送料無料が適用されます",
       "note": "送料と税額はご購入手続きの画面で確定します。",
       "view_cart": "カートを見る"
     },

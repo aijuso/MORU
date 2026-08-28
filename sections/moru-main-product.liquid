@@ -1417,6 +1417,9 @@
   (function () {
     var buyNow = document.querySelector('[data-moru-buy-now]');
     if (!buyNow) return;
+    // チェックアウトから「戻る」で復帰すると bfcache が disabled のまま復元するため、
+    // 表示のたびに必ず押せる状態に戻す
+    window.addEventListener('pageshow', function () { buyNow.disabled = false; });
     buyNow.addEventListener('click', function () {
       var form = buyNow.closest('form');
       if (!form) return;

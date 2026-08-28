@@ -264,6 +264,7 @@
       "conditions": "One use per customer. Cannot be combined with other discounts."
     },
     "cart_drawer": {
+      "free_shipping_applied": "Free shipping applied",
       "note": "Shipping and tax are calculated at checkout.",
       "view_cart": "View cart"
     },

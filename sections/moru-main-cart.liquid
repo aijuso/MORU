@@ -190,7 +190,7 @@
         {% endif %}
 
         <div class="moru-cart__breakdown">
-          <div class="moru-cart__line"><span>{{ 'moru.cart.subtotal' | t }}</span><span class="moru-cart__line-value">{{ cart.items_subtotal_price | money }}</span></div>
+          <div class="moru-cart__line"><span>{{ 'moru.cart.subtotal' | t }}</span><span class="moru-cart__line-value">{% if cart.total_discount > 0 %}<s class="moru-cart__subtotal-original">{{ cart.original_total_price | money }}</s> <strong class="moru-cart__subtotal-current">{{ cart.total_price | money }}</strong>{% else %}{{ cart.items_subtotal_price | money }}{% endif %}</span></div>
           {%- comment -%}
             送料は 割引前小計 >= しきい値(既定 ¥7,700)で無料(docs/13 §9・D-127。
             Function は割引前 subtotal で判定するので、表示も cart.original_total_price で揃える)。
@@ -204,13 +204,7 @@
               assign shipping_is_free = false
             endif
           -%}
-          {% if cart.total_discount > 0 %}
-            <div class="moru-cart__line moru-cart__line--discount"><span>{{ 'moru.cart.product_discount' | t }}</span><span class="moru-cart__line-value moru-cart__line-value--discount">&minus;{{ cart.total_discount | money }}</span></div>
-          {% endif %}
           <div class="moru-cart__line"><span>{{ 'moru.cart.shipping' | t }}</span><span class="moru-cart__line-value{% if shipping_is_free %} moru-cart__line-value--free{% endif %}">{% if shipping_is_free %}<s class="moru-cart__shipping-original">{{ shipping_fee | money }}</s> {{ 'moru.cart.shipping_free' | t }}{% else %}{{ shipping_fee | money }}{% endif %}</span></div>
-          {% if shipping_is_free %}
-            <div class="moru-cart__line moru-cart__line--discount"><span>{{ 'moru.cart.shipping_discount' | t }}</span><span class="moru-cart__line-value moru-cart__line-value--discount">&minus;{{ shipping_fee | money }}</span></div>
-          {% endif %}
           {%- unless shipping_is_free -%}
             {%- assign remaining = free_threshold | minus: cart.original_total_price -%}
             {%- assign remaining_money = remaining | money -%}
@@ -342,15 +336,15 @@
   .moru-cart__line:last-child { margin-block-end:0; }
   .moru-cart__line-value { color:var(--color-text); font-weight:500; }
   .moru-cart__line-value--free { color:var(--color-accent-terracotta); font-weight:700; }
-  .moru-cart__shipping-original { color:var(--color-muted); font-weight:400; margin-inline-end:4px; }
-  .moru-cart__line--discount { color:var(--color-accent-terracotta); }
-  .moru-cart__line--discount .moru-cart__line-value--discount { color:var(--color-accent-terracotta); font-weight:600; }
+  .moru-cart__shipping-original { color:var(--color-sale); font-weight:400; margin-inline-end:4px; }
+  .moru-cart__subtotal-original { color:var(--color-text); font-weight:400; margin-inline-end:4px; }
+  .moru-cart__subtotal-current { font-size:calc(var(--font-size-sm) * 1.15); font-weight:700; }
   .moru-cart__line--shipping-hint { font-size:var(--font-size-xs); color:var(--color-muted); }
   .moru-cart__total { display:flex; align-items:baseline; justify-content:space-between; margin-block-end:var(--space-lg); }
   .moru-cart__total-label { font-size:var(--font-size-lg); font-weight:600; }
   .moru-cart__total-value { display:flex; align-items:baseline; gap:var(--space-2xs); }
   .moru-cart__currency { font-size:var(--font-size-xs); color:var(--color-muted); }
-  .moru-cart__total-value strong { font-size:var(--font-size-xl); font-weight:700; }
+  .moru-cart__total-value strong { font-size:var(--font-size-2xl); font-weight:700; }
   .moru-cart__checkout { width:100%; padding-block:var(--space-md); border:none; border-radius:4px; background-color:var(--color-text); color:var(--color-bg); font-family:inherit; font-size:var(--font-size-sm); font-weight:500; letter-spacing:.03em; cursor:pointer; transition:opacity 200ms ease; }
   .moru-cart__checkout:hover { opacity:.85; }
   .moru-cart__express { margin-block-start:var(--space-md); }
