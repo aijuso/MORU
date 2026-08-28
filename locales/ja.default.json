@@ -109,6 +109,7 @@
       "wishlist_added": "お気に入りに追加済み",
       "express_checkout": "エクスプレスチェックアウト",
       "coupon_amount": "¥500 OFF",
+      "sale_flag": "サマーセール {{ rate }}%OFF 対象",
       "buy_now": "今すぐ購入",
       "buy_now_error": "カートに追加できませんでした。時間をおいてもう一度お試しください。",
       "coupon_scope": "おひとり様1回",

@@ -208,6 +208,9 @@
           {% endif %}
         </div>
       {% endif %}
+      {% if current_on_sale %}
+        <p class="moru-product__sale-flag">{{ 'moru.product.sale_flag' | t: rate: sale_rate }}</p>
+      {% endif %}
 
       <div class="moru-product__price-row">
         <span class="moru-product__price{% if current_on_sale %} moru-product__price--sale{% endif %}" data-moru-price>
@@ -557,13 +560,45 @@
           </div>
           <div class="moru-product__coupon-toast" data-product-coupon-toast role="status" aria-live="polite" hidden>{{ 'moru.product.coupon_toast' | t }}</div>
       {% endif %}
+
+      {%- assign info_accordions = section.blocks | where: 'type', 'accordion' -%}
+      {% if info_accordions.size > 0 %}
+        <div class="moru-product__accordions">
+          {% for block in info_accordions %}
+            {% liquid
+              assign hide_accordion = false
+              if block.settings.use_specs_metafield and product.metafields.custom.specs == blank
+                assign hide_accordion = true
+              endif
+            %}
+            {% unless hide_accordion %}
+              <details class="moru-accordion" {% if block.settings.open_by_default %}open{% endif %} {{ block.shopify_attributes }}>
+                <summary class="moru-accordion__summary">
+                  <span>{{ block.settings.heading }}</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </summary>
+                <div class="moru-accordion__content">
+                  {% if block.settings.use_description and product.description != blank %}
+                    {{ product.description }}
+                  {% elsif block.settings.use_specs_metafield and product.metafields.custom.specs != blank %}
+                    {{ product.metafields.custom.specs | metafield_tag }}
+                  {% else %}
+                    {{ block.settings.content }}
+                  {% endif %}
+                </div>
+              </details>
+            {% endunless %}
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
     </div>
 
     <div class="moru-product__below" data-moru-below>
-  {% if section.blocks.size > 0 %}
+  {%- assign trust_blocks = section.blocks | where: 'type', 'trust' -%}
+  {% if trust_blocks.size > 0 %}
     <ul class="moru-product__trust" role="list">
-      {% for block in section.blocks %}
+      {% for block in trust_blocks %}
         <li class="moru-product__trust-item" {{ block.shopify_attributes }}>
           <span class="moru-product__trust-icon">
             {% case block.settings.icon %}
@@ -904,16 +939,37 @@
      右カラムは CSS sticky で追従する(常に商品名が上端。長い分はパネル内スクロール)。 */
   .moru-product__below { min-inline-size: 0; }
 
+  .moru-product__sale-flag {
+    display: inline-block;
+    align-self: flex-start;
+    margin: 0 0 var(--space-xs);
+    padding: 2px 10px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-sale, #d65832) 12%, transparent);
+    color: var(--color-sale, #d65832);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .moru-product__accordions {
+    display: flex;
+    flex-direction: column;
+    margin-block-start: var(--space-md);
+    border-block-start: 1px solid var(--color-border);
+  }
+  .moru-product__accordions .moru-accordion__summary { padding-inline: 0; }
+  .moru-product__accordions .moru-accordion__content { padding-inline: 0; font-size: var(--font-size-sm); }
+
   @media (min-width: 990px) {
     .moru-product__main { align-items: start; }
     .moru-product__gallery { grid-column: 1; grid-row: 1; }
     .moru-product__below { grid-column: 1; grid-row: 2; }
     .moru-product__info-col { grid-column: 2; grid-row: 1 / span 2; align-self: stretch; }
+    /* 内部スクロールにすると商品名が隠れたままになるので使わない。
+       パネルは常に自分の上端(商品名)から貼り付く。 */
     .moru-product__info {
       position: sticky;
       top: 24px;
-      max-block-size: calc(100vh - 48px);
-      overflow-y: auto;
     }
     /* 左カラム幅では4列が窮屈なので2×2に(バンドのデザインは元のまま) */
     .moru-product__below .moru-product__trust { grid-template-columns: repeat(2, 1fr); }
@@ -1447,7 +1503,7 @@
     var below = document.querySelector('[data-moru-below]');
     if (!below) return;
     var mq = window.matchMedia('(min-width: 990px)');
-    var roots = ['.moru-quantity-offers', '.moru-features', '.moru-product-promos', '.moru-details', '.moru-styling'];
+    var roots = ['.moru-quantity-offers', '.moru-features', '.moru-details', '.moru-styling'];
     var moved = [];
     function collect() {
       var sections = [];
@@ -1978,6 +2034,17 @@
     }
   ],
   "blocks": [
+    {
+      "type": "accordion",
+      "name": "t:moru.product_details.block_accordion_name",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "t:moru.common.title", "default": "t:moru.product_details.block_heading_default" },
+        { "type": "richtext", "id": "content", "label": "t:moru.product_details.block_content_label" },
+        { "type": "checkbox", "id": "use_description", "label": "t:moru.product_details.block_use_description_label", "info": "t:moru.product_details.block_use_description_info", "default": false },
+        { "type": "checkbox", "id": "use_specs_metafield", "label": "t:moru.product_details.block_use_specs_label", "info": "t:moru.product_details.block_use_specs_info", "default": false },
+        { "type": "checkbox", "id": "open_by_default", "label": "t:moru.product_details.block_open_label", "default": false }
+      ]
+    },
     {
       "type": "trust",
       "name": "t:moru.main_product.block_trust_name",

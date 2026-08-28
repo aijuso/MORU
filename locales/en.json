@@ -109,6 +109,7 @@
       "wishlist_added": "Saved to wishlist",
       "express_checkout": "Express checkout",
       "coupon_amount": "\u00a5500 OFF",
+      "sale_flag": "Summer sale: {{ rate }}% off",
       "buy_now": "Buy now",
       "buy_now_error": "Could not add to cart. Please try again in a moment.",
       "coupon_scope": "One per customer",
