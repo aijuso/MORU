@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: **2026-08-28**(Google Sheets 連携を確立 D-155 / 残る阻害は MORU500 案内のみ)
+> 最終更新: **2026-08-28**(Sheets 連携 D-155 / リサーチ・広告の資産化 ops/research・ops/ads D-156〜159 / 残る阻害は MORU500 案内のみ)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni` — **新しいブランチを作らない(Owner 指示)**
 > 対象ストア: `rgy5ee-fv.myshopify.com` / 独自ドメイン **`moruliving.com`**(SSL 有効)
 
@@ -224,6 +224,16 @@ MORU_STORE_URL=https://moruliving.com node ops/promotions/storefront-tests/run.m
 
 セッションごとに `pip install gspread google-auth && pip install --upgrade cffi`。
 **`cffi` の upgrade を省くと `import gspread` が `PanicException` で落ちる。**
+
+### リサーチ・広告制作の資産(2026-08-28 新設・D-156〜D-159)
+
+| 場所 | 中身 |
+|---|---|
+| `ops/research/` | README(Runbook)/ rubric(評価基準)/ sites(対象サイトDB)/ workflow(実行手順) |
+| `ops/ads/benchmarks/` | 分析の作法(README)+ kocol / desk-nest-cat-bed の競合分析 |
+| `ops/ads/creatives/` | フラワーラウンジの制作知見 / コピー設計 / Beautiful Utility の翻訳型 |
+
+**着手前に `ops/research/rubric.md` と `ops/ads/benchmarks/README.md` を読む(CLAUDE.md 絶対ルール16)。**
 
 ## 8. 次のフェーズ: Meta(Facebook)広告
 
