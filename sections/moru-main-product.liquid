@@ -1467,7 +1467,16 @@
 
   /* スマホ: 購入ボタンを画面下部に固定(Owner 指示 2026-08-28) */
   @media (max-width: 749px) {
-    .moru-product { padding-block-end: calc(76px + env(safe-area-inset-bottom)); }
+    /* 固定購入バーぶんの余白は「ページの末尾」に取る(2026-08-28 修正)。
+       バーは position:fixed で画面下端に貼り付くので、これを .moru-product に
+       付けると ①商品ブロックと次のセクションの間に76pxの穴が空き
+       ②本来隠れるページ末尾(フッター)は守れない、という二重の誤りになる。
+       body に付ければ穴は消え、末尾も守られる。 */
+    body.template-product { padding-block-end: calc(76px + env(safe-area-inset-bottom)); }
+    /* 縦のリズムを詰める(Owner 指示)。PC は元のまま。
+       商品ブロックの下余白は __main の margin だけで足りるので 0 にする。 */
+    .moru-product { padding-block-end: 0; }
+    .moru-product__main { margin-block-end: var(--space-md); }
     .moru-product__actions {
       position: fixed;
       inset-block-end: 0;

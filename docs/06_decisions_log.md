@@ -2403,3 +2403,69 @@ MORU500 案内のローンチ阻害は**解消**。
 本番を取得して `style="--moru-features-pt:24px;--moru-features-pb:32px;"` と
 `.moru-features{padding-block:var(--moru-features-pt, 1.5rem) var(--moru-features-pb, 2rem)}` の
 両方が配信されていることを確認。
+
+### 追記3(2026-08-28・商品ページ下半分の縦の余白を詰めた。実測してから直した)
+
+**追記2 だけでは足りなかった**(Owner「まだ全然ひろい」)。**推測をやめて、
+本番のページとCSSをローカルにミラーし、Playwright で実測してから直した。**
+
+#### 実測でわかった内訳(390px 幅)
+
+| 区間 | 内訳 | 変更前 |
+|---|---|---|
+| 安心バナー → 「この商品の特徴」 | trust の margin 20 + `__main` の margin 48 + **`.moru-product` の padding 76** | **144px** |
+| 最後のアコーディオン → 「猫との暮らしにおすすめ」 | `.moru-details` の padding 48 + `.moru-product-grid` の padding 64 | **112px** |
+
+**特徴セクション自身の padding は 0 だった**(追記2で入れたスライダーを Owner が0にしていた)。
+**つまり残っていた余白は全部、前後のセクションのものだった。**
+
+#### 🔴 見つけたバグ: 固定購入バーの余白確保が別の要素に付いていた
+
+`@media (max-width: 749px)` に `.moru-product { padding-block-end: calc(76px + safe-area) }` があった。
+スマホの固定購入バー(`position: fixed`・高さ57px)のぶんを空けるつもりの指定だが、
+**バーは画面下端に貼り付くので、商品セクションに余白を足しても意味がない。**
+
+- ① 商品ブロックと次のセクションの間に **76px の穴**が空く(今回の「広い」の主因)
+- ② 本来隠れるページ末尾(フッター)は**守れていない**
+
+**`body.template-product` に付け替えた。**穴は消え、ページ末尾も守られる。
+(body の template クラスは D-161 追記6 で追加済みのものを使った)
+
+#### 変更(すべてスマホ ≤749px 限定。PC のリズムは変えていない)
+
+| ファイル | 変更 |
+|---|---|
+| `moru-main-product` | 76px の余白確保を `.moru-product` → `body.template-product` へ移動 / `.moru-product` の下 padding を 0 に / `.moru-product__main` の下 margin 48 → 20px |
+| `moru-product-grid` | padding-block 64 → 32px |
+
+#### 詳細アコーディオンもエディタから調整できるようにした
+
+`.moru-details` の余白を特徴と同じ流儀(style 属性 → カスタムプロパティ)で
+**`padding_top` / `padding_bottom`(0〜96px)**に。既定 24/24px。
+**PC も 64 → 24px になる**(エディタで戻せる)。
+⚠️ 従来の `@media (max-width:768px)` の `padding-block` 上書きは、
+カスタムプロパティを潰すので**削除した**。
+
+余白の文言は `moru.features.*` から **`moru.common.*` に移して共有**した(特徴・詳細の両方で使う)。
+
+#### 結果(本番を再取得して実測・390px)
+
+| 区間 | 変更前 | 変更後 |
+|---|---|---|
+| 安心バナー → 「この商品の特徴」 | 144px | **40px** |
+| 最後のアコーディオン → 「猫との暮らしにおすすめ」 | 112px | **56px** |
+
+`theme check` 101 files / 0 offenses。**dev と live の両方へ push**。
+
+#### 次に余白をいじる人へ
+
+**推測で削らないこと。** 商品ページの縦の空きは3〜4セクションの余白の合計で、
+どれが効いているかは見た目では分からない。手順は:
+
+```bash
+# 本番のHTMLとCSSをローカルにミラーして Playwright で測る
+# (ストアフロントに直接 Chromium は通せないが、ミラーなら測れる)
+```
+
+実例は本追記。**「特徴セクションが広い」と見えていたものの正体は、
+特徴セクションではなく `.moru-product` の 76px だった。**

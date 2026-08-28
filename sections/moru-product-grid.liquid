@@ -84,6 +84,12 @@
     padding-block: var(--space-2xl);
   }
 
+  /* スマホは縦のリズムを詰める(Owner 指示 2026-08-28)。
+     PC は元の 4rem のまま */
+  @media (max-width: 749px) {
+    .moru-product-grid { padding-block: var(--space-lg); }
+  }
+
   .moru-product-grid__grid {
     display: grid;
     grid-template-columns: repeat(var(--grid-columns, 4), 1fr);

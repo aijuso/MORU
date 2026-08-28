@@ -3,7 +3,7 @@
 %}
 
 {% if accordion_blocks.size > 0 %}
-  <div class="moru-details">
+  <div class="moru-details" style="--moru-details-pt:{{ section.settings.padding_top }}px;--moru-details-pb:{{ section.settings.padding_bottom }}px;">
     <div class="moru-details__accordions">
       {% for block in accordion_blocks %}
         {% liquid
@@ -35,7 +35,10 @@
 {% endif %}
 
 {% stylesheet %}
-  .moru-details { width: 100%; max-width: 64rem; margin-inline: auto; padding-block: var(--space-2xl); }
+  /* 上下の余白はテーマエディタから変える(Owner 指示 2026-08-28)。特徴セクションと同じ流儀。
+     stylesheet タグの中では Liquid が評価されないので、値は style 属性から
+     カスタムプロパティで渡す。ここの数値は設定が空のときのフォールバック。 */
+  .moru-details { width: 100%; max-width: 64rem; margin-inline: auto; padding-block: var(--moru-details-pt, 1.5rem) var(--moru-details-pb, 1.5rem); }
   .moru-details__accordions, .moru-details .moru-accordion { width: 100%; }
   .moru-details__accordions { display: flex; flex-direction: column; border-block-start: 1px solid var(--color-border); }
   .moru-details .moru-accordion__summary { width: 100%; box-sizing: border-box; padding-inline: 0; text-align: left; }
@@ -50,7 +53,6 @@
   .moru-details .moru-accordion__content > :first-child { margin-block-start: 0; }
   .moru-details .moru-accordion__content > :last-child { margin-block-end: 0; }
   @media (max-width: 749px) {
-    .moru-details { padding-block: var(--space-xl); }
     .moru-details .moru-accordion__summary { min-height: 52px; padding-block: 0.9rem; }
     .moru-details .moru-accordion__content { padding-block-end: 1.1rem; }
   }
@@ -59,6 +61,11 @@
 {% schema %}
 {
   "name": "商品詳細アコーディオン",
+  "settings": [
+    { "type": "header", "content": "t:moru.common.spacing_header" },
+    { "type": "range", "id": "padding_top", "label": "t:moru.common.padding_top_label", "info": "t:moru.common.padding_info", "min": 0, "max": 96, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "padding_bottom", "label": "t:moru.common.padding_bottom_label", "info": "t:moru.common.padding_info", "min": 0, "max": 96, "step": 4, "unit": "px", "default": 24 }
+  ],
   "blocks": [
     {
       "type": "accordion",
