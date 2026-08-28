@@ -638,37 +638,10 @@
     </ul>
   {% endif %}
 
-  {% if section.settings.delivery_title != blank %}
-    <div class="moru-delivery">
-      <div class="moru-delivery__info">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-          <rect x="1" y="4" width="14" height="12" rx="1"></rect>
-          <path d="M15 9h4l3 3v4h-7V9Z"></path>
-          <circle cx="5.5" cy="18.5" r="2"></circle>
-          <circle cx="18.5" cy="18.5" r="2"></circle>
-        </svg>
-        <span class="moru-delivery__title">{{ section.settings.delivery_title }}</span>
-        <span class="moru-delivery__dates">
-          {% if section.settings.delivery_main != blank %}
-            <span class="moru-delivery__main">{{ section.settings.delivery_main }}</span>
-          {% endif %}
-          {% if section.settings.delivery_sub != blank %}
-            <span class="moru-delivery__sub">{{ section.settings.delivery_sub }}</span>
-          {% endif %}
-        </span>
-      </div>
-
-      {% if section.settings.zip_label != blank %}
-        <a class="moru-delivery__zip" href="{{ section.settings.zip_link | default: '#' }}">
-          {{ section.settings.zip_label }}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </a>
-      {% endif %}
-    </div>
-  {% endif %}
+  {%- comment -%}
+    お届け目安カードは非表示(Owner 指示 2026-08-28)。
+    配送目安は「配送について」アコーディオンに記載する。
+  {%- endcomment -%}
     </div>
   </div>
 
@@ -966,10 +939,12 @@
     .moru-product__below { grid-column: 1; grid-row: 2; }
     .moru-product__info-col { grid-column: 2; grid-row: 1 / span 2; align-self: stretch; }
     /* 内部スクロールにすると商品名が隠れたままになるので使わない。
-       パネルは常に自分の上端(商品名)から貼り付く。 */
+       パネルは常に自分の上端(商品名)から貼り付く。
+       top はサイトヘッダー(sticky・高さ84px)の下に置く。24px だと
+       商品名がヘッダーの裏に隠れる(2026-08-28 に実際に起きた)。 */
     .moru-product__info {
       position: sticky;
-      top: 24px;
+      top: 100px;
     }
     /* 左カラム幅では4列が窮屈なので2×2に(バンドのデザインは元のまま) */
     .moru-product__below .moru-product__trust { grid-template-columns: repeat(2, 1fr); }
