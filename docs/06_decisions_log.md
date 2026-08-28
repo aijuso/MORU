@@ -2369,3 +2369,37 @@ MORU500 案内のローンチ阻害は**解消**。
 - `theme check` 101 files / 0 offenses。**dev と live の両方へ push**(内容一致を維持)
 - 検証: 本番の `compiled_assets/styles.css` を取得し、599px ブロックに
   `grid-template-columns:repeat(2,1fr)` が入っていることを確認
+
+### 追記2(2026-08-28・特徴セクションの上下余白を詰め、テーマエディタから変えられるようにした)
+
+**Owner 指示。** 「この商品の特徴」の始まりと終わりの余白が大きすぎた。
+
+**内訳を実測した**(スマホ)。特徴の前後の空きは3つのセクションの余白の合計だった:
+
+| どこ | 値 |
+|---|---|
+| `.moru-product` の padding-block-end | `--space-xl` = **48px** |
+| **`.moru-features` の padding-block** | **`--space-xl` / `--space-2xl` = 48 / 64px** ← ここを変えた |
+| `.moru-details`(アコーディオン)の padding-block(≤768px) | `--space-xl` = **48px** |
+
+つまり特徴の上は 48+48=96px、下は 64+48=112px あった。
+**このうち特徴セクション自身の分だけを 24 / 32px に減らした**(上 72px・下 80px になる)。
+前後のセクションは触っていない。
+
+### テーマエディタから変えられるようにした
+
+- セクション設定に **`padding_top` / `padding_bottom`(range・0〜96px・4px刻み)** を追加。
+  既定は **上24px / 下32px**
+- ⚠️ **`{% stylesheet %}` の中では Liquid が評価されない**(D-161 の運用ノートと同じ制約)。
+  そこで値を**セクションの `style` 属性からカスタムプロパティ**
+  `--moru-features-pt` / `--moru-features-pb` として渡し、CSS 側は
+  `padding-block: var(--moru-features-pt, 1.5rem) var(--moru-features-pb, 2rem)` で受ける。
+  第2引数は設定が空のときのフォールバック
+- 文言は `locales/ja.default.schema.json` / `en.schema.json` に追加(MatchingTranslations 対応)
+
+### 検証
+
+`theme check` 101 files / 0 offenses。**dev と live の両方へ push**(3ファイル)。
+本番を取得して `style="--moru-features-pt:24px;--moru-features-pb:32px;"` と
+`.moru-features{padding-block:var(--moru-features-pt, 1.5rem) var(--moru-features-pb, 2rem)}` の
+両方が配信されていることを確認。
