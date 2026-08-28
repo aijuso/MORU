@@ -2290,3 +2290,12 @@ moru-main-cart / moru-main-product / templates/page.faq.json / templates/product
 **Dev と live は再び内容一致。** 残る Owner 操作は
 「統合割引の組み合わせ → 注文割引にチェック」(D-161 追記5)のみ。
 MORU500 案内のローンチ阻害は**解消**。
+
+### 追記9(2026-08-28・併用化の完了)
+
+**Owner が管理画面で「MORU 販促割引(統合)」の組み合わせ →「注文割引」にチェックした。**
+これで MORU500(注文割引)とセール/まとめ買い/PAIR/送料無料(統合 Function)が**併用可能**になった。
+
+⚠️ **`ops/promotions/storefront-tests/` の期待値は非併用前提のまま。**
+「MORU500 が適用されなかった → PASS」系のケース(テスト1など)は、
+併用化後は**期待値が古くて FAIL する**。テストを流す前に期待値の見直しが要る。
