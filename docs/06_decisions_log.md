@@ -2273,3 +2273,20 @@ handoff の「DRAFT 8商品」「257 Variant」は古い(4商品が削除され�
 - お届け目安カード(moru-delivery)を削除。配送目安は「配送について」に集約:
   2〜3週間前後 / 在庫状況・国際輸送・通関・天候等により4週間以上
 - 安心バナーは元デザインのまま左カラム(確定)
+
+### 追記8(2026-08-28・本番反映)
+
+**Owner 指示で本日の全変更を live(MAIN `MORU Release 2026-08-27`)へ反映した。**
+`theme check` 0 offenses → 13ファイルを `--only` + `--nodelete` で push。
+
+反映ファイル: layout/theme.liquid / locales×4 / sections/header-group.json /
+moru-cart-discount-summary / moru-cart-drawer-v2 / moru-coupon-popup(未マウント) /
+moru-main-cart / moru-main-product / templates/page.faq.json / templates/product.json
+
+本番実測(全て✅): クーポンカード / 今すぐ購入(動的ボタン廃止) / 2カラム追従 /
+キャンペーン削除+セールフラグ / 配送新文面 / カート再設計 / アナウンスバー新文言 /
+ホームにポップアップなし / Liquid エラー 0。
+
+**Dev と live は再び内容一致。** 残る Owner 操作は
+「統合割引の組み合わせ → 注文割引にチェック」(D-161 追記5)のみ。
+MORU500 案内のローンチ阻害は**解消**。
