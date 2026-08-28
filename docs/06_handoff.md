@@ -237,6 +237,18 @@ MORU_STORE_URL=https://moruliving.com node ops/promotions/storefront-tests/run.m
 **リサーチ前に `ops/research/rubric.md`(ルール16)、広告制作・競合分析前に
 `.claude/skills/ad-benchmark-creative/`(ルール17)を読む。**
 
+## 7.8 次セッションへの引き継ぎ: 商品説明を「特徴」へ統合する編集作業(Owner 指示・2026-08-28)
+
+**商品ページから「商品説明」アコーディオンを撤去した**(特徴と重複・長文で離脱要因。D-161 追記7)。
+このため **説明文(product.description)は現在ページのどこにも表示されていない。**
+
+- **やること**: 各商品の説明文の内容を、特徴メタフィールド(`custom.features`)の
+  記事組みに統合する(重複は捨て、説明文にしかない情報を特徴へ移す)
+- 対象: 全商品(まず ACTIVE 28。広告対象のフラワーラウンジから)
+- 特徴の記事組みの形は D-154(見出し → 画像 → 説明文・連番なし)
+- 表現制約: CLAUDE.md 絶対ルール8・15(未確認の品質表現をしない)と
+  `ops/ads/creatives/beautiful-utility.md`(機能→飼い主価値の翻訳)に従う
+
 ## 8. 次のフェーズ: Meta(Facebook)広告
 
 Owner が着手予定。**独自ドメイン `moruliving.com` があるのでドメイン認証は可能。**
