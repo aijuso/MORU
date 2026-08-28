@@ -180,7 +180,7 @@
       "shipping_free": "無料",
       "payment_title": "支払い金額",
       "items_total": "商品金額",
-      "discount_amount": "割引金額",
+      "discount_amount": "割引合計",
       "product_discount": "商品割引",
       "shipping_discount": "送料割引",
       "free_shipping_hint": "あと{{ amount }}のご購入で送料無料",

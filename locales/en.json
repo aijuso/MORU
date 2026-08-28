@@ -180,7 +180,7 @@
       "shipping_free": "Free",
       "payment_title": "Payment total",
       "items_total": "Items total",
-      "discount_amount": "Discount",
+      "discount_amount": "Total discount",
       "product_discount": "Product discount",
       "shipping_discount": "Shipping discount",
       "free_shipping_hint": "Add {{ amount }} more for free shipping",

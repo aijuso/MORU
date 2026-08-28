@@ -118,13 +118,10 @@
         {% endif %}
         {% if show_member_coupon_block %}
           <div class="moru-cart__member-coupon">
-            <p class="moru-cart__member-coupon-title">{{ 'moru.cart.member_coupon_title' | t }}</p>
-            <p class="moru-cart__member-coupon-text">{{ 'moru.cart.member_coupon_text' | t }}</p>
             <div class="moru-cart__member-coupon-row">
               <code class="moru-cart__member-coupon-code">{{ section.settings.member_coupon_code }}</code>
-              <a class="moru-cart__member-coupon-apply" href="/discount/{{ section.settings.member_coupon_code | url_encode }}?redirect=/cart">{{ 'moru.cart.member_coupon_apply' | t }}</a>
+              <a class="moru-cart__member-coupon-apply" href="/discount/{{ section.settings.member_coupon_code | url_encode }}?redirect=/cart" data-member-coupon-apply data-code="{{ section.settings.member_coupon_code | escape }}">{{ 'moru.cart.member_coupon_apply' | t }}</a>
             </div>
-            <p class="moru-cart__member-coupon-note">{{ 'moru.cart.member_coupon_note' | t }}</p>
           </div>
         {% endif %}
         {% if section.settings.show_coupon %}
@@ -181,11 +178,8 @@
         <div class="moru-cart__payment">
           <div class="moru-cart__payment-total"><span>{{ 'moru.cart.payment_title' | t }}</span><strong>{{ cart.total_price | money }}</strong></div>
           <div class="moru-cart__payment-rows">
-            <div class="moru-cart__line"><span>{{ 'moru.cart.items_total' | t }}</span><span class="moru-cart__line-value">{{ cart.original_total_price | money }}</span></div>
-            {% if discount_amount > 0 %}
-              <div class="moru-cart__line"><span>{{ 'moru.cart.discount_amount' | t }}</span><span class="moru-cart__line-value moru-cart__line-value--accent">&minus;{{ discount_amount | money }}</span></div>
-            {% endif %}
-            <div class="moru-cart__line"><span>{{ 'moru.cart.shipping' | t }}</span><span class="moru-cart__line-value">{% if shipping_is_free %}<s class="moru-cart__shipping-original">{{ shipping_fee | money }}</s> <span class="moru-cart__line-value--accent">{{ 'moru.cart.shipping_free' | t }}</span>{% else %}{{ shipping_fee | money }}{% endif %}</span></div>
+            <div class="moru-cart__line"><span>{{ 'moru.cart.items_total' | t }}</span><span class="moru-cart__line-value">{% if cart.total_discount > 0 %}<s class="moru-cart__line-original">{{ cart.original_total_price | money }}</s> <span class="moru-cart__line-value--accent">{{ cart.total_price | money }}</span>{% else %}{{ cart.original_total_price | money }}{% endif %}</span></div>
+            <div class="moru-cart__line"><span>{{ 'moru.cart.shipping' | t }}</span><span class="moru-cart__line-value">{% if shipping_is_free %}<s class="moru-cart__line-original">{{ shipping_fee | money }}</s> <span class="moru-cart__line-value--accent">{{ 'moru.cart.shipping_free' | t }}</span>{% else %}{{ shipping_fee | money }}{% endif %}</span></div>
             {%- unless shipping_is_free -%}
               {%- assign remaining = free_threshold | minus: cart.original_total_price -%}
               {%- assign remaining_money = remaining | money -%}
@@ -193,6 +187,9 @@
             {%- endunless -%}
             {% if section.settings.tax_display == 'included' %}<div class="moru-cart__line"><span>{{ 'moru.cart.tax_included' | t: rate: section.settings.tax_rate }}</span><span class="moru-cart__line-value">{{ tax_amount | money }}</span></div>{% endif %}
           </div>
+          {% if discount_amount > 0 %}
+            <div class="moru-cart__discount-total"><span>{{ 'moru.cart.discount_amount' | t }}</span><span>&minus;{{ discount_amount | money }}</span></div>
+          {% endif %}
         </div>
         <button type="submit" name="checkout" class="moru-cart__checkout">{{ 'cart.checkout' | t }}</button>
 
@@ -264,7 +261,7 @@
   .moru-cart__item-media { display:block; aspect-ratio:1/1; overflow:hidden; border:1px solid var(--color-border); border-radius:8px; background-color:var(--color-bg-alt); }
   .moru-cart__item-media img,.moru-cart__item-media svg { width:100%; height:100%; object-fit:cover; }
   .moru-cart__item-body { display:flex; flex-direction:column; gap:var(--space-2xs); }
-  .moru-cart__item-title { font-size:var(--font-size-sm); font-weight:600; color:var(--color-text); text-decoration:none; }
+  .moru-cart__item-title { font-size:var(--font-size-md); font-weight:600; color:var(--color-text); text-decoration:none; }
   .moru-cart__item-title:hover { color:var(--color-accent-terracotta); }
   .moru-cart__item-variant,.moru-cart__item-discounts { margin:0; padding:0; list-style:none; font-size:var(--font-size-xs); color:var(--color-muted); }
   .moru-cart__item-controls { display:flex; align-items:center; gap:var(--space-md); margin-block-start:var(--space-xs); }
@@ -277,7 +274,7 @@
   .moru-cart__remove:hover { color:var(--color-text); }
   .moru-cart__hold { margin:var(--space-2xs) 0 0; font-size:var(--font-size-xs); font-variant-numeric:tabular-nums; color:var(--color-accent-terracotta); }
   .moru-cart__hold:empty { display:none; }
-  .moru-cart__item-price { display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:var(--font-size-sm); font-weight:500; }
+  .moru-cart__item-price { display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:var(--font-size-md); font-weight:600; }
   .moru-cart__item-price s { font-size:var(--font-size-xs); font-weight:400; color:var(--color-muted); }
   .moru-cart__update { align-self:flex-start; margin-block-start:var(--space-md); }
   .moru-cart__checkbox { display:flex; align-items:center; gap:var(--space-sm); margin-block-start:var(--space-lg); font-size:var(--font-size-xs); cursor:pointer; user-select:none; }
@@ -296,13 +293,10 @@
   .moru-cart__trust-item svg { width:1rem; height:1rem; color:var(--color-text); }
   .moru-cart__summary { padding:var(--space-lg); border:1px solid var(--color-border); border-radius:10px; background-color:var(--color-bg-alt); }
   .moru-cart__member-coupon { margin-block-end:var(--space-md); padding:var(--space-sm); border:1px dashed var(--color-accent-terracotta); border-radius:8px; background-color:var(--color-bg); }
-  .moru-cart__member-coupon-title { margin:0 0 var(--space-2xs); color:var(--color-accent-terracotta); font-size:var(--font-size-xs); font-weight:600; letter-spacing:.04em; }
-  .moru-cart__member-coupon-text { margin:0 0 var(--space-xs); font-size:var(--font-size-xs); line-height:1.6; }
   .moru-cart__member-coupon-row { display:flex; gap:var(--space-2xs); margin-block-end:var(--space-xs); }
   .moru-cart__member-coupon-code { flex:1; display:grid; place-items:center; padding:var(--space-2xs); border:1px solid var(--color-border); border-radius:4px; background-color:var(--color-bg-alt); font-size:var(--font-size-sm); font-weight:600; letter-spacing:.12em; }
   .moru-cart__member-coupon-apply { display:grid; place-items:center; padding:var(--space-2xs) var(--space-sm); border-radius:4px; background-color:var(--color-text); color:var(--color-bg); font-size:var(--font-size-xs); font-weight:500; text-decoration:none; }
   .moru-cart__member-coupon-apply:hover { opacity:.85; }
-  .moru-cart__member-coupon-note { margin:0; color:var(--color-muted); font-size:0.6875rem; line-height:1.5; }
   .moru-cart__coupon-block { margin-block-end:var(--space-lg); }
   .moru-cart__coupon { display:flex; gap:var(--space-sm); }
   .moru-cart__coupon-label { margin:0 0 var(--space-2xs); font-size:var(--font-size-xs); color:var(--color-muted); }
@@ -324,13 +318,14 @@
   .moru-cart__summary .moru-cart__trust-item svg { inline-size:16px; block-size:16px; color:var(--color-accent-terracotta); }
   .moru-cart__payment-total { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-md); padding-block-end:var(--space-sm); margin-block-end:var(--space-sm); border-block-end:1px solid var(--color-border); }
   .moru-cart__payment-total span { font-size:var(--font-size-md); font-weight:600; }
-  .moru-cart__payment-total strong { color:var(--color-accent-terracotta); font-size:var(--font-size-2xl); font-weight:700; }
+  .moru-cart__payment-total strong { color:var(--color-text); font-size:var(--font-size-2xl); font-weight:700; }
   .moru-cart__payment-rows { display:flex; flex-direction:column; }
   .moru-cart__line { display:flex; justify-content:space-between; margin-block-end:var(--space-xs); font-size:var(--font-size-sm); color:var(--color-muted); }
   .moru-cart__line:last-child { margin-block-end:0; }
   .moru-cart__line-value { color:var(--color-text); font-weight:500; }
   .moru-cart__line-value--accent { color:var(--color-accent-terracotta); font-weight:700; }
-  .moru-cart__shipping-original { color:var(--color-muted); font-weight:400; margin-inline-end:4px; }
+  .moru-cart__line-original { color:var(--color-muted); font-weight:400; margin-inline-end:4px; }
+  .moru-cart__discount-total { display:flex; justify-content:space-between; gap:var(--space-md); margin-block-start:var(--space-sm); padding-block-start:var(--space-sm); border-block-start:1px solid var(--color-border); color:var(--color-accent-terracotta); font-size:var(--font-size-sm); font-weight:700; }
   .moru-cart__line--shipping-hint { font-size:var(--font-size-xs); color:var(--color-muted); }
   .moru-cart__checkout { width:100%; padding-block:var(--space-md); border:none; border-radius:4px; background-color:var(--color-text); color:var(--color-bg); font-family:inherit; font-size:var(--font-size-sm); font-weight:500; letter-spacing:.03em; cursor:pointer; transition:opacity 200ms ease; }
   .moru-cart__checkout:hover { opacity:.85; }
@@ -366,6 +361,7 @@
         const plus = event.target.closest('[data-cart-plus]');
         const remove = event.target.closest('[data-cart-remove]');
         const coupon = event.target.closest('[data-coupon-apply]');
+        const memberCoupon = event.target.closest('[data-member-coupon-apply]');
         const couponClear = event.target.closest('[data-coupon-clear]');
         const upsell = event.target.closest('[data-upsell-add]');
         if (minus || plus) {
@@ -377,6 +373,15 @@
           event.preventDefault();
           const item = remove.closest('[data-line]');
           this.change(item.dataset.line, 0);
+        } else if (memberCoupon) {
+          // JSが生きていれば入力欄に流し込んで通常の適用フローへ
+          // (成功・不成立のメッセージが出る)。死んでいれば href の /discount へ
+          const input = this.root.querySelector('[data-coupon-input]');
+          if (input) {
+            event.preventDefault();
+            input.value = memberCoupon.dataset.code || '';
+            this.applyCoupon();
+          }
         } else if (coupon) this.applyCoupon();
         else if (couponClear) this.clearCoupons();
         else if (upsell) this.addUpsell(upsell);
