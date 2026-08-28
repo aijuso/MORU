@@ -2103,3 +2103,33 @@ pip install --upgrade cffi      # ← 省略できない
 
 絶対ルール16を分割: 16 = リサーチ前に `ops/research/rubric.md`、
 **17 = 広告制作・競合分析前に `.claude/skills/ad-benchmark-creative/`**。
+
+---
+
+## D-161 MORU500 の顧客案内を実装(Frontend Dev のみ・2026-08-28)
+
+**Owner 指示。** FAQ の「カートに表示される」と実装の食い違い(最後のローンチ阻害)への対応。
+**⚠️ 反映は MORU Frontend Dev(166341181680)のみ。本番(live)には出していない。
+Owner のブラウザ確認後に live へ反映する。それまで Dev と live は意図的に差分がある状態。**
+
+### 入れたもの3点
+
+| # | 場所 | 内容 |
+|---|---|---|
+| 1 | **商品ページ**(moru-main-product) | **オーハウス式クーポンカード**(Owner がスクリーンショットで参考指定)。購入ボタン下に「新規会員限定 ¥500 OFF / MORU500 / コードをコピー」。**注文実績のある会員には出さない**(対象外への偽訴求になるため)。**期限表記は付けない**(実際に無期限。偽の期限は絶対ルール6違反) |
+| 2 | **カートページ**(moru-main-cart) | FAQ の約束の実体。**ログイン済み・注文0回**の顧客にだけ、コード+ワンクリック適用(`/discount/MORU500?redirect=/cart`)を表示 |
+| 3 | **クーポン案内カード**(moru-coupon-popup・新規セクション) | スクロールで画面下にスライドイン。**ホーム(index)のみ**(Owner 指示で限定)。未ログイン→会員登録導線 / 会員(注文0回)→コード表示 / 注文実績あり→非表示。閉じたら既定7日再表示しない(localStorage) |
+
+- すべてテーマエディタから編集可能(表示ON/OFF・コード変更・スクロール量・再表示日数)
+- 文言は `locales/ja.default.json`(`en.json` にも対訳。theme check の MatchingTranslations 対応)
+- ポップアップは header-group にマウント(検索モーダル・カートドロワーと同じ流儀)
+
+### 運用ノート
+
+- `theme check` 101 files / 0 offenses
+- **live へ反映するときのファイル一覧**: `sections/moru-coupon-popup.liquid` /
+  `sections/moru-main-product.liquid` / `sections/moru-main-cart.liquid` /
+  `sections/header-group.json` / `locales/ja.default.json` / `locales/ja.default.schema.json` /
+  `locales/en.json` / `locales/en.schema.json`
+- `{% javascript %}` 内では Liquid が評価されない(静的アセット化される)。
+  翻訳文字列は data 属性で渡す

@@ -1,6 +1,6 @@
 # 06. 引き継ぎメモ(セッション間の申し送り)
 
-> 最終更新: **2026-08-28**(Sheets 連携 D-155 / リサーチ・広告の資産化 D-156〜159 / 広告制作スキル新設 D-160 / 残る阻害は MORU500 案内のみ)
+> 最終更新: **2026-08-28**(Sheets D-155 / リサーチ・広告資産化 D-156〜160 / **MORU500 案内を Frontend Dev に実装 D-161 — live 反映は Owner 確認待ち。Dev と live に意図的な差分あり**)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni` — **新しいブランチを作らない(Owner 指示)**
 > 対象ストア: `rgy5ee-fv.myshopify.com` / 独自ドメイン **`moruliving.com`**(SSL 有効)
 

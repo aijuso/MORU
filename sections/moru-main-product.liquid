@@ -527,6 +527,31 @@
           </div>
         {% endif %}
       {% endform %}
+
+      {%- comment -%}
+        オーハウス式のクーポンカード(Owner 指示 2026-08-28)。
+        コード表示 + コピー。MORU500 は新規会員限定なので、
+        注文実績のある会員には出さない(事実に反する訴求になるため)。
+        期限は設定しない(実際に無期限。偽の期限は絶対ルール6で禁止)。
+      {%- endcomment -%}
+      {% if section.settings.show_coupon_card %}
+        {% unless customer and customer.orders_count > 0 %}
+          <div class="moru-product__coupon" data-product-coupon>
+            <span class="moru-product__coupon-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2 9V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"></path><line x1="9" y1="9" x2="15" y2="15"></line><circle cx="9.5" cy="14.5" r="0.5"></circle><circle cx="14.5" cy="9.5" r="0.5"></circle></svg>
+            </span>
+            <span class="moru-product__coupon-body">
+              <span class="moru-product__coupon-amount">{{ 'moru.product.coupon_amount' | t }}</span>
+              <span class="moru-product__coupon-code" data-product-coupon-code>{{ section.settings.coupon_card_code }}</span>
+              <span class="moru-product__coupon-note">{{ 'moru.product.coupon_note' | t }}</span>
+            </span>
+            <button type="button" class="moru-product__coupon-copy" data-product-coupon-copy data-copied-label="{{ 'moru.product.coupon_copied' | t }}" data-copy-label="{{ 'moru.product.coupon_copy' | t }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span data-product-coupon-copy-label>{{ 'moru.product.coupon_copy' | t }}</span>
+            </button>
+          </div>
+        {% endunless %}
+      {% endif %}
     </div>
   </div>
 
@@ -606,6 +631,39 @@
 </div>
 
 {% stylesheet %}
+  .moru-product__coupon {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-block-start: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-inline-start: 3px solid var(--color-accent-terracotta);
+    border-radius: 8px;
+    background-color: var(--color-bg-alt);
+  }
+  .moru-product__coupon-icon { display: grid; place-items: center; color: var(--color-accent-terracotta); }
+  .moru-product__coupon-icon svg { inline-size: 22px; block-size: 22px; }
+  .moru-product__coupon-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-inline-size: 0; }
+  .moru-product__coupon-amount { font-size: var(--font-size-sm); font-weight: 600; }
+  .moru-product__coupon-code { font-size: var(--font-size-xs); font-weight: 600; letter-spacing: 0.12em; }
+  .moru-product__coupon-note { color: var(--color-muted); font-size: 0.6875rem; line-height: 1.5; }
+  .moru-product__coupon-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .moru-product__coupon-copy svg { inline-size: 14px; block-size: 14px; }
+  .moru-product__coupon-copy.is-copied { border-color: var(--color-accent-terracotta); color: var(--color-accent-terracotta); }
   .moru-product {
     padding-block: var(--space-sm) var(--space-xl);
   }
@@ -1312,6 +1370,34 @@
 {% endstylesheet %}
 
 {% javascript %}
+  (function () {
+    var copyButton = document.querySelector('[data-product-coupon-copy]');
+    if (!copyButton) return;
+    copyButton.addEventListener('click', function () {
+      var code = document.querySelector('[data-product-coupon-code]').textContent.trim();
+      var label = copyButton.querySelector('[data-product-coupon-copy-label]');
+      var markCopied = function () {
+        label.textContent = copyButton.dataset.copiedLabel;
+        copyButton.classList.add('is-copied');
+        window.setTimeout(function () {
+          label.textContent = copyButton.dataset.copyLabel;
+          copyButton.classList.remove('is-copied');
+        }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(markCopied);
+      } else {
+        var textarea = document.createElement('textarea');
+        textarea.value = code;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        markCopied();
+      }
+    });
+  })();
+
   /**
    * Stock label = real inventory minus what THIS shopper already holds in
    * their own cart. Shopify's cart is per browser session, so two people
@@ -1707,6 +1793,23 @@
       "label": "t:moru.main_product.show_express_checkout_label",
       "info": "t:moru.main_product.show_express_checkout_info",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:moru.main_product.coupon_card_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_coupon_card",
+      "label": "t:moru.main_product.show_coupon_card_label",
+      "info": "t:moru.main_product.show_coupon_card_info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "coupon_card_code",
+      "label": "t:moru.main_product.coupon_card_code_label",
+      "default": "MORU500"
     },
     {
       "type": "header",

@@ -108,6 +108,10 @@
       "wishlist": "Add to wishlist",
       "wishlist_added": "Saved to wishlist",
       "express_checkout": "Express checkout",
+      "coupon_amount": "New members: \u00a5500 OFF",
+      "coupon_note": "Available after free registration. One use per customer; cannot be combined with other discounts.",
+      "coupon_copy": "Copy code",
+      "coupon_copied": "Copied",
       "rating_pending": "Reviews coming soon",
       "remaining": {
         "one": "({{ count }} left)",
@@ -169,6 +173,10 @@
       "coupon_removed": "Removed the discount code.",
       "coupon_not_applied": "The code was not applied to your current cart. A discount already on the cart may be taking priority. Please check the code you entered, your sign-in status, and the code's conditions.",
       "coupon_error": "Something went wrong. Please try again in a moment.",
+      "member_coupon_title": "New member coupon",
+      "member_coupon_text": "A \u00a5500 OFF coupon is available for your first order.",
+      "member_coupon_apply": "Apply to cart",
+      "member_coupon_note": "One use per customer. Cannot be combined with other discounts; another discount may take priority.",
       "upsell_add": "Add",
       "upsell_added": "Added",
       "hold_remaining": "Removed from your cart in {{ time }}",
@@ -232,6 +240,20 @@
       "body": "The page you are looking for may have moved, been removed, or changed address. Try the search below or one of these links.",
       "home": "Back to home",
       "links_title": "Popular pages"
+    },
+    "coupon_popup": {
+      "aria_label": "Coupon offer",
+      "eyebrow": "COUPON",
+      "close": "Close",
+      "title_guest": "\u00a5500 OFF coupon for new members",
+      "text_guest": "Register for a free account and receive a \u00a5500 OFF coupon for your first order.",
+      "cta_guest": "Create a free account",
+      "title_member": "Your \u00a5500 OFF coupon is ready",
+      "text_member": "Use the code below at checkout on your first order.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "cta_member": "Use in cart",
+      "conditions": "One use per customer. Cannot be combined with other discounts."
     },
     "cart_drawer": {
       "note": "Shipping and tax are calculated at checkout.",

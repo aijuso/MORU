@@ -1,0 +1,244 @@
+{%- comment -%}
+  新規会員 ¥500OFF クーポン(MORU500)の案内カード。
+  スクロールで画面下にスライドインする。docs/06 §6 の「MORU500 の顧客案内」の実装。
+
+  出し分け:
+  - 未ログイン       → 会員登録への導線(コードは見せない。セグメント限定のため
+                        ログインしないと使えず、見せると混乱する)
+  - ログイン済み・注文0回 → コード表示 + コピー + カートで使う(/discount/CODE)
+  - ログイン済み・注文あり → 出さない(対象外。偽の訴求になる)
+
+  ホーム(index)のみに表示する(Owner 指示 2026-08-28)。カートは
+  moru-main-cart 側の会員クーポン枠、商品ページは moru-main-product 側の
+  クーポンカードが担当。
+{%- endcomment -%}
+{%- liquid
+  assign suppress = false
+  if section.settings.enable == false
+    assign suppress = true
+  endif
+  unless request.page_type == 'index'
+    assign suppress = true
+  endunless
+  if customer and customer.orders_count > 0
+    assign suppress = true
+  endif
+-%}
+{%- unless suppress -%}
+  <aside
+    class="moru-coupon-popup"
+    data-coupon-popup
+    data-scroll-threshold="{{ section.settings.scroll_threshold | default: 300 }}"
+    data-suppress-days="{{ section.settings.suppress_days | default: 7 }}"
+    aria-label="{{ 'moru.coupon_popup.aria_label' | t }}"
+    hidden
+  >
+    <button type="button" class="moru-coupon-popup__close" data-coupon-popup-close aria-label="{{ 'moru.coupon_popup.close' | t }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+    </button>
+    <p class="moru-coupon-popup__eyebrow">{{ 'moru.coupon_popup.eyebrow' | t }}</p>
+    {%- if customer -%}
+      <p class="moru-coupon-popup__title">{{ 'moru.coupon_popup.title_member' | t }}</p>
+      <p class="moru-coupon-popup__text">{{ 'moru.coupon_popup.text_member' | t }}</p>
+      <div class="moru-coupon-popup__code-row">
+        <code class="moru-coupon-popup__code" data-coupon-popup-code>{{ section.settings.coupon_code }}</code>
+        <button type="button" class="moru-coupon-popup__copy" data-coupon-popup-copy data-copied-label="{{ 'moru.coupon_popup.copied' | t }}" data-copy-label="{{ 'moru.coupon_popup.copy' | t }}">{{ 'moru.coupon_popup.copy' | t }}</button>
+      </div>
+      <a class="moru-coupon-popup__cta" href="/discount/{{ section.settings.coupon_code | url_encode }}?redirect=/cart" data-coupon-popup-cta>{{ 'moru.coupon_popup.cta_member' | t }}</a>
+    {%- else -%}
+      <p class="moru-coupon-popup__title">{{ 'moru.coupon_popup.title_guest' | t }}</p>
+      <p class="moru-coupon-popup__text">{{ 'moru.coupon_popup.text_guest' | t }}</p>
+      <a class="moru-coupon-popup__cta" href="{{ routes.account_register_url }}" data-coupon-popup-cta>{{ 'moru.coupon_popup.cta_guest' | t }}</a>
+    {%- endif -%}
+    <p class="moru-coupon-popup__conditions">{{ 'moru.coupon_popup.conditions' | t }}</p>
+  </aside>
+{%- endunless -%}
+
+{% stylesheet %}
+  .moru-coupon-popup {
+    position: fixed;
+    inset-block-end: var(--space-md);
+    inset-inline-start: var(--space-md);
+    z-index: 60;
+    max-width: 320px;
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-block-start: 3px solid var(--color-accent-terracotta);
+    border-radius: 10px;
+    background-color: var(--color-bg);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 300ms ease, transform 300ms ease;
+  }
+  .moru-coupon-popup.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .moru-coupon-popup { transition: none; transform: none; }
+  }
+  @media (max-width: 599px) {
+    .moru-coupon-popup { inset-inline: var(--space-sm); max-width: none; }
+  }
+  .moru-coupon-popup__close {
+    position: absolute;
+    inset-block-start: var(--space-xs);
+    inset-inline-end: var(--space-xs);
+    display: grid;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 32px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--color-muted);
+    cursor: pointer;
+  }
+  .moru-coupon-popup__close svg { inline-size: 14px; block-size: 14px; }
+  .moru-coupon-popup__eyebrow {
+    margin: 0 0 var(--space-2xs);
+    color: var(--color-accent-terracotta);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .moru-coupon-popup__title {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .moru-coupon-popup__text {
+    margin: 0 0 var(--space-sm);
+    color: var(--color-muted);
+    font-size: var(--font-size-xs);
+    line-height: 1.6;
+  }
+  .moru-coupon-popup__code-row {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-2xs);
+    margin-block-end: var(--space-sm);
+  }
+  .moru-coupon-popup__code {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px dashed var(--color-accent-terracotta);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+  .moru-coupon-popup__copy {
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-bg-alt);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+  }
+  .moru-coupon-popup__cta {
+    display: block;
+    padding-block: var(--space-xs);
+    border-radius: 4px;
+    background-color: var(--color-text);
+    color: var(--color-bg);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+  }
+  .moru-coupon-popup__cta:hover { opacity: 0.85; }
+  .moru-coupon-popup__conditions {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-muted);
+    font-size: 0.6875rem;
+    line-height: 1.5;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var popup = document.querySelector('[data-coupon-popup]');
+    if (!popup) return;
+
+    var STORAGE_KEY = 'moru-coupon-popup:dismissed-at';
+    var suppressDays = parseInt(popup.dataset.suppressDays, 10) || 7;
+    var threshold = parseInt(popup.dataset.scrollThreshold, 10) || 300;
+
+    function storageGet() {
+      try { return window.localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+    }
+    function storageSet(value) {
+      try { window.localStorage.setItem(STORAGE_KEY, value); } catch (e) { /* private mode */ }
+    }
+
+    var dismissedAt = parseInt(storageGet(), 10);
+    if (dismissedAt && Date.now() - dismissedAt < suppressDays * 86400000) return;
+
+    var shown = false;
+    function show() {
+      if (shown) return;
+      shown = true;
+      popup.hidden = false;
+      window.requestAnimationFrame(function () { popup.classList.add('is-visible'); });
+      window.removeEventListener('scroll', onScroll);
+    }
+    function dismiss() {
+      storageSet(String(Date.now()));
+      popup.classList.remove('is-visible');
+      window.setTimeout(function () { popup.hidden = true; }, 320);
+    }
+
+    function onScroll() {
+      if (window.scrollY > threshold) show();
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    popup.querySelector('[data-coupon-popup-close]').addEventListener('click', dismiss);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && shown && !popup.hidden) dismiss();
+    });
+
+    var cta = popup.querySelector('[data-coupon-popup-cta]');
+    if (cta) cta.addEventListener('click', function () { storageSet(String(Date.now())); });
+
+    var copyButton = popup.querySelector('[data-coupon-popup-copy]');
+    if (copyButton) {
+      copyButton.addEventListener('click', function () {
+        var code = popup.querySelector('[data-coupon-popup-code]').textContent.trim();
+        var markCopied = function () {
+          copyButton.textContent = copyButton.dataset.copiedLabel;
+          window.setTimeout(function () { copyButton.textContent = copyButton.dataset.copyLabel; }, 2000);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(markCopied);
+        } else {
+          var textarea = document.createElement('textarea');
+          textarea.value = code;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          markCopied();
+        }
+      });
+    }
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:moru.coupon_popup.name",
+  "settings": [
+    { "type":"checkbox", "id":"enable", "label":"t:moru.coupon_popup.enable_label", "default":true },
+    { "type":"text", "id":"coupon_code", "label":"t:moru.coupon_popup.code_label", "info":"t:moru.coupon_popup.code_info", "default":"MORU500" },
+    { "type":"range", "id":"scroll_threshold", "min":100, "max":1000, "step":50, "unit":"px", "label":"t:moru.coupon_popup.scroll_label", "default":300 },
+    { "type":"range", "id":"suppress_days", "min":1, "max":30, "step":1, "label":"t:moru.coupon_popup.suppress_label", "info":"t:moru.coupon_popup.suppress_info", "default":7 }
+  ],
+  "enabled_on": { "groups":["header"] },
+  "presets": [{ "name": "t:moru.coupon_popup.name" }]
+}
+{% endschema %}

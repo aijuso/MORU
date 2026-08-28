@@ -131,6 +131,21 @@
       </div>
 
       <aside class="moru-cart__summary">
+        {%- comment -%}
+          FAQ の「新規会員登録後、対象のお客様のカートに表示される¥500OFFクーポン」の実体。
+          対象 = ログイン済みかつ注文0回(MORU500 のセグメント条件と同じ)。
+        {%- endcomment -%}
+        {% if section.settings.show_member_coupon and customer and customer.orders_count == 0 %}
+          <div class="moru-cart__member-coupon">
+            <p class="moru-cart__member-coupon-title">{{ 'moru.cart.member_coupon_title' | t }}</p>
+            <p class="moru-cart__member-coupon-text">{{ 'moru.cart.member_coupon_text' | t }}</p>
+            <div class="moru-cart__member-coupon-row">
+              <code class="moru-cart__member-coupon-code">{{ section.settings.member_coupon_code }}</code>
+              <a class="moru-cart__member-coupon-apply" href="/discount/{{ section.settings.member_coupon_code | url_encode }}?redirect=/cart">{{ 'moru.cart.member_coupon_apply' | t }}</a>
+            </div>
+            <p class="moru-cart__member-coupon-note">{{ 'moru.cart.member_coupon_note' | t }}</p>
+          </div>
+        {% endif %}
         {% if section.settings.show_coupon %}
           {%- comment -%}
             入力したコードがどうなったのかを必ず見せる。以前は /discount/CODE へ
@@ -267,6 +282,14 @@
   .moru-cart__trust-item { display:flex; align-items:center; gap:var(--space-2xs); font-size:var(--font-size-xs); color:var(--color-muted); }
   .moru-cart__trust-item svg { width:1rem; height:1rem; color:var(--color-text); }
   .moru-cart__summary { padding:var(--space-lg); border:1px solid var(--color-border); border-radius:10px; background-color:var(--color-bg-alt); }
+  .moru-cart__member-coupon { margin-block-end:var(--space-md); padding:var(--space-sm); border:1px dashed var(--color-accent-terracotta); border-radius:8px; background-color:var(--color-bg); }
+  .moru-cart__member-coupon-title { margin:0 0 var(--space-2xs); color:var(--color-accent-terracotta); font-size:var(--font-size-xs); font-weight:600; letter-spacing:.04em; }
+  .moru-cart__member-coupon-text { margin:0 0 var(--space-xs); font-size:var(--font-size-xs); line-height:1.6; }
+  .moru-cart__member-coupon-row { display:flex; gap:var(--space-2xs); margin-block-end:var(--space-xs); }
+  .moru-cart__member-coupon-code { flex:1; display:grid; place-items:center; padding:var(--space-2xs); border:1px solid var(--color-border); border-radius:4px; background-color:var(--color-bg-alt); font-size:var(--font-size-sm); font-weight:600; letter-spacing:.12em; }
+  .moru-cart__member-coupon-apply { display:grid; place-items:center; padding:var(--space-2xs) var(--space-sm); border-radius:4px; background-color:var(--color-text); color:var(--color-bg); font-size:var(--font-size-xs); font-weight:500; text-decoration:none; }
+  .moru-cart__member-coupon-apply:hover { opacity:.85; }
+  .moru-cart__member-coupon-note { margin:0; color:var(--color-muted); font-size:0.6875rem; line-height:1.5; }
   .moru-cart__coupon-block { margin-block-end:var(--space-lg); }
   .moru-cart__coupon { display:flex; gap:var(--space-sm); }
   .moru-cart__coupon-label { margin:0 0 var(--space-2xs); font-size:var(--font-size-xs); color:var(--color-muted); }
@@ -461,6 +484,9 @@
     { "type":"text", "id":"notice_text", "label":"t:moru.cart.notice_text_label", "default":"t:moru.cart.notice_text_default" },
     { "type":"header", "content":"t:moru.cart.summary_header" },
     { "type":"checkbox", "id":"show_coupon", "label":"t:moru.cart.show_coupon_label", "info":"t:moru.cart.show_coupon_info", "default":true },
+    { "type":"header", "content":"t:moru.cart.member_coupon_header" },
+    { "type":"checkbox", "id":"show_member_coupon", "label":"t:moru.cart.show_member_coupon_label", "info":"t:moru.cart.show_member_coupon_info", "default":true },
+    { "type":"text", "id":"member_coupon_code", "label":"t:moru.cart.member_coupon_code_label", "default":"MORU500" },
     { "type":"text", "id":"shipping_note", "label":"t:moru.cart.shipping_note_label", "info":"t:moru.cart.shipping_note_info", "default":"t:moru.cart.shipping_note_default" },
     { "type":"select", "id":"tax_display", "label":"t:moru.cart.tax_display_label", "info":"t:moru.cart.tax_display_info", "options":[{ "value":"included", "label":"t:moru.cart.tax_included_option" },{ "value":"hidden", "label":"t:moru.cart.tax_hidden_option" }], "default":"included" },
     { "type":"range", "id":"tax_rate", "min":0, "max":20, "step":1, "unit":"%", "label":"t:moru.cart.tax_rate_label", "default":10 },

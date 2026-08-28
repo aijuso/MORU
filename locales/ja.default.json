@@ -108,6 +108,10 @@
       "wishlist": "お気に入りに追加",
       "wishlist_added": "お気に入りに追加済み",
       "express_checkout": "エクスプレスチェックアウト",
+      "coupon_amount": "新規会員限定 ¥500 OFF",
+      "coupon_note": "会員登録(無料)後にご利用いただけます。お一人様1回まで・他の割引と併用不可。",
+      "coupon_copy": "コードをコピー",
+      "coupon_copied": "コピーしました",
       "rating_pending": "レビュー準備中",
       "remaining": {
         "one": "(残り{{ count }}点)",
@@ -169,6 +173,10 @@
       "coupon_removed": "クーポンを削除しました。",
       "coupon_not_applied": "コードは現在のカートに適用されませんでした。すでに適用中の割引が優先されている場合があります。コードの入力内容、ログイン状態、利用条件をご確認ください。",
       "coupon_error": "うまく処理できませんでした。時間をおいてもう一度お試しください。",
+      "member_coupon_title": "新規会員限定クーポン",
+      "member_coupon_text": "初回のお買い物で使える¥500OFFクーポンをご利用いただけます。",
+      "member_coupon_apply": "カートに適用する",
+      "member_coupon_note": "お一人様1回まで。他の割引とは併用できないため、別の割引が優先され適用されない場合があります。",
       "upsell_add": "追加する",
       "upsell_added": "追加済み",
       "hold_remaining": "あと {{ time }} でカートから削除されます",
@@ -232,6 +240,20 @@
       "body": "お探しのページは移動または削除されたか、URLが変更された可能性があります。下の検索やリンクからお探しください。",
       "home": "トップページへ",
       "links_title": "よく見られているページ"
+    },
+    "coupon_popup": {
+      "aria_label": "クーポンのご案内",
+      "eyebrow": "COUPON",
+      "close": "閉じる",
+      "title_guest": "新規会員登録で¥500OFFクーポン",
+      "text_guest": "会員登録いただいた方に、初回のお買い物で使える¥500OFFクーポンをお渡ししています。",
+      "cta_guest": "無料で会員登録する",
+      "title_member": "¥500OFFクーポンをご利用いただけます",
+      "text_member": "初回のお買い物で、下のコードをチェックアウト時にご利用いただけます。",
+      "copy": "コピー",
+      "copied": "コピーしました",
+      "cta_member": "カートで使う",
+      "conditions": "お一人様1回まで。他の割引とは併用できません。"
     },
     "cart_drawer": {
       "note": "送料と税額はご購入手続きの画面で確定します。",
