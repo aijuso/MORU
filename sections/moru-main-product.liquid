@@ -541,15 +541,15 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2 9V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"></path><line x1="9" y1="9" x2="15" y2="15"></line><circle cx="9.5" cy="14.5" r="0.5"></circle><circle cx="14.5" cy="9.5" r="0.5"></circle></svg>
             </span>
             <span class="moru-product__coupon-body">
-              <span class="moru-product__coupon-amount">{{ 'moru.product.coupon_amount' | t }}</span>
+              <span class="moru-product__coupon-head"><span class="moru-product__coupon-amount">{{ 'moru.product.coupon_amount' | t }}</span><span class="moru-product__coupon-scope">{{ 'moru.product.coupon_scope' | t }}</span></span>
               <span class="moru-product__coupon-code" data-product-coupon-code>{{ section.settings.coupon_card_code }}</span>
-              <span class="moru-product__coupon-note">{{ 'moru.product.coupon_note' | t }}</span>
             </span>
-            <button type="button" class="moru-product__coupon-copy" data-product-coupon-copy data-copied-label="{{ 'moru.product.coupon_copied' | t }}" data-copy-label="{{ 'moru.product.coupon_copy' | t }}">
+            <button type="button" class="moru-product__coupon-copy" data-product-coupon-copy>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span data-product-coupon-copy-label>{{ 'moru.product.coupon_copy' | t }}</span>
+              <span>{{ 'moru.product.coupon_copy' | t }}</span>
             </button>
           </div>
+          <div class="moru-product__coupon-toast" data-product-coupon-toast role="status" aria-live="polite" hidden>{{ 'moru.product.coupon_toast' | t }}</div>
         {% endunless %}
       {% endif %}
     </div>
@@ -638,16 +638,16 @@
     margin-block-start: var(--space-md);
     padding: var(--space-sm) var(--space-md);
     border: 1px solid var(--color-border);
-    border-inline-start: 3px solid var(--color-accent-terracotta);
     border-radius: 8px;
     background-color: var(--color-bg-alt);
   }
   .moru-product__coupon-icon { display: grid; place-items: center; color: var(--color-accent-terracotta); }
-  .moru-product__coupon-icon svg { inline-size: 22px; block-size: 22px; }
+  .moru-product__coupon-icon svg { inline-size: 24px; block-size: 24px; }
   .moru-product__coupon-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-inline-size: 0; }
-  .moru-product__coupon-amount { font-size: var(--font-size-sm); font-weight: 600; }
-  .moru-product__coupon-code { font-size: var(--font-size-xs); font-weight: 600; letter-spacing: 0.12em; }
-  .moru-product__coupon-note { color: var(--color-muted); font-size: 0.6875rem; line-height: 1.5; }
+  .moru-product__coupon-head { display: flex; align-items: baseline; gap: var(--space-2xs); flex-wrap: wrap; }
+  .moru-product__coupon-amount { font-size: var(--font-size-lg); font-weight: 700; line-height: 1.2; }
+  .moru-product__coupon-scope { color: var(--color-muted); font-size: var(--font-size-xs); }
+  .moru-product__coupon-code { color: var(--color-muted); font-size: var(--font-size-xs); font-weight: 600; letter-spacing: 0.12em; }
   .moru-product__coupon-copy {
     display: inline-flex;
     align-items: center;
@@ -663,7 +663,28 @@
     cursor: pointer;
   }
   .moru-product__coupon-copy svg { inline-size: 14px; block-size: 14px; }
-  .moru-product__coupon-copy.is-copied { border-color: var(--color-accent-terracotta); color: var(--color-accent-terracotta); }
+  .moru-product__coupon-toast {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: calc(24px + env(safe-area-inset-bottom));
+    z-index: 70;
+    margin-inline: auto;
+    inline-size: fit-content;
+    max-inline-size: calc(100vw - 32px);
+    padding: var(--space-xs) var(--space-lg);
+    border-radius: 999px;
+    background-color: var(--color-text);
+    color: var(--color-bg);
+    font-size: var(--font-size-xs);
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .moru-product__coupon-toast.is-visible { opacity: 1; }
+  @media (max-width: 749px) {
+    .moru-product__coupon-toast { inset-block-end: calc(84px + env(safe-area-inset-bottom)); }
+  }
   .moru-product {
     padding-block: var(--space-sm) var(--space-xl);
   }
@@ -1367,25 +1388,59 @@
       flex-wrap: wrap;
     }
   }
+
+  /* スマホ: 購入ボタンを画面下部に固定(Owner 指示 2026-08-28) */
+  @media (max-width: 749px) {
+    .moru-product { padding-block-end: calc(76px + env(safe-area-inset-bottom)); }
+    .moru-product__actions {
+      position: fixed;
+      inset-block-end: 0;
+      inset-inline-start: 0;
+      inline-size: 50%;
+      z-index: 40;
+      margin: 0;
+      padding: var(--space-2xs) var(--space-2xs) calc(var(--space-2xs) + env(safe-area-inset-bottom)) var(--space-sm);
+      background-color: var(--color-bg);
+      border-block-start: 1px solid var(--color-border);
+    }
+    .moru-product__actions .moru-product__wishlist { display: none; }
+    .moru-product__add { inline-size: 100%; }
+    .moru-product__express {
+      position: fixed;
+      inset-block-end: 0;
+      inset-inline-end: 0;
+      inline-size: 50%;
+      z-index: 40;
+      margin: 0;
+      padding: var(--space-2xs) var(--space-sm) calc(var(--space-2xs) + env(safe-area-inset-bottom)) var(--space-2xs);
+      background-color: var(--color-bg);
+      border-block-start: 1px solid var(--color-border);
+    }
+    .moru-product__express-divider { display: none; }
+    .moru-product__express .shopify-payment-button__button { block-size: 3rem; min-block-size: 3rem; }
+  }
 {% endstylesheet %}
 
 {% javascript %}
   (function () {
     var copyButton = document.querySelector('[data-product-coupon-copy]');
     if (!copyButton) return;
+    var toast = document.querySelector('[data-product-coupon-toast]');
+    var toastTimer = null;
+    var showToast = function () {
+      if (!toast) return;
+      toast.hidden = false;
+      window.requestAnimationFrame(function () { toast.classList.add('is-visible'); });
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(function () {
+        toast.classList.remove('is-visible');
+        window.setTimeout(function () { toast.hidden = true; }, 220);
+      }, 2500);
+    };
     copyButton.addEventListener('click', function () {
       var code = document.querySelector('[data-product-coupon-code]').textContent.trim();
-      var label = copyButton.querySelector('[data-product-coupon-copy-label]');
-      var markCopied = function () {
-        label.textContent = copyButton.dataset.copiedLabel;
-        copyButton.classList.add('is-copied');
-        window.setTimeout(function () {
-          label.textContent = copyButton.dataset.copyLabel;
-          copyButton.classList.remove('is-copied');
-        }, 2000);
-      };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(markCopied);
+        navigator.clipboard.writeText(code).then(showToast);
       } else {
         var textarea = document.createElement('textarea');
         textarea.value = code;
@@ -1393,7 +1448,7 @@
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        markCopied();
+        showToast();
       }
     });
   })();

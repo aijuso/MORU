@@ -14,8 +14,7 @@
     "announcement": {"type":"moru-announcement","settings":{"text":"¥7,700以上のご購入で送料無料 / 新規会員登録で¥500OFFクーポンプレゼント","link":""}},
     "header": {"type":"moru-header-v2","settings":{"logo":"shopify://shop_images/MORU.gif","logo_width":140,"wordmark":"MORU","menu":"main-menu","sale_link_title":"セール","show_login":true}},
     "search_modal": {"type":"moru-search-modal","blocks":{"k1":{"type":"keyword","settings":{"keyword":"チェア"}},"k2":{"type":"keyword","settings":{"keyword":"テーブル"}},"k3":{"type":"keyword","settings":{"keyword":"照明"}}},"block_order":["k1","k2","k3"],"settings":{"show_recent":true}},
-    "cart_drawer": {"type":"moru-cart-drawer-v2","settings":{"open_on_add":true}},
-    "coupon_popup": {"type":"moru-coupon-popup","settings":{"enable":true,"coupon_code":"MORU500","scroll_threshold":300,"suppress_days":7}}
+    "cart_drawer": {"type":"moru-cart-drawer-v2","settings":{"open_on_add":true}}
   },
-  "order": ["announcement","header","search_modal","cart_drawer","coupon_popup"]
+  "order": ["announcement","header","search_modal","cart_drawer"]
 }
