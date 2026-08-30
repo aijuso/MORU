@@ -2567,3 +2567,16 @@ Owner フィードバック「フェードが広すぎ・コピー(タイトル/
 
 dev / live へ push。本番で polish.css(ellipse 100% 62%)と
 compiled styles(新clamp・data-sp-hide-subtitle)の配信を確認。
+
+### 追記4(2026-08-29・スマホのCTAを下線付きテキストリンクに)
+
+**Owner 指定(モック画像あり)。狙いは「写真の見せ場をコピーで隠さない」こと。**
+スマホのヒーローCTAを箱型ボタン → **下線付きテキストリンク「◯◯を見る ›」**に変更。
+
+- border / 背景 / backdrop-filter を外し、underline(offset 0.45em)+ `›` を付加
+- ホバー時の黒塗り(PCの挙動)はスマホでは無効化
+- ボタン上の余白 md → sm。**PCのボタンは従来のまま**
+- 写真の見せ場の位置合わせは、標準の**焦点(フォーカルポイント)機能**を案内済み
+  (コンテンツ → ファイル → 画像 → 焦点。image_tag が object-position を自動出力)
+
+dev / live へ push、本番の compiled styles で配信確認(反映に数十秒のラグあり)。

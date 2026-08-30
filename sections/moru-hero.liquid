@@ -146,8 +146,28 @@
     .moru-hero__slide[data-mobile-position^='middle_'] .moru-hero__overlay { background: linear-gradient(to bottom, transparent 18%, rgb(255 255 255 / 0.18) 34%, rgb(255 255 255 / 0.72) 50%, rgb(255 255 255 / 0.18) 66%, transparent 82%); }
     /* スマホはコピーを一回り小さく(コピー塊がヒーローの半分を超えないように) */
     .moru-hero__title { font-size: clamp(1.4rem, 5.6vw, 1.8rem); line-height: 1.4; }
-    .moru-hero__button-wrap { margin-block-start: var(--space-md); }
-    .moru-hero__button { padding: var(--space-xs) var(--space-md); font-size: var(--font-size-xs); }
+    .moru-hero__button-wrap { margin-block-start: var(--space-sm); }
+    /* スマホは箱型ボタンではなく下線付きテキストリンク(Owner 指定・2026-08-29)。
+       箱をやめて写真の見せ場を隠さない。PC は従来のボタンのまま */
+    .moru-hero__button {
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      backdrop-filter: none;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      letter-spacing: var(--letter-spacing-wide);
+      text-decoration: underline;
+      text-underline-offset: 0.45em;
+      text-decoration-thickness: 1px;
+    }
+    .moru-hero__button::after { content: '\203A'; margin-inline-start: 0.4em; display: inline-block; text-decoration: none; }
+    .moru-hero__button:hover, .moru-hero__button:active {
+      background: transparent;
+      color: var(--moru-hero-text-color, var(--color-text));
+      box-shadow: none;
+    }
     .moru-hero__slide[data-sp-hide-subtitle] .moru-hero__subtitle { display: none; }
     .moru-hero__subtitle { margin-block-start: var(--space-xs); font-size: var(--font-size-xs); line-height: 1.7; }
     .moru-hero__button-wrap { margin-block-start: var(--space-md); }
