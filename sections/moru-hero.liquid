@@ -5,12 +5,13 @@
 
 {% liquid
   assign frame_ratio = section.settings.frame_ratio | default: '12 / 5'
+  assign frame_ratio_sp = section.settings.frame_ratio_mobile | default: '4 / 5'
 %}
 <moru-hero-slideshow
   class="moru-hero full-width{% unless frame_ratio == 'legacy' %} moru-hero--ratio{% endunless %}"
   data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
   aria-roledescription="carousel"
-  style="--moru-hero-text-color: {{ section.settings.text_color | default: '#2E2E2E' }}; --moru-hero-fade-opacity: {{ fade_opacity }};{% unless frame_ratio == 'legacy' %} --moru-hero-ratio-pc: {{ frame_ratio }};{% endunless %}"
+  style="--moru-hero-text-color: {{ section.settings.text_color | default: '#2E2E2E' }}; --moru-hero-fade-opacity: {{ fade_opacity }};{% unless frame_ratio == 'legacy' %} --moru-hero-ratio-pc: {{ frame_ratio }};{% endunless %} --moru-hero-ratio-sp: {{ frame_ratio_sp }};"
 >
   <div class="moru-hero__slides">
     {% for block in section.blocks %}
@@ -125,7 +126,8 @@
     .moru-hero--ratio .moru-hero__picture img, .moru-hero--ratio .moru-hero__media svg { object-position: center center; }
   }
   @media (max-width: 749px) {
-    .moru-hero { height: auto; aspect-ratio: 4 / 5; }
+    /* スマホの枠。比率はセクション設定(既定4:5)。同じ比率の画像なら切り抜きゼロ */
+    .moru-hero { height: auto; aspect-ratio: var(--moru-hero-ratio-sp, 4 / 5); }
     .moru-hero__picture img, .moru-hero__media svg { object-position: center center; }
     .moru-hero__content { padding: 1.75rem var(--page-margin) 4.25rem; }
     .moru-hero__title, .moru-hero__subtitle, .moru-hero__button-wrap { width: min(100%, 30rem); }
@@ -198,6 +200,17 @@
         { "value": "legacy", "label": "従来（高さ580px固定・画面幅により切り抜き）" }
       ]
     },
+    {
+      "type": "select", "id": "frame_ratio_mobile", "label": "スマホの枠の縦横比",
+      "info": "画像をこの比率で作ると切り抜きゼロで全体表示されます。横長にするほどコピー・ボタンの置き場が狭くなります",
+      "default": "4 / 5",
+      "options": [
+        { "value": "4 / 5", "label": "4:5（1200×1500）縦長・従来" },
+        { "value": "1 / 1", "label": "1:1（1200×1200）" },
+        { "value": "4 / 3", "label": "4:3（1600×1200）" },
+        { "value": "16 / 9", "label": "16:9（1600×900）横長" }
+      ]
+    },
     { "type": "range", "id": "autoplay_interval", "min": 4, "max": 10, "step": 1, "unit": "s", "label": "t:moru.hero.autoplay_interval_label", "default": 6 },
     { "type": "color", "id": "text_color", "label": "テキスト色", "default": "#2E2E2E" },
     { "type": "range", "id": "fade_strength", "min": 40, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ", "default": 85 }
@@ -209,7 +222,7 @@
       "limit": 5,
       "settings": [
         { "type": "image_picker", "id": "image", "label": "PC画像（推奨 2400×1000px）", "info": "下の「PCの枠の縦横比」と同じ比率で作ると、トリミングなしで画像全体がそのまま表示されます（既定は12:5 = 2400×1000）。比率が違う画像は中央基準で切り抜かれます。" },
-        { "type": "image_picker", "id": "mobile_image", "label": "スマホ画像（推奨 1200×1500px）", "info": "スマホの枠は4:5固定です。4:5ちょうど（例 1200×1500）の画像ならトリミングなしで全体が表示されます。未設定の場合はPC画像を中央基準で切り抜いて使用します。" },
+        { "type": "image_picker", "id": "mobile_image", "label": "スマホ画像", "info": "「スマホの枠の縦横比」と同じ比率で作ると、トリミングなしで全体が表示されます（既定は4:5 = 1200×1500）。未設定の場合はPC画像を中央基準で切り抜いて使用します。" },
         {
           "type": "select", "id": "desktop_content_position", "label": "PC：タイトル・説明・ボタンの位置", "default": "middle_left",
           "options": [
