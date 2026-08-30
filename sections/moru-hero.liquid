@@ -10,7 +10,7 @@
   assign frame_ratio_sp = section.settings.frame_ratio_mobile | default: '4 / 5'
 %}
 <moru-hero-slideshow
-  class="moru-hero full-width{% unless frame_ratio == 'legacy' %} moru-hero--ratio{% endunless %}"
+  class="moru-hero full-width{% unless frame_ratio == 'legacy' %} moru-hero--ratio{% endunless %}{% if section.settings.sp_cta_style == 'button' %} moru-hero--sp-cta-button{% endif %}"
   data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
   aria-roledescription="carousel"
   style="--moru-hero-text-color: {{ section.settings.text_color | default: '#2E2E2E' }}; --moru-hero-fade-opacity: {{ fade_opacity }}; --moru-hero-fade-opacity-sp: {{ fade_opacity_sp }};{% unless frame_ratio == 'legacy' %} --moru-hero-ratio-pc: {{ frame_ratio }};{% endunless %} --moru-hero-ratio-sp: {{ frame_ratio_sp }};"
@@ -170,6 +170,16 @@
       color: var(--moru-hero-text-color, var(--color-text));
       box-shadow: none;
     }
+    /* セクション設定「スマホ:CTAの見た目」=ボタンのとき、コンパクトな箱型に戻す */
+    .moru-hero--sp-cta-button .moru-hero__button {
+      padding: var(--space-xs) var(--space-md);
+      border: 1px solid var(--color-text);
+      border-radius: var(--style-border-radius-inputs);
+      background-color: rgb(255 255 255 / 0.52);
+      backdrop-filter: blur(4px);
+      text-decoration: none;
+    }
+    .moru-hero--sp-cta-button .moru-hero__button::after { content: none; }
     .moru-hero__slide[data-sp-hide-subtitle] .moru-hero__subtitle { display: none; }
     /* スマホは白フェードの強さを別スライダーで制御(未設定時はPCの値に追従) */
     .moru-hero__overlay { opacity: var(--moru-hero-fade-opacity-sp, var(--moru-hero-fade-opacity, 0.85)); }
@@ -246,7 +256,14 @@
     { "type": "range", "id": "autoplay_interval", "min": 4, "max": 10, "step": 1, "unit": "s", "label": "t:moru.hero.autoplay_interval_label", "default": 6 },
     { "type": "color", "id": "text_color", "label": "テキスト色", "default": "#2E2E2E" },
     { "type": "range", "id": "fade_strength", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ（PC）", "default": 85 },
-    { "type": "range", "id": "fade_strength_sp", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ（スマホ）", "info": "0で完全になし。文字が読みにくくならない範囲で下げてください", "default": 85 }
+    { "type": "range", "id": "fade_strength_sp", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ（スマホ）", "info": "0で完全になし。文字が読みにくくならない範囲で下げてください", "default": 85 },
+    {
+      "type": "select", "id": "sp_cta_style", "label": "スマホ：CTAの見た目", "default": "link",
+      "options": [
+        { "value": "link", "label": "テキストリンク（下線＋›）" },
+        { "value": "button", "label": "ボタン（枠付き・コンパクト）" }
+      ]
+    }
   ],
   "blocks": [
     {

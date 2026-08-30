@@ -2580,3 +2580,12 @@ compiled styles(新clamp・data-sp-hide-subtitle)の配信を確認。
   (コンテンツ → ファイル → 画像 → 焦点。image_tag が object-position を自動出力)
 
 dev / live へ push、本番の compiled styles で配信確認(反映に数十秒のラグあり)。
+
+### 追記5(2026-08-29・フェード強度のPC/スマホ分離とCTA見た目の切り替え)
+
+- **「白フェードの強さ」をPC/スマホの2本に分離**(どちらも0〜100%。スマホ既定85%)。
+  スマホは overlay の opacity を専用変数で受ける
+- **「スマホ:CTAの見た目」セレクトを新設**: テキストリンク(下線+›・既定)/
+  ボタン(枠付き・コンパクト)。Owner が見比べて決められるようにした
+  (箱型はコピー塊が大きくなり写真を隠すが、タップ誘導は強い。エディタで切り替え可)
+- dev / live へ push、compiled styles で配信確認
