@@ -221,12 +221,12 @@
      コピーを動かすとフェードも一緒に動くようにする。 */
   .moru-hero__slide .moru-hero__overlay {
     background: radial-gradient(
-      ellipse 120% 80% at calc(var(--moru-mobile-fade-x, 32%) + var(--moru-copy-ox-sp, 0%)) calc(var(--moru-mobile-fade-y, 68%) + var(--moru-copy-oy-sp, 0%)),
+      ellipse 100% 62% at calc(var(--moru-mobile-fade-x, 32%) + var(--moru-copy-ox-sp, 0%)) calc(var(--moru-mobile-fade-y, 68%) + var(--moru-copy-oy-sp, 0%)),
       rgb(255 255 255 / 0.98) 0%,
-      rgb(255 255 255 / 0.85) 32%,
-      rgb(255 255 255 / 0.45) 56%,
-      rgb(255 255 255 / 0.12) 72%,
-      transparent 84%
+      rgb(255 255 255 / 0.85) 36%,
+      rgb(255 255 255 / 0.45) 60%,
+      rgb(255 255 255 / 0.12) 76%,
+      transparent 88%
     ) !important;
   }
 }

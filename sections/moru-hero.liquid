@@ -20,6 +20,7 @@
         data-slide-index="{{ forloop.index0 }}"
         data-desktop-position="{{ block.settings.desktop_content_position }}"
         data-mobile-position="{{ block.settings.mobile_content_position }}"
+        {% if block.settings.sp_hide_subtitle %}data-sp-hide-subtitle{% endif %}
         style="--moru-copy-ox-pc: {{ block.settings.pc_offset_x | default: 0 }}%; --moru-copy-oy-pc: {{ block.settings.pc_offset_y | default: 0 }}%; --moru-copy-ox-sp: {{ block.settings.sp_offset_x | default: 0 }}%; --moru-copy-oy-sp: {{ block.settings.sp_offset_y | default: 0 }}%;"
         {{ block.shopify_attributes }}
       >
@@ -143,8 +144,12 @@
     .moru-hero__slide[data-mobile-position^='bottom_'] .moru-hero__overlay { background: linear-gradient(to bottom, transparent 28%, transparent 48%, rgb(255 255 255 / 0.28) 65%, rgb(255 255 255 / 0.78) 86%, rgb(255 255 255 / 0.96) 100%); }
     .moru-hero__slide[data-mobile-position^='top_'] .moru-hero__overlay { background: linear-gradient(to bottom, rgb(255 255 255 / 0.96) 0%, rgb(255 255 255 / 0.76) 19%, rgb(255 255 255 / 0.26) 38%, transparent 58%); }
     .moru-hero__slide[data-mobile-position^='middle_'] .moru-hero__overlay { background: linear-gradient(to bottom, transparent 18%, rgb(255 255 255 / 0.18) 34%, rgb(255 255 255 / 0.72) 50%, rgb(255 255 255 / 0.18) 66%, transparent 82%); }
-    .moru-hero__title { font-size: clamp(1.65rem, 7vw, 2.25rem); line-height: 1.35; }
-    .moru-hero__subtitle { margin-block-start: var(--space-sm); font-size: var(--font-size-sm); line-height: 1.7; }
+    /* スマホはコピーを一回り小さく(コピー塊がヒーローの半分を超えないように) */
+    .moru-hero__title { font-size: clamp(1.4rem, 5.6vw, 1.8rem); line-height: 1.4; }
+    .moru-hero__button-wrap { margin-block-start: var(--space-md); }
+    .moru-hero__button { padding: var(--space-xs) var(--space-md); font-size: var(--font-size-xs); }
+    .moru-hero__slide[data-sp-hide-subtitle] .moru-hero__subtitle { display: none; }
+    .moru-hero__subtitle { margin-block-start: var(--space-xs); font-size: var(--font-size-xs); line-height: 1.7; }
     .moru-hero__button-wrap { margin-block-start: var(--space-md); }
   }
 {% endstylesheet %}
@@ -246,6 +251,7 @@
         { "type": "range", "id": "pc_offset_y", "label": "PC：縦の微調整", "info": "マイナスで上、プラスで下", "min": -40, "max": 40, "step": 1, "unit": "%", "default": 0 },
         { "type": "range", "id": "sp_offset_x", "label": "スマホ：横の微調整", "info": "白フェードもコピーに追従します", "min": -40, "max": 40, "step": 1, "unit": "%", "default": 0 },
         { "type": "range", "id": "sp_offset_y", "label": "スマホ：縦の微調整", "info": "白フェードもコピーに追従します", "min": -40, "max": 40, "step": 1, "unit": "%", "default": 0 },
+        { "type": "checkbox", "id": "sp_hide_subtitle", "label": "スマホ：サブコピーを非表示", "info": "PCでは表示したまま、スマホだけ見出しとボタンにできます", "default": false },
         { "type": "textarea", "id": "title", "label": "t:moru.common.title", "default": "t:moru.hero.title_default" },
         { "type": "textarea", "id": "subtitle", "label": "t:moru.hero.subtitle_label", "default": "t:moru.hero.subtitle_default" },
         { "type": "text", "id": "button_label", "label": "t:moru.common.button_label", "default": "t:moru.hero.button_label_default" },
