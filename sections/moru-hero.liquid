@@ -3,11 +3,14 @@
   assign fade_opacity = fade_strength | times: 0.01
 %}
 
+{% liquid
+  assign frame_ratio = section.settings.frame_ratio | default: '12 / 5'
+%}
 <moru-hero-slideshow
-  class="moru-hero full-width"
+  class="moru-hero full-width{% unless frame_ratio == 'legacy' %} moru-hero--ratio{% endunless %}"
   data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
   aria-roledescription="carousel"
-  style="--moru-hero-text-color: {{ section.settings.text_color | default: '#2E2E2E' }}; --moru-hero-fade-opacity: {{ fade_opacity }};"
+  style="--moru-hero-text-color: {{ section.settings.text_color | default: '#2E2E2E' }}; --moru-hero-fade-opacity: {{ fade_opacity }};{% unless frame_ratio == 'legacy' %} --moru-hero-ratio-pc: {{ frame_ratio }};{% endunless %}"
 >
   <div class="moru-hero__slides">
     {% for block in section.blocks %}
@@ -113,6 +116,14 @@
   .moru-hero__dot.is-active { width: 22px; border-radius: 6px; background: #fff; box-shadow: 0 1px 4px rgb(0 0 0 / 0.25); }
 
   @media (max-width: 899px) and (min-width: 750px) { .moru-hero { height: 520px; } }
+  /* 縦横比モード(既定)。枠を画像と同じ比率にすると object-fit:cover でも
+     一切トリミングされず、入れた画像がそのまま全体表示される。
+     「従来(580px固定)」を選んだときだけ上の固定高さが生きる。
+     スマホ(〜749px)は従来どおり 4:5 固定(下の media が後勝ち)。 */
+  @media (min-width: 750px) {
+    .moru-hero--ratio { height: auto; aspect-ratio: var(--moru-hero-ratio-pc, 12 / 5); }
+    .moru-hero--ratio .moru-hero__picture img, .moru-hero--ratio .moru-hero__media svg { object-position: center center; }
+  }
   @media (max-width: 749px) {
     .moru-hero { height: auto; aspect-ratio: 4 / 5; }
     .moru-hero__picture img, .moru-hero__media svg { object-position: center center; }
@@ -176,6 +187,17 @@
 {
   "name": "t:moru.hero.name",
   "settings": [
+    {
+      "type": "select", "id": "frame_ratio", "label": "PCの枠の縦横比",
+      "info": "画像をこの比率で作ると切り抜きゼロで全体表示されます。高さは画面幅に比例します",
+      "default": "12 / 5",
+      "options": [
+        { "value": "12 / 5", "label": "12:5（2400×1000）おすすめ" },
+        { "value": "16 / 9", "label": "16:9（2400×1350）" },
+        { "value": "3 / 1", "label": "3:1（2400×800）" },
+        { "value": "legacy", "label": "従来（高さ580px固定・画面幅により切り抜き）" }
+      ]
+    },
     { "type": "range", "id": "autoplay_interval", "min": 4, "max": 10, "step": 1, "unit": "s", "label": "t:moru.hero.autoplay_interval_label", "default": 6 },
     { "type": "color", "id": "text_color", "label": "テキスト色", "default": "#2E2E2E" },
     { "type": "range", "id": "fade_strength", "min": 40, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ", "default": 85 }
@@ -186,8 +208,8 @@
       "name": "t:moru.hero.block_slide_name",
       "limit": 5,
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "PC画像（推奨 12:5 / 2400×1000px以上）", "info": "横長用です。画面幅によって上下が少しトリミングされるため、重要な被写体は中央寄りに配置してください。" },
-        { "type": "image_picker", "id": "mobile_image", "label": "スマホ画像（推奨 4:5 / 1200×1500px以上）", "info": "スマホでは4:5枠で表示します。未設定の場合はPC画像を使用します。" },
+        { "type": "image_picker", "id": "image", "label": "PC画像（推奨 2400×1000px）", "info": "下の「PCの枠の縦横比」と同じ比率で作ると、トリミングなしで画像全体がそのまま表示されます（既定は12:5 = 2400×1000）。比率が違う画像は中央基準で切り抜かれます。" },
+        { "type": "image_picker", "id": "mobile_image", "label": "スマホ画像（推奨 1200×1500px）", "info": "スマホの枠は4:5固定です。4:5ちょうど（例 1200×1500）の画像ならトリミングなしで全体が表示されます。未設定の場合はPC画像を中央基準で切り抜いて使用します。" },
         {
           "type": "select", "id": "desktop_content_position", "label": "PC：タイトル・説明・ボタンの位置", "default": "middle_left",
           "options": [
