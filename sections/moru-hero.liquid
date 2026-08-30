@@ -20,6 +20,7 @@
         data-slide-index="{{ forloop.index0 }}"
         data-desktop-position="{{ block.settings.desktop_content_position }}"
         data-mobile-position="{{ block.settings.mobile_content_position }}"
+        style="--moru-copy-ox-pc: {{ block.settings.pc_offset_x | default: 0 }}%; --moru-copy-oy-pc: {{ block.settings.pc_offset_y | default: 0 }}%; --moru-copy-ox-sp: {{ block.settings.sp_offset_x | default: 0 }}%; --moru-copy-oy-sp: {{ block.settings.sp_offset_y | default: 0 }}%;"
         {{ block.shopify_attributes }}
       >
         <div class="moru-hero__media">
@@ -93,7 +94,9 @@
     background: linear-gradient(90deg, rgb(255 255 255 / 0.96) 0%, rgb(255 255 255 / 0.76) 23%, rgb(255 255 255 / 0.30) 42%, transparent 62%);
   }
 
-  .moru-hero__content { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; padding: var(--space-2xl) clamp(var(--page-margin), 6vw, 4.5rem) 4rem; }
+  .moru-hero__content { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; padding: var(--space-2xl) clamp(var(--page-margin), 6vw, 4.5rem) 4rem; transform: translate(var(--moru-copy-ox-pc, 0%), var(--moru-copy-oy-pc, 0%)); }
+  /* content は inset:0 でヒーローと同サイズなので、transform の % =
+     ヒーローに対する % になる。X/Y微調整はプリセット位置からのずらし量 */
   .moru-hero__title, .moru-hero__subtitle, .moru-hero__button-wrap { width: min(48rem, 52vw); }
   .moru-hero__title, .moru-hero__subtitle { background: transparent; }
   .moru-hero__title { margin: 0; font-size: var(--font-size-3xl); font-weight: 700; line-height: 1.5; letter-spacing: 0.02em; color: var(--moru-hero-text-color, var(--color-text)); transform: translateY(20px); opacity: 0; transition: all 600ms cubic-bezier(0.25,1,0.5,1) 150ms; }
@@ -129,7 +132,7 @@
     /* スマホの枠。比率はセクション設定(既定4:5)。同じ比率の画像なら切り抜きゼロ */
     .moru-hero { height: auto; aspect-ratio: var(--moru-hero-ratio-sp, 4 / 5); }
     .moru-hero__picture img, .moru-hero__media svg { object-position: center center; }
-    .moru-hero__content { padding: 1.75rem var(--page-margin) 4.25rem; }
+    .moru-hero__content { padding: 1.75rem var(--page-margin) 4.25rem; transform: translate(var(--moru-copy-ox-sp, 0%), var(--moru-copy-oy-sp, 0%)); }
     .moru-hero__title, .moru-hero__subtitle, .moru-hero__button-wrap { width: min(100%, 30rem); }
     .moru-hero__slide[data-mobile-position^='top_'] .moru-hero__content { justify-content: flex-start; }
     .moru-hero__slide[data-mobile-position^='middle_'] .moru-hero__content { justify-content: center; }
@@ -239,6 +242,10 @@
             { "value": "bottom_left", "label": "左下" }, { "value": "bottom_center", "label": "中央下" }, { "value": "bottom_right", "label": "右下" }
           ]
         },
+        { "type": "range", "id": "pc_offset_x", "label": "PC：横の微調整", "info": "プリセット位置からのずらし量。マイナスで左、プラスで右", "min": -40, "max": 40, "step": 1, "unit": "%", "default": 0 },
+        { "type": "range", "id": "pc_offset_y", "label": "PC：縦の微調整", "info": "マイナスで上、プラスで下", "min": -40, "max": 40, "step": 1, "unit": "%", "default": 0 },
+        { "type": "range", "id": "sp_offset_x", "label": "スマホ：横の微調整", "info": "白フェードもコピーに追従します", "min": -40, "max": 40, "step": 1, "unit": "%", "default": 0 },
+        { "type": "range", "id": "sp_offset_y", "label": "スマホ：縦の微調整", "info": "白フェードもコピーに追従します", "min": -40, "max": 40, "step": 1, "unit": "%", "default": 0 },
         { "type": "textarea", "id": "title", "label": "t:moru.common.title", "default": "t:moru.hero.title_default" },
         { "type": "textarea", "id": "subtitle", "label": "t:moru.hero.subtitle_label", "default": "t:moru.hero.subtitle_default" },
         { "type": "text", "id": "button_label", "label": "t:moru.common.button_label", "default": "t:moru.hero.button_label_default" },
