@@ -1,6 +1,8 @@
 {% liquid
   assign fade_strength = section.settings.fade_strength | default: 85
   assign fade_opacity = fade_strength | times: 0.01
+  assign fade_strength_sp = section.settings.fade_strength_sp | default: fade_strength
+  assign fade_opacity_sp = fade_strength_sp | times: 0.01
 %}
 
 {% liquid
@@ -11,7 +13,7 @@
   class="moru-hero full-width{% unless frame_ratio == 'legacy' %} moru-hero--ratio{% endunless %}"
   data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
   aria-roledescription="carousel"
-  style="--moru-hero-text-color: {{ section.settings.text_color | default: '#2E2E2E' }}; --moru-hero-fade-opacity: {{ fade_opacity }};{% unless frame_ratio == 'legacy' %} --moru-hero-ratio-pc: {{ frame_ratio }};{% endunless %} --moru-hero-ratio-sp: {{ frame_ratio_sp }};"
+  style="--moru-hero-text-color: {{ section.settings.text_color | default: '#2E2E2E' }}; --moru-hero-fade-opacity: {{ fade_opacity }}; --moru-hero-fade-opacity-sp: {{ fade_opacity_sp }};{% unless frame_ratio == 'legacy' %} --moru-hero-ratio-pc: {{ frame_ratio }};{% endunless %} --moru-hero-ratio-sp: {{ frame_ratio_sp }};"
 >
   <div class="moru-hero__slides">
     {% for block in section.blocks %}
@@ -169,6 +171,8 @@
       box-shadow: none;
     }
     .moru-hero__slide[data-sp-hide-subtitle] .moru-hero__subtitle { display: none; }
+    /* スマホは白フェードの強さを別スライダーで制御(未設定時はPCの値に追従) */
+    .moru-hero__overlay { opacity: var(--moru-hero-fade-opacity-sp, var(--moru-hero-fade-opacity, 0.85)); }
     .moru-hero__subtitle { margin-block-start: var(--space-xs); font-size: var(--font-size-xs); line-height: 1.7; }
     .moru-hero__button-wrap { margin-block-start: var(--space-md); }
   }
@@ -241,7 +245,8 @@
     },
     { "type": "range", "id": "autoplay_interval", "min": 4, "max": 10, "step": 1, "unit": "s", "label": "t:moru.hero.autoplay_interval_label", "default": 6 },
     { "type": "color", "id": "text_color", "label": "テキスト色", "default": "#2E2E2E" },
-    { "type": "range", "id": "fade_strength", "min": 40, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ", "default": 85 }
+    { "type": "range", "id": "fade_strength", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ（PC）", "default": 85 },
+    { "type": "range", "id": "fade_strength_sp", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "白フェードの強さ（スマホ）", "info": "0で完全になし。文字が読みにくくならない範囲で下げてください", "default": 85 }
   ],
   "blocks": [
     {
