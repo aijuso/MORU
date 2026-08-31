@@ -1,5 +1,10 @@
 # Winning Hunter MCP セットアップ(2026-08-31 調査)
 
+> ✅ **2026-08-31 接続確認済み。** Owner が claude.ai のカスタムコネクタ(経路2 / OAuth)で接続し、
+> セッションに `mcp__WinningHunter__*` ツール群(40超)が出現。`check_credits` 実測で
+> **クレジット 98/100 残**(2/100 消費済み)。この経路が生きている限り経路1(APIキー)は不要 —
+> `.mcp.json` の `winninghunter` はコネクタが使えない環境向けのフォールバックとして残す。
+
 > リサーチの手順・評価基準は `.claude/skills/winning-hunter-research/SKILL.md` が正。
 > 本書は接続方法だけを扱う。
 

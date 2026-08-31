@@ -7,8 +7,9 @@
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni` — **新しいブランチを作らない(Owner 指示)**
 > 📄 **2026-08-31: オーナーコンサル資料(Shopify Dropshipping Playbook)を受領・読解済み。**
 > 原本と MORU 現状との対照・オーナー確認事項3件は `docs/consulting/playbook_digest_20260831.md`
-> 🔌 **Winning Hunter 導入決定(Owner 指示)。** `.mcp.json` 設定済み・**残りは Owner の
-> `WH_API_KEY` 環境変数登録のみ**(`ops/research/winning_hunter_setup.md`)。
+> 🔌 **Winning Hunter 接続済み(2026-08-31 実測)。** claude.ai カスタムコネクタ(OAuth)経由で
+> `mcp__WinningHunter__*` が使える。クレジット 98/100 残・**1ツール呼び出し=1クレジット**。
+> 手順とフォールバックは `ops/research/winning_hunter_setup.md`。
 > ブランド非依存のリサーチ標準を `.claude/skills/winning-hunter-research/` に新設
 > 対象ストア: `rgy5ee-fv.myshopify.com` / 独自ドメイン **`moruliving.com`**(SSL 有効)
 
