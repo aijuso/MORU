@@ -5,6 +5,8 @@
 > **価格改定案(利益額ベース+1年保証)が Owner 承認待ち** `ops/products/_price_proposal_1yr_20260829.md`。
 > ⚠️ 承認が出るまで価格・保証文言を変えないこと)
 > 作業ブランチ: `claude/moru-living-shopify-dev-yvnmni` — **新しいブランチを作らない(Owner 指示)**
+> 📄 **2026-08-31: オーナーコンサル資料(Shopify Dropshipping Playbook)を受領・読解済み。**
+> 原本と MORU 現状との対照・オーナー確認事項3件は `docs/consulting/playbook_digest_20260831.md`
 > 対象ストア: `rgy5ee-fv.myshopify.com` / 独自ドメイン **`moruliving.com`**(SSL 有効)
 
 ---
