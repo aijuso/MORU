@@ -3,6 +3,13 @@
     "shopify-dev-mcp": {
       "command": "npx",
       "args": ["-y", "@shopify/dev-mcp@latest"]
+    },
+    "winninghunter": {
+      "type": "http",
+      "url": "https://app.winninghunter.com/mcp",
+      "headers": {
+        "X-API-Key": "${WH_API_KEY}"
+      }
     }
   }
 }

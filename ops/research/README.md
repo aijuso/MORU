@@ -9,6 +9,11 @@
 | `rubric.md` | 商品の評価基準(問題解決力 / 世界観適合 / セット候補 / 色展開数) |
 | `sites.md` | リサーチ対象サイトDB(基準サイト: kocol.shop) |
 | `workflow.md` | 実行手順(取得 → 評価 → シート追記 → 照合 → 商品登録へ) |
+| `winning_hunter_setup.md` | Winning Hunter MCP の接続手順(オーナー側の作業を含む) |
+
+**ブランド非依存のリサーチ標準は `.claude/skills/winning-hunter-research/SKILL.md`。**
+本ディレクトリの rubric / sites は MORU 固有の「ブランドアダプタ」という位置づけ(スキル §6)。
+新ブランドを立ち上げるときはスキル本体を書き換えず、そのブランド用の rubric を新規作成する。
 
 **着手前に `rubric.md` を読むこと(CLAUDE.md 絶対ルール16)。**
 
